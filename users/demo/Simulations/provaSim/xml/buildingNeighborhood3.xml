@@ -1,0 +1,123 @@
+<?xml version="1.0" ?>
+<neighborhood id="1" name="test">
+  <!--Imported CoSSMic Microgrid-->
+  <house id="7">
+    <user id="1">
+      <heatercooler>
+       <type>NS-Consumer</type>
+       <name>Heater1</name>
+       <id>10</id>
+      </heatercooler>
+
+      <device>
+        <id>0</id>
+        <name>WashingMachine</name>
+        <type>Consumer</type>
+      </device>
+      <device>
+        <id>1</id>
+        <name>Freezer</name>
+        <type>Consumer</type>
+      </device>
+      <device>
+        <id>3</id>
+        <name>Pannello</name>
+        <type>Producer</type>
+      </device>
+      <device>
+        <id>4</id>
+        <name>Freezer2</name>
+        <type>Consumer</type>
+      </device>
+      <device>
+        <id>6</id>
+        <name>Fridge</name>
+        <type>Consumer</type>
+      </device>
+    </user>
+  </house>
+  <house id="2">
+    <user id="1">
+      <device>
+        <id>0</id>
+        <name>Fridge</name>
+        <type>Consumer</type>
+      </device>
+      <device>
+        <id>3</id>
+        <name>Pannello2</name>
+        <type>Producer</type>
+      </device>
+      <device>
+        <id>4</id>
+        <name>noname</name>
+        <type>Consumer</type>
+      </device>
+    </user>
+  </house>
+  <house id="3">
+    <user id="1">
+      <device>
+        <id>0</id>
+        <name>noname</name>
+        <type>Consumer</type>
+      </device>
+      <device>
+        <id>3</id>
+        <name>noname</name>
+        <type>Producer</type>
+      </device>
+    </user>
+  </house>
+  <house id="4">
+    <user id="1">
+      <device>
+        <id>0</id>
+        <name>noname</name>
+        <type>Consumer</type>
+      </device>
+      <device>
+        <id>3</id>
+        <name>noname</name>
+        <type>Producer</type>
+      </device>
+    </user>
+  </house>
+  <house id="5">
+    <user id="1">
+      <device>
+        <id>0</id>
+        <name>noname</name>
+        <type>Consumer</type>
+      </device>
+      <device>
+        <id>3</id>
+        <name>noname</name>
+        <type>Producer</type>
+      </device>
+    </user>
+  </house>
+  <house id="6">
+    <user id="1">
+      <device>
+        <id>3</id>
+        <name>noname</name>
+        <type>Producer</type>
+      </device>
+    </user>
+  </house>
+  <house id="1">
+    <user id="1">
+      <device>
+        <id>5</id>
+        <name>noname</name>
+        <type>Consumer</type>
+      </device>
+      <device>
+        <id>6</id>
+        <name>noname</name>
+        <type>Consumer</type>
+      </device>
+    </user>
+  </house>
+</neighborhood>

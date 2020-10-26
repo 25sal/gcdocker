@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Neighborhood>
+  <house id="0">
+    <user id="0">
+      <backgroundload>
+        <id>5</id>
+        <profile>0_run_0_1_ein.csv </profile>
+      </backgroundload>
+      <device>
+        <id>1</id>
+        <est>43200</est>
+        <lst>54000</lst>
+        <type>load</type>
+        <creation_time>32400</creation_time>
+        <profile>0_run_4_1_ein.csv </profile>
+      </device>
+      <device>
+        <id>2</id>
+        <est>0</est>
+        <lst>0</lst>
+        <type>load</type>
+        <creation_time>7200</creation_time>
+        <profile>6_run_3_1_eout.csv </profile>
+      </device>
+      <heatercooler>
+        <id>4</id>
+        <profile>hcprofile.csv </profile>
+      </heatercooler>
+      <ecar>
+        <id>6</id>
+        <pat>36000</pat>
+        <pdt>46800</pdt>
+        <aat>36000</aat>
+        <adt>46800</adt>
+        <creation_time>28800</creation_time>
+        <soc>5</soc>
+        <targetSoc>72</targetSoc>
+        <V2G>0</V2G>
+        <priority>0</priority>
+      </ecar>
+    </user>
+  </house>
+</Neighborhood>
