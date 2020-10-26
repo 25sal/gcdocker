@@ -14,5 +14,6 @@ RUN dpkg-reconfigure -f noninteractive tzdata
 COPY requirements.txt ./
 RUN pip3 install --no-cache-dir -r requirements.txt
 COPY users/demo/bin .
+RUN chmod +x ./starter.sh
 COPY GCSimulator/Simulator/greenchargeSoloDim/bin /usr/local/lib/python3.8/dist-packages/gcsimulator
 #CMD [ "python", "./bin/gcsimulator.py" ]
