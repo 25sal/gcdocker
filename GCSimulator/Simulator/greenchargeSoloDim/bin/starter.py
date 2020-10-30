@@ -25,6 +25,7 @@ import pdb
 import aiohttp_cors
 import yaml
 from yaml import Loader
+import sys
 
 
 
@@ -40,6 +41,9 @@ def adaptor():
 
 	protocol_version = cfg['config']['protocol']
 	simulation_dir = cfg['config']['simulation_dir']
+	print("simdir:" + simulation_dir)
+	simd = cfg['config']['simulation']
+	simulation_dir = simulation_dir + "/" + simd
 	simulation_date = cfg['config']['date']
 	hostname = cfg['config']['adaptor_address']
 	password = cfg['config']['xmpp_password']
@@ -140,6 +144,8 @@ class MyThread(threading.Thread):
 
         protocol_version = cfg['config']['protocol']
         simulation_dir = cfg['config']['simulation_dir']
+        simd = cfg['config']['simulation']
+        simulation_dir = simulation_dir + "/" + simd
         simulation_date = cfg['config']['date']
         hostname = cfg['config']['adaptor_address']
         password = cfg['config']['xmpp_password']
@@ -166,6 +172,7 @@ class MyThread(threading.Thread):
 
 
 if __name__ == "__main__":
+
     mythread = MyThread()
     start_disp()
     mythread.start()

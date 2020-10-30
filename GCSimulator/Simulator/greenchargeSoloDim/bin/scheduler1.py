@@ -18,6 +18,8 @@ import yaml
 from yaml import Loader
 import json
 import externalSourceAgent as es
+from shutil import copy2
+
 
 dispatched = queue.Queue()
 mexToSend = queue.Queue()
@@ -62,40 +64,50 @@ class scheduler(Agent):
             cfg = yaml.load(ymlfile, Loader = Loader)
             date = cfg['config']['date'] + " 00:00:00"
             path = cfg['config']['simulation_dir']
-        try:
-                message = data['response']
-                parsed_json = (json.loads(message))
-                sub = parsed_json['subject']
-                if(sub == "ASSIGNED_START_TIME"):
+            simdir = cfg['config']['simulation']
+            user = cfg['config']['userjid'].split('@')[0]
+        message = data['response']
+        parsed_json = (json.loads(message))
+        sub = parsed_json['subject']
+        f = open(path +"file222.csv", 'w')
+        f.write(sub)
+        f.close
+        
 
-                        id_load = parsed_json['id']
-                        ast = parsed_json['ast']
-                        producer = parsed_json['producer']
-                        mex = sub + " ID " + id_load + " " + ast + " PV " + producer
-                        mexToSend.put_nowait(mex)
+        print("riceveid")
 
-                elif(sub == "HC_PROFILE"):
-                        id_load = parsed_json['id']
-                        input_file = data['thefile'].file
-                        file_name = data['thefile'].filename
-                        print(file_name)
-                        if input_file:
-                                f = open(path+"/Simulations/"+es.mydir+"/output/HC/"+id_load+".csv", "w+")
-                                for line in input_file:
-                                      f.write(line.decode("utf-8"))
-                elif(sub == "EV_PROFILE"):
-                        id_load = parsed_json['id']
-                        input_file = data['thefile'].file
-                        file_name = data['thefile'].filename
-                        print(file_name)
-                        if input_file:
-                                f = open(path+"/Simulations/"+es.mydir+"/output/EV/"+id_load+".csv", "w+")
-                                for line in input_file:
-                                      f.write(line.decode("utf-8"))
+        if(sub == "ASSIGNED_START_TIME"):
+                id_load = parsed_json['id']
+                ast = parsed_json['ast']
+                producer = parsed_json['producer']
+                mex = sub + " ID " + id_load + " " + ast + " PV " + producer
+                mexToSend.put_nowait(mex)
+        elif(sub == "HC_PROFILE"):
+                id_load = parsed_json['id']
+                input_file = data['csvfile'].file
+                file_name = data['csvfile'].filename
+                print(file_name)
+                if input_file:
+                    f = open(path+"/"+simdir+"/Simulations/"+es.mydir+"/output/HC/"+id_load+".csv", "w+")
+                    for line in input_file:
+                        f.write(line.decode("utf-8"))
+                copy2(path+"/"+simdir+"/Simulations/"+es.mydir+"/output/HC/"+id_load+".csv","/home/gcdemo/public_html/Simulations/"+user+"/"+es.mydir+"/output")
+                
+        elif(sub == "EV_PROFILE"):
+                id_load = parsed_json['id']
+                input_file = data['csvfile'].file
+                file_name = data['csvfile'].filename
+                print(file_name)
+                print(path+simdir+"/Simulations/"+es.mydir+"/output/EV/"+id_load+".csv")
+                if input_file:
+                    f = open(path+"/"+simdir+"/Simulations/"+es.mydir+"/output/EV/"+id_load+".csv", "w+")
+                    for line in input_file:
+                        f.write(line.decode("utf-8"))
+                copy2(path+"/"+simdir+"/Simulations/"+es.mydir+"/output/EV/"+id_load+".csv","/home/gcdemo/public_html/Simulations/"+user+"/"+es.mydir+"/output")
 
-        except Exception as e:
-                print(e)
-                print("not valid request")
+
+
+
         response = web.StreamResponse(
         status=200,
         reason='OK'

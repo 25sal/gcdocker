@@ -41,6 +41,8 @@ class scheduler(Agent):
         schejid = cfg['config']['scheduler']
         protocol_version = cfg['config']['protocol']
         simulation_dir = cfg['config']['simulation_dir']
+        simd = cfg['config']['simulation']
+        simulation_dir = simulation_dir + "/" + simd
         simulation_date = cfg['config']['date']
         hostname = cfg['config']['adaptor_address']
         base_url = "http://"+hostname+":5280/files"
@@ -90,11 +92,13 @@ class scheduler(Agent):
             cfg = yaml.load(ymlfile, Loader = Loader)
             date = cfg['config']['date'] + " 00:00:00"
             path = cfg['config']['simulation_dir']
+            simdir = cfg['config']['simulation']
+
         try:
-                message = data['response']
-                parsed_json = (json.loads(message))
-                sub = parsed_json['subject']
-                if(sub == "ASSIGNED_START_TIME"):
+            message = data['response']
+            parsed_json = (json.loads(message))
+            sub = parsed_json['subject']
+            if(sub == "ASSIGNED_START_TIME"):
 
                         id_load = parsed_json['id']
                         ast = parsed_json['ast']
@@ -102,28 +106,31 @@ class scheduler(Agent):
                         mex = sub + " ID " + id_load + " " + ast + " PV " + producer
                         mexToSend.put_nowait(mex)
 
-                elif(sub == "HC_PROFILE"):
-                        id_load = parsed_json['id']
-                        input_file = data['thefile'].file
-                        file_name = data['thefile'].filename
-                        print(file_name)
-                        if input_file:
-                                f = open(path+"/Simulations/"+es.mydir+"/output/HC/"+id_load+".csv", "w+")
-                                for line in input_file:
-                                      f.write(line.decode("utf-8"))
-                elif(sub == "EV_PROFILE"):
-                        id_load = parsed_json['id']
-                        input_file = data['thefile'].file
-                        file_name = data['thefile'].filename
-                        print(file_name)
-                        if input_file:
-                                f = open(path+"/Simulations/"+es.mydir+"/output/EV/"+id_load+".csv", "w+")
-                                for line in input_file:
-                                      f.write(line.decode("utf-8"))
+            elif(sub == "HC_PROFILE"):
+                    id_load = parsed_json['id']
+                    input_file = data['csvfile'].file
+                    file_name = data['csvfile'].filename
+                    print(file_name)
+                    if input_file:
+                            f = open(path+"/"+simdir+"/Simulations/"+es.mydir+"/output/HC/"+id_load+".csv", "w+")
+                            for line in input_file:
+                                  f.write(line.decode("utf-8"))
+                    copy2(path+"/"+simdir+"/Simulations/"+es.mydir+"/output/HC/"+id_load+".csv","/home/gcdemo/public_html/Simulations/uio/"+es.mydir+"/output")
+                    
+            elif(sub == "EV_PROFILE"):
+                    id_load = parsed_json['id']
+                    input_file = data['csvfile'].file
+                    file_name = data['csvfile'].filename
+                    print(file_name)
+                    if input_file:
+                            f = open(path+"/"+simdir+"/Simulations/"+es.mydir+"/output/EV/"+id_load+".csv", "w+")
+                            for line in input_file:
+                                  f.write(line.decode("utf-8"))
+                    copy2(path+"/"+simdir+"/Simulations/"+es.mydir+"/output/EV/"+id_load+".csv","/home/gcdemo/public_html/Simulations/uio/"+es.mydir+"/output")
 
         except Exception as e:
-                print(e)
-                print("not valid request")
+            print(e)
+            print("not valid request")
         response = web.StreamResponse(
         status=200,
         reason='OK'
@@ -152,6 +159,8 @@ class scheduler(Agent):
             schejid = cfg['config']['scheduler']
             protocol_version = cfg['config']['protocol']
             simulation_dir = cfg['config']['simulation_dir']
+            simd = cfg['config']['simulation']
+            simulation_dir = simulation_dir + "/" + simd
             simulation_date = cfg['config']['date']
             hostname = cfg['config']['adaptor_address']
             msg = await self.receive(timeout=5)

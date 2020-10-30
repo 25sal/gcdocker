@@ -49,10 +49,14 @@ simjid = cfg['config']['simulator']
 schejid = cfg['config']['scheduler']
 protocol_version = cfg['config']['protocol']
 simulation_dir = cfg['config']['simulation_dir']
+sim = cfg['config']['simulation']
+simulation_dir = simulation_dir + "/" + sim
 simulation_date = cfg['config']['date']
 hostname = cfg['config']['adaptor_address']
 webdir = cfg['config']['webdir']
 dir1 = cfg['config']['simulation_dir']
+sim = cfg['config']['simulation']
+dir1 = dir1 + "/" + sim
 
 webarray = webdir.split("/")
 found = 0
@@ -67,21 +71,141 @@ for element in webarray:
 
 class MessageFactory():
 
-    def end():
+    def end(actual_time):
         global jid
         global basejid
         if(protocol_version == "1.0"):
             mex = Message(to=basejid+"/actormanager")
-            message="SIMULATION END"
+            message="SIMULATION END " + str(actual_time)
             mex.body = message
             return(mex)
         else:
             mex = Message(to=basejid+"/"+jid)
-            message =  """{"message" : {"subject" : "SIMULATION_END"}}"""
+            message =  """{"message" : {"subject" : "SIMULATION_END", "simulation_time": " """ + str(actual_time) + """ "}}"""
             mex.body = message
             mex.metadata = "0"
             return(mex)
+    def energyCost(device,time, protocol_version):
+        global jid
+        global basejid
+        if(protocol_version == "1.0"):
+            name = basejid.split('@')[0]
+            url = basejid.split('@')[1]
+            mex = Message(to=basejid+"/actormanager")
+            message="ENERGY_COST [0] " + "http://"+str(url)+"/~gcdemo/"+realpath+"/" +str(es.mydir)+"/"+ str(device.profile) +" " + str(time)
+            mex.body = message
+            return(mex)
+        else:
+            mex = Message(to=basejid+"/"+jid)
+            message =  """{"message" : {"subject" : "ENERGY_COST",id: "[0]","profile" : "http://parsec2.unicampania.it/~gcdemo/"""+realpath+"/"+str(es.mydir)+"""/"""+str(device.profile)+""" "}}"""
+            mex.body = message
+            mex.metadata = '0'
+            return(mex)
+	
+    def energyCostProducer(device, time, protocol_version):
+        global jid
+        global basejid 
+        if(protocol_version == "1.0"):
+            name = basejid.split('@')[0]
+            url = basejid.split('@')[1]
+            mex = Message(to=basejid+"/actormanager")
+            message="ENERGY_COST ["+str(device.house)+"]:["+str(device.device.id)+"] " + "http://"+str(url)+"/~gcdemo/"+realpath+"/Simulations/" +str(es.mydir)+"/"+ str(device.energycost) + " " + str(time)
+            mex.body = message
+            return(mex)
+        else:
+            mex = Message(to=basejid+"/"+jid)
+            message =  """{"message" : {"subject" : "ENERGY_COST",id: "[""" + str(device.house) + """]:[""" + str(device.device.id) + """]","profile" : "http://parsec2.unicampania.it/~gcdemo/"""+realpath+"/"+str(es.mydir)+"""/"""+str(device.energycost)+""" "}}"""
+            mex.body = message
+            mex.metadata = '0'
+            return(mex)
+			
+    def energyMix(device, time, protocol_version):
+        global jid
+        global basejid
+        if(protocol_version == "1.0"):
+            name = basejid.split('@')[0]
+            url = basejid.split('@')[1]
+            mex = Message(to=basejid+"/actormanager")
+            message="ENERGY_MIX " + "http://"+str(url)+"/~gcdemo/"+realpath+"/" +str(es.mydir)+"/"+ str(device.profile) + " " + str(time)
+            mex.body = message
+            return(mex)
+        else:
+            mex = Message(to=basejid+"/"+jid)
+            message =  """{"message" : {"subject" : "ENERGY_MIX","profile" : "http://parsec2.unicampania.it/~gcdemo/"""+realpath+"/"+str(es.mydir)+"""/"""+str(device.profile)+""" "}}"""
+            mex.body = message
+            mex.metadata = '0'
+            return(mex)
+			
+    def neighborhood(device,time, protocol_version):
+        global jid
+        global basejid
+        if(protocol_version == "1.0"):
+            name = basejid.split('@')[0]
+            url = basejid.split('@')[1]
+            mex = Message(to=basejid+"/actormanager")
+            message="CREATE_ENERGY_GROUP [99] " + str(device.peakload) + " " + time
+            mex.body = message
+            return(mex)
+        else:
+            mex = Message(to=basejid+"/"+jid)
+            message =  """{"message" : {"subject" : "CREATE_ENERGY_GROUP","powerpeak" : " """ + str(device.peakload) + """ "}}"""
+            mex.body = message
+            mex.metadata = '0'
+            return(mex)
+			
+    def house(device, time, protocol_version):
+        global jid
+        global basejid
+        if(protocol_version == "1.0"):
+            name = basejid.split('@')[0]
+            url = basejid.split('@')[1]
+            mex = Message(to=basejid+"/actormanager")
+            message="CREATE_ENERGY_GROUP [" + str(device.id) + "] " + str(device.peakload) + " " + str(time)
+            mex.body = message
+            return(mex)
+        else:
+            mex = Message(to=basejid+"/"+jid)
+            message =  """{"message" : {"subject" : "CREATE_ENERGY_GROUP", "id" : " """ + str(device.id) + """ ", "powerpeak" : " """ + str(device.peakload) + """ "}}"""
+            mex.body = message
+            mex.metadata = '0'
+            return(mex)
+			
+    def chargingstation(device,time, protocol_version):
+        global jid
+        global basejid
+        if(protocol_version == "1.0"):
+            name = basejid.split('@')[0]
+            url = basejid.split('@')[1]
+            mex = Message(to=basejid+"/actormanager")
+            message="CREATE_ENERGY_GROUP  [" + str(device.id) + "] " + str(device.peakload) + " " + str(time)
+            mex.body = message
+            return(mex)
+        else:
+            mex = Message(to=basejid+"/"+jid)
+            message =  """{"message" : {"subject" : "CREATE_ENERGY_GROUP", "id" : " """ + str(device.id) + """ ", "powerpeak" : " """ + str(device.peakload) + """ ", "numcp" : " """ + str(device.numcp) + """ "}}"""
+            mex.body = message
+            mex.metadata = '0'
+            return(mex)
 
+    def chargingpoint(device,time, protocol_version):
+        global jid
+        global basejid
+        if(protocol_version == "1.0"):
+            name = basejid.split('@')[0]
+            url = basejid.split('@')[1]
+            mex = Message(to=basejid+"/actormanager")
+            message="CREATE_ENERGY_GROUP [" + str(device.houseid) + "]:[" + str(device.id) + "]" + " CONNECTORS_TYPE " + str(device.connection_type) + " POWERPEAK " + str(device.peakload) + " " + str(time)
+            mex.body = message
+            return(mex)
+        else:
+            mex = Message(to=basejid+"/"+jid)
+            message =  """{"message" : {"subject" : "CREATE_ENERGY_GROUP", "id" : "[""" + str(device.houseid) + """]:[""" + str(device.id) + """]", "connectors_type" : " """ + str(device.connection_type) + """ ", "powerpeak" : " """ + str(device.peakload) + """ "}}"""
+            mex.body = message
+            mex.metadata = '0'
+            return(mex)
+			
+			
+			
     def heatercooler(device, time, protocol_version):
         global jid
         global basejid
@@ -89,7 +213,7 @@ class MessageFactory():
             name = basejid.split('@')[0]
             url = basejid.split('@')[1]
             mex = Message(to=basejid+"/actormanager")
-            message="HC ID ["+str(device.house)+"]:["+str(device.device.id)+"]  SEQ 0 " + "http://"+str(url)+"/~gcdemo/"+realpath+"/" +str(es.mydir)+"/"+ str(device.profile) + " " + str(time)
+            message="HC ["+str(device.house)+"]:["+str(device.device.id)+"] 0 " + "http://"+str(url)+"/~gcdemo/"+realpath+"/" +str(es.mydir)+"/"+ str(device.profile) + " " + str(time)
             mex.body = message
             return(mex)
         else:
@@ -108,7 +232,7 @@ class MessageFactory():
             name = basejid.split('@')[0]
             url = basejid.split('@')[1]
             mex = Message(to=basejid+"/actormanager")
-            message="BG ID ["+str(device.house)+"]:["+str(device.device.id)+"]  SEQ 0 " + "http://"+str(url)+"/~gcdemo/"+realpath+"/" +str(es.mydir)+"/"+ str(device.profile) + " " + str(time)
+            message="BG  ["+str(device.house)+"]:["+str(device.device.id)+"] 0 " + "http://"+str(url)+"/~gcdemo/"+realpath+"/" +str(es.mydir)+"/"+ str(device.profile) + " " + str(time)
             mex.body = message
             return(mex)
         else:
@@ -143,7 +267,7 @@ class MessageFactory():
         global basejid
         if (protocol_version == "1.0"):
             mex = Message(to=basejid+"/actormanager")
-            message = "EV ID " + device.device.id + " CAPACITY " + device.device.capacity + " MAX_CH_POW_AC " + device.device.max_ch_pow_ac + " MAX_CH_POW_CC " + device.device.max_ch_pow_cc + " MAX_ALL_EN "  + device.device.max_all_en + " MIN_ALL_EN " + device.device.min_all_en + " SB_CH " + device.device.sb_ch + " CH_EFF " + device.device.ch_eff + " SOC_AT_ARRIVAL " + device.Soc_at_arrival + " PLANNED_DEPARTURE_TIME " + device.planned_departure_time + " ARRIVAL_TIME " + device.actual_arrival_time + " V2G " +  device.v2g + " TARGET_SOC "  + device.target_soc + " " + str(time)
+            message = "EV [" + str(device.device.id) + "] "+ device.Soc_at_arrival + " " + device.planned_departure_time + " " + device.actual_arrival_time + " ["+str(device.house)+"]:["+ str(device.device.cp) + "] " +  device.v2g + " "  + device.target_soc + " " + str(time)
             mex.body = message
 
             return (mex)
@@ -151,11 +275,27 @@ class MessageFactory():
         else:
             mex = Message(to=basejid+"/"+jid)
 
-            message = """{"message" : {"subject" : "EV" , "id" : "[""" + str(device.house) + """]:[""" + str(device.device.id) + """]", "capacity" : " """ + str(device.device.capacity)+  """ " , "max_ch_pow_ac" : " """ + str(device.device.max_ch_pow_ac) +  """ " , "max_ch_pow_cc" : " """ + str(device.device.max_ch_pow_cc) + """ " , "max_all_en" : " """ + str(device.device.max_all_en) + """ " , "min_all_en" : " """ + str(device.device.min_all_en) + """ " , "sb_ch" : " """ + str(device.device.sb_ch) + """ " , "ch_eff" :  " """ + str(device.device.ch_eff) +  """ " , "soc_at_arrival": " """ + str(device.Soc_at_arrival) + """ " , "planned_departure_time" : " """ + str(device.planned_departure_time) + """ " , "arrival_time" : " """ + str(device.actual_arrival_time) + """ " , "v2g" : " """ + str(device.v2g) + """ " , "target_soc" : " """ + str(device.target_soc) + """ " }}"""
+            message = """{"message" : {"subject" : "EV" , "id" : "[""" + str(device.device.id) + """]", "soc_at_arrival": " """ + str(device.Soc_at_arrival) + """ " , "planned_departure_time" : " """ + str(device.planned_departure_time) + """ " , "arrival_time" : " """ + str(device.actual_arrival_time) + """ " ,"charging_point" : "[""" + str(device.house) + """]:[""" + str(device.device.cp) + """]", "v2g" : " """ + str(device.v2g) + """ " , "target_soc" : " """ + str(device.target_soc) + """ " }}"""
             mex.body = message
             mex.metadata = time
             return (mex)
+			
+    def create_ev(device, time, protocol_version):
+        global jid
+        global basejid
+        if (protocol_version == "1.0"):
+            mex = Message(to=basejid+"/actormanager")
+            message = "CREATE_EV [" + str(device.device.id) + "] " + device.device.capacity + " " + device.device.max_ch_pow_ac + " " + device.device.max_ch_pow_cc + " "  + device.device.max_all_en + " " + device.device.min_all_en + " " + device.device.sb_ch + " " + device.device.sb_dis + " " + device.device.ch_eff + " " + device.device.dis_eff + " " + device.v2g + " " + str(time)
+            mex.body = message
 
+            return (mex)
+
+        else:
+            mex = Message(to=basejid+"/"+jid)
+            message = """{"message" : {"subject" : "CREATE_EV" , "id" : "[""" + str(device.device.id) + """]", "capacity" : " """ + str(device.device.capacity)+  """ " , "max_ch_pow_ac" : " """ + str(device.device.max_ch_pow_ac) +  """ " , "max_ch_pow_cc" : " """ + str(device.device.max_ch_pow_cc) + """ " , "max_dis_pow_ac" : " """ + str(device.device.max_dis_pow_ac) + """ " , "max_dis_pow_cc" : " """ + str(device.device.max_dis_pow_cc) + """ " , "max_all_en" : " """ + str(device.device.max_all_en) + """ " , "min_all_en" : " """ + str(device.device.min_all_en) + """ " , "sb_ch" : " """ + str(device.device.sb_ch) + """ " , "sb_dis" : " """ + str(device.device.sb_dis) + """ " , "ch_eff" :  " """ + str(device.device.ch_eff) +  """ " , "dis_eff": " """ + str(device.device.dis_eff) + """ " , "v2g" : " """ + str(device.v2g) + """ "}}"""
+            mex.body = message
+            mex.metadata = time
+            return (mex)
     def ev_arrival(device, time, protocol_version):
         global jid
         global basejid
@@ -190,6 +330,28 @@ class MessageFactory():
             mex.metadata = time
             return (mex)
 
+    def create_Battery(device, time, protocol_version):
+        global jid
+        global basejid
+        if (protocol_version == "1.0"):
+            mex = Message(to=basejid+"/actormanager")
+            message = "CREATE_BATTERY " + "["+str(device.house)+"]:[" + str(device.device.id) + "] " +  device.device.capacity + " " + device.device.max_ch_pow_ac + " " + device.device.max_ch_pow_cc + " "  + device.device.max_all_en + " " + device.device.min_all_en + " " + device.device.sb_ch + " " + device.device.ch_eff + " " + device.Soc_at_arrival + " " + device.start_time + " " + device.end_time
+            mex.body = message
+
+            return (mex)
+
+        else:
+            mex = Message(to=basejid+"/"+jid)
+            message = """{"message" : {"subject" : "CREATE_BATTERY" , "capacity" : " """ + str(device.device.capacity)+  """ " , "max_ch_pow_ac" : " """ + str(device.device.max_ch_pow_ac) +  """ " , "max_ch_pow_cc" : " """ + str(device.device.max_ch_pow_cc) + """ " , "max_all_en" : " """ + str(device.device.max_all_en) + """ " , "min_all_en" : " """ + str(device.device.min_all_en) + """ " , "sb_ch" : " """ + str(device.device.sb_ch) + """ " , "ch_eff" :  " """ + str(device.device.ch_eff) +  """ " , "soc_at_arrival": " """ + str(device.Soc_at_arrival) + """ " , "start_time" : " """ + str(device.start_time) + """ " , "end_time" : " """ + str(device.end_time) + """ " }}"""
+            mex.body = message
+            mex.metadata = time
+            return (mex)
+			
+			
+			
+			
+
+
     def create_producer(device, time, protocol_version):
         global jid
         global basejid
@@ -197,13 +359,13 @@ class MessageFactory():
             name = basejid.split('@')[0]
             url = basejid.split('@')[1]
             mex = Message(to=basejid+"/actormanager")
-            message="CREATE_PRODUCER PV ["+str(device.house)+"]:["+str(device.device.id)+"]  " +  "http://"+str(url)+"/~gcdemo/"+realpath+"/" +str(es.mydir)+"/"+ str(device.profile) + " " + str(time)
+            message="CREATE_PRODUCER ["+str(device.house)+"]:["+str(device.device.id)+"] " + str(time)
             mex.body = message
             return(mex)
         else:
 
             mex = Message(to=basejid+"/"+jid)
-            message =  """{"message" : {"subject" : "CREATE_PRODUCER","type" : "PV","id" : "[""" + str(device.house) + """]:[""" + str(device.device.id) + """]","profile" : "http://parsec2.unicampania.it/~gcdemo/"""+realpath+"/"+str(es.mydir)+"""/"""+str(device.profile)+""" "}}"""
+            message =  """{"message" : {"subject" : "CREATE_PRODUCER","type" : "PV","id" : "[""" + str(device.house) + """]:[""" + str(device.device.id) + """]"}}"""
             mex.body = message
             mex.metadata = time
             return (mex)
@@ -215,7 +377,7 @@ class MessageFactory():
             name = basejid.split('@')[0]
             url = basejid.split('@')[1]
             mex = Message(to=basejid+"/actormanager")
-            message = "LOAD ID [" + str(device.house) + "]:[" + str(device.device.id) + "]:[1] SEQUENCE 1 EST " + str(device.est) + " LST " + str(device.lst) + " PROFILE " +  "http://"+str(url)+"/~gcdemo/"+realpath+"/" +str(es.mydir)+"/"+ str(device.profile)  + " " + str(time)
+            message = "LOAD [" + str(device.house) + "]:[" + str(device.device.id) + "]:[1] 1 " + str(device.est) + " " + str(device.lst) + " " +  "http://"+str(url)+"/~gcdemo/"+realpath+"/" +str(es.mydir)+"/"+ str(device.profile)  + " " + str(time)
             mex.body = message
 
             return(mex)
@@ -231,14 +393,16 @@ class MessageFactory():
     def update_producer(device,time,  protocol_version):
         global jid
         global basejid
+        name = basejid.split('@')[0]
+        url = basejid.split('@')[1]
         if(protocol_version == "1.0"):
             mex = Message(to=basejid+"/actormanager")
-            message="UPDATE_PRODUCER"+str(device.house)+"_run_"+str(device.device.id)+"_1.csv" +" "+ str(time)
+            message="PREDICTION_UPDATE ["+str(device.house)+"]:["+str(device.device.id)+"]  " +  "http://"+str(url)+"/~gcdemo/"+realpath+"/" +str(es.mydir)+"/"+ str(device.profile) + " " + str(time)
             mex.body = message
             return(mex)
         else:
             mex = Message(to=basejid+"/"+jid)
-            message="UPDATE_PRODUCER"+str(device.house)+"_run_"+str(device.device.id)+"_1.csv"
+            message =  """{"message" : {"subject" : "PREDICTION_UPDATE","type" : "PV","id" : "[""" + str(device.house) + """]:[""" + str(device.device.id) + """]","profile" : "http://parsec2.unicampania.it/~gcdemo/"""+realpath+"/"+str(es.mydir)+"""/"""+str(device.profile)+""" "}}"""
             mex.body = message
             mex.metadata = time
             return(mex)
@@ -248,7 +412,8 @@ class MessageFactory():
         global basejid
         if(protocol_version == "1.0"):
             mex = Message(to=basejid+"/actormanager")
-            message="DELETE_LOAD ["+str(device.house)+"]:["+str(device.device.id)+"] " + str(device.consumption) + " "+ str(device.panel) + " " + str(time)
+            #message="DELETE_LOAD ["+str(device.house)+"]:["+str(device.device.id)+"] " + str(device.consumption) + " "+ str(device.panel) + " " + str(time)
+            message="DELETE_LOAD ["+str(device.house)+"]:["+str(device.device.id)+"]:[1] " + str(device.consumption) + " " + " " + str(time)
             mex.body = message
             return(mex)
         else:
@@ -318,14 +483,83 @@ class dispatcher(Agent):
             with open("config.yml", 'r') as ymlfile:
                cfg = yaml.load(ymlfile, Loader = Loader)
             protocol_version = cfg['config']['protocol']
-
+            date = cfg['config']['date'] + " 00:00:00"
+            datetime_object = datetime.strptime(date, '%m/%d/%y %H:%M:%S')
+            timestamp  = str(datetime.timestamp(datetime_object)).split(".")[0]
             completed = 0
             total = es.sharedQueue.qsize()
             percent = 0
+            deletedList = []
             with open("config.yml", 'r') as ymlfile:
                 cfg = yaml.load(ymlfile, Loader = Loader)
             path = cfg['config']['simulation_dir']
+            sim = cfg['config']['simulation']
+            path = path + "/" + sim
             with open(path+"/Simulations/"+es.mydir+"/output/output.txt", "w+") as file:
+                finish = 0
+                while(finish == 0):
+                    next2 = es.sharedQueue.get()
+                    print(next2[2].type)
+                    if(next2[2].type=="neighborhood"):
+                        message = MessageFactory.neighborhood(next2[2],timestamp, protocol_version)
+                        await self.send(message)
+                        file.write(">>> " +message.body +"\n")
+                        file.flush()
+                    elif(next2[2].type=="house"):
+                        message = MessageFactory.house(next2[2],timestamp, protocol_version)
+                        await self.send(message)
+                        file.write(">>> " +message.body +"\n")
+                        file.flush()
+                        if(next2[2].numcp != 0):
+                           message = MessageFactory.chargingstation(next2[2],timestamp, protocol_version)
+                           await self.send(message)
+                           file.write(">>> " +message.body +"\n")
+                           file.flush()
+						
+                    elif(next2[2].type=="chargingStation"):
+                        message = MessageFactory.chargingstation(next2[2],timestamp, protocol_version)
+                        await self.send(message)
+                        file.write(">>> " +message.body +"\n")
+                        file.flush()
+                    elif(next2[2].type=="chargingPoint"):
+                        message = MessageFactory.chargingpoint(next2[2], timestamp, protocol_version)
+                        await self.send(message)
+                        file.write(">>> " +message.body +"\n")
+                        file.flush()
+                    elif(next2[2].type=="energy_cost"):
+                        message = MessageFactory.energyCost(next2[2],timestamp,protocol_version)
+                        await self.send(message)
+                        file.write(">>> " +message.body +"\n")
+                        file.flush()
+                    elif(next2[2].type=="energy_mix"):
+                        message = MessageFactory.energyMix(next2[2], timestamp, protocol_version)
+                        await self.send(message)
+                        file.write(">>> " +message.body +"\n")
+                        file.flush()
+                    elif(next2[2].type == "EV" and next2[2].device.type == "CREATE_EV"):
+                            next2[2].device.type = "EV_BOOKING"
+                            message = MessageFactory.create_ev(next2[2],next2[0], protocol_version)
+                            await self.send(message)
+                            file.write(message.body+"\n")
+                            file.flush()
+                    elif (next2[2].type == "heatercooler" ):
+                            print("condiz")
+                            message = MessageFactory.heatercooler(next2[2], next2[0], protocol_version)
+                            await self.send(message)
+                            print("inviato")
+                            file.write(">>> " +message.body+"\n")
+                            file.flush()
+                    elif (next2[2].type == "background" ):
+                            message = MessageFactory.background(next2[2], next2[0], protocol_version)
+                            print(protocol_version)
+                            await self.send(message)
+                    else:
+                        finish = 1
+                        es.sharedQueue.put((int(next2[0]),int(next2[1]),next2[2]))
+                    
+                    file.write(next2[2].type+"\n")
+                    file.flush()
+                    
                 while(abilitation and finish):
 
                     #time.sleep(2)
@@ -334,9 +568,11 @@ class dispatcher(Agent):
                     #    firstTime=False
                     WasEnable= True
                     next2 = es.sharedQueue.get()
-
+                    file.write(next2[2].device.type+"\n")
+                    file.flush()
                     nextload=next2[2]
                     actual_time = next2[0]
+				
                     try:
                         providedby = next2[3]
                     except:
@@ -347,64 +583,109 @@ class dispatcher(Agent):
                         f2.close()
                     completed +=1
                     print(nextload)
-                    if( nextload.device.type=="Producer"):
+                    if( nextload.device.type=="Producer" and nextload.type == "load"):
+                        
                         message = MessageFactory.create_producer(nextload,next2[0],protocol_version)
                         await self.send(message)
-                        msg2 = await self.receive(timeout=3)
-                        file.write(message.body +"\n")
+                        file.write(">>> " +message.body +"\n")
                         file.flush()
-
+						
+                        message = MessageFactory.update_producer(nextload,next2[0],protocol_version)
+                        await self.send(message)
+                        msg2 = await self.receive(timeout=3)
+                        file.write(">>> " +message.body +"\n")
+                        message = MessageFactory.energyCostProducer(nextload,next2[0],protocol_version)
+                        await self.send(message)
+                        file.write(">>> " +message.body +"\n")
+                        file.flush()
+                        nextload.type = "LoadUpdate"
+                        nextload.creation_time = int(nextload.creation_time) + 21600
+                        nextload.count = 1
+                        es.sharedQueue.put((int(nextload.creation_time),int(next2[1]),nextload))
+                        file.flush()
+                    elif( nextload.device.type=="Producer" and nextload.type == "LoadUpdate" ):
+                        message = MessageFactory.update_producer(nextload,next2[0],protocol_version)
+                        await self.send(message)
+                        msg2 = await self.receive(timeout=3)
+                        if(nextload.count<2):
+                            nextload.creation_time = int(nextload.creation_time) + 21600
+                            nextload.count += 1
+                            es.sharedQueue.put((int(nextload.creation_time),int(next2[1]),nextload))
+                        file.write(">>> " +message.body +"\n")
+                        file.flush()
+                    if( nextload.device.type=="battery"):
+                        message = MessageFactory.create_Battery(nextload,next2[0],protocol_version)
+                        await self.send(message)
+                        file.write(">>> " +message.body +"\n")
+                        file.flush()
 
                     elif(nextload.type=="load" and nextload.device.type=="Consumer"):
                         total +=1
                         message = MessageFactory.create_load(nextload,next2[0],protocol_version)
                         await self.send(message)
+                        file.write(">>> " +message.body+"\n")
+
+                        print(message.body)
                         #msg2 = await self.receive()
                         #time.sleep(4)
                         messageFromScheduler = None
                         if(protocol_version == "1.0"):
                             while(isinstance(messageFromScheduler, type(None))):
+                                print("sono in attesa di un messaggio")
                                 messageFromScheduler = await self.receive(timeout=20)
-                            try:
-                                print(messageFromScheduler.body)
-                                delta = calculateTime(nextload.profile)
-                                newTime = str(int(messageFromScheduler.body.split(" ")[3])+int(delta))
-                                #es.sharedQueue.put((newTime,es.count,es.eventDelete(nextload.device,nextload.house,messageFromScheduler.body.split(" ")[2],messageFromScheduler.body.split(" ")[2],newTime,nextload.profile,"delete"),messageFromScheduler.body.split(" ")[4]))
+                            while(messageFromScheduler.body.split(" ")[0] != "SCHEDULED"):
+                                print("messaggio:" + messageFromScheduler.body)
+                                try:
+                                    print(messageFromScheduler.body)
+                                    delta = calculateTime(nextload.profile)
+                                    newTime = str(int(messageFromScheduler.body.split(" ")[3])+int(delta))
+                                    #es.sharedQueue.put((newTime,es.count,es.eventDelete(nextload.device,nextload.house,messageFromScheduler.body.split(" ")[2],messageFromScheduler.body.split(" ")[2],newTime,nextload.profile,"delete"),messageFromScheduler.body.split(" ")[4]))
+    
+                                    #mydel = es.eventDelete(nextload.device, nextload.house, newTime, calculate_consum(nextload.profile),messageFromScheduler.body.split(" ")[4])
+                                    mydel = es.eventDelete(nextload.device, nextload.house, newTime, calculate_consum(nextload.profile))
 
-                                mydel = es.eventDelete(nextload.device, nextload.house, newTime, calculate_consum(nextload.profile),messageFromScheduler.body.split(" ")[5])
-                                with open("config.yml", 'r') as ymlfile:
-                                      cfg = yaml.load(ymlfile, Loader = Loader)
-                                date = cfg['config']['date'] + " 00:00:00"
-                                path = cfg['config']['simulation_dir']
-                                with open(path+"/Simulations/"+es.mydir+"/inputs/"+nextload.profile, "r") as f:
-                                      with open(path+"/Simulations/"+es.mydir+"/output/"+nextload.profile, "w") as f2:
-                                          reader = csv.reader(f)
-                                          writer = csv.writer(f2, delimiter =' ')
-                                          print(nextload.profile)
-                                          data = next(reader)
-                                          absolute = int(data[0].split(" ")[0])
-                                          print(absolute)
-                                          entry = []
-                                          entry.append(int(messageFromScheduler.body.split(" ")[3]))
-                                          entry.append(data[0].split(" ")[1])
-                                          writer.writerow(entry)
-                                          for data in reader:
-                                             entry = []
-                                             entry.append(int(str(data[0].split(" ")[0]))-absolute+int(messageFromScheduler.body.split(" ")[3]))
-                                             entry.append(str(data[0].split(" ")[1]))
-                                             writer.writerow(entry)
+                                    with open("config.yml", 'r') as ymlfile:
+                                          cfg = yaml.load(ymlfile, Loader = Loader)
+                                    date = cfg['config']['date'] + " 00:00:00"
+                                    path = cfg['config']['simulation_dir']
+                                    sim = cfg['config']['simulation']
+                                    path = path + "/" + sim
+                                    with open(path+"/Simulations/"+es.mydir+"/inputs/"+nextload.profile, "r") as f:
+                                          with open(path+"/Simulations/"+es.mydir+"/output/"+nextload.profile, "w") as f2:
+                                              reader = csv.reader(f)
+                                              writer = csv.writer(f2, delimiter =' ')
+                                              print(nextload.profile)
+                                              data = next(reader)
+                                              absolute = int(data[0].split(" ")[0])
+                                              print(absolute)
+                                              entry = []
+                                              entry.append(int(messageFromScheduler.body.split(" ")[3]))
+                                              entry.append(data[0].split(" ")[1])
+                                              writer.writerow(entry)
+                                              for data in reader:
+                                                 entry = []
+                                                 entry.append(int(str(data[0].split(" ")[0]))-absolute+int(messageFromScheduler.body.split(" ")[3]))
+                                                 entry.append(str(data[0].split(" ")[1]))
+                                                 writer.writerow(entry)
 
-                                es.sharedQueue.put((newTime,es.count,mydel))
-                                es.count +=1
-                                print(es.count)
-                                file.write(message.body+"\n")
+                                    es.sharedQueue.put((int(newTime),int(es.count),mydel))
+                                    es.count +=1
+                                    print(es.count)
+                                    file.write("<<< " +messageFromScheduler.body +"\r\n")
+                                    file.flush()
+                                    #time.sleep(2)
+                                    
 
-                                file.write(messageFromScheduler.body +"\r\n")
-                                file.flush()
-                                #time.sleep(2)
+                                except:
+                                    print("unrecognized Message")
+                                messageFromScheduler = await self.receive()
+                                while(isinstance(messageFromScheduler, type(None))):
+                                    messageFromScheduler = await self.receive(timeout=20)
+                                    print("attendo")
+                                print("messaggio:" + messageFromScheduler.body)
 
-                            except:
-                                print("unrecognized Message")
+                            file.write("<<< " +messageFromScheduler.body +"\r\n")
+                            file.flush()
                         else:
                             messageFromScheduler = await self.receive(timeout=20)
                             while(not isinstance(messageFromScheduler, type(None))):
@@ -423,6 +704,8 @@ class dispatcher(Agent):
                                               cfg = yaml.load(ymlfile, Loader = Loader)
                                         date = cfg['config']['date'] + " 00:00:00"
                                         path = cfg['config']['simulation_dir']
+                                        sim = cfg['config']['simulation']
+                                        path = path + "/" + sim
                                         with open(path+"/Simulations/"+es.mydir+"/inputs/"+nextload.profile, "r") as f:
                                               with open(path+"/Simulations/"+es.mydir+"/output/"+nextload.profile, "w") as f2:
                                                   reader = csv.reader(f)
@@ -441,12 +724,12 @@ class dispatcher(Agent):
                                                      entry.append(str(data[0].split(" ")[1]))
                                                      writer.writerow(entry)
 
-                                        es.sharedQueue.put((newTime,es.count,mydel))
+                                        es.sharedQueue.put((int(newTime),int(es.count),mydel))
                                         es.count +=1
                                         print(es.count)
-                                        file.write(message.body+"\n")
+                                        file.write(">>> " +message.body+"\n")
 
-                                        file.write(messageFromScheduler.body +"\r\n")
+                                        file.write("<<< " +messageFromScheduler.body +"\r\n")
                                         file.flush()
                                         #time.sleep(2)
 
@@ -455,26 +738,23 @@ class dispatcher(Agent):
                                 messageFromScheduler = await self.receive(timeout=20)
 
                     elif(nextload.type=="delete"):
-                        message = MessageFactory.delete_load(nextload,next2[0],protocol_version)
-                        await self.send(message)
-                        #msg2 = await self.receive(timeout=3)
-                        file.write(message.body+"\n")
-                        file.flush()
+                        if(nextload.device.id not in deletedList):
+                            deletedList.append(nextload.device.id)
+                            message = MessageFactory.delete_load(nextload,next2[0],protocol_version)
+                            await self.send(message)
+                            #msg2 = await self.receive(timeout=3)
+                            file.write(">>> " +message.body+"\n")
+                            file.flush()
 
-
-                    elif(nextload.type=="update"  and nextload.device.type=="Producer"):
-                        message = MessageFactory.update_producer(nextload,next2[0],protocol_version)
-                        await self.send(message)
-                        msg2 = await self.receive(timeout=40)
 
                     #elif(nextload.type == "EV" and nextload.planned_arrival_time == '0'):
                     elif(nextload.type == "EV" and nextload.device.type == "EV_ARRIVAL"):
                         nextload.device.type = "EV_DEPARTURE"
-
                         message = MessageFactory.booking_request(nextload,next2[0],protocol_version)
                         await self.send(message)
-                        file.write(message.body+"\n")
+                        file.write(">>> " +message.body+"\n")
                         file.flush()
+
                     #elif(nextload.type == "EV" and nextload.planned_arrival_time != '0' and next2[0] == nextload.creation_time):
                     elif(nextload.type == "EV" and nextload.device.type == "EV_BOOKING"):
                             nextload.device.type = "EV_ARRIVAL"
@@ -482,24 +762,26 @@ class dispatcher(Agent):
                             await self.send(message)
                             file.write(message.body+"\n")
                             file.flush()
+
                     #elif (nextload.type == "EV" and nextload.planned_arrival_time != '0' and next2[0] != nextload.creation_time):
                     elif(nextload.type == "EV" and nextload.device.type == "EV_DEPARTURE"):
                         message = MessageFactory.booking_request(nextload, next2[0], protocol_version)
                         await self.send(message)
-                        file.write(message.body+"\n")
+                        file.write(">>> " +message.body+"\n")
                         file.flush()
                     elif (nextload.type == "heatercooler" ):
+                        print("condiz")
                         message = MessageFactory.heatercooler(nextload, next2[0], protocol_version)
                         await self.send(message)
                         print("inviato")
-                        file.write(message.body+"\n")
+                        file.write(">>> " +message.body+"\n")
                         file.flush()
                     elif (nextload.type == "background" ):
                         message = MessageFactory.background(nextload, next2[0], protocol_version)
                         print(protocol_version)
                         await self.send(message)
 
-                        file.write(message.body+"\n")
+                        file.write(">>> " +message.body+"\n")
                         file.flush()
 
 
@@ -539,18 +821,18 @@ class dispatcher(Agent):
                                                       writer.writerow(entry)
 
 
-                                        es.sharedQueue.put((newTime,es.count,mydel))
+                                        es.sharedQueue.put((int(newTime),int(es.count),mydel))
                                         es.count +=1
-                                        file.write(message.body+"\n")
-                                        file.write(messageFromScheduler.body +"\r\n")
+                                        file.write(">>> " + message.body+"\n")
+                                        file.write("<<< " + messageFromScheduler.body +"\r\n")
                                         file.flush()
 
                                     except:
                                         print("unrecognized Message")
                                 messageFromScheduler = await self.receive(timeout=10)
                     if(es.sharedQueue.empty()):
-                        message = MessageFactory.end()
-                        file.write(message.body+"\n")
+                        message = MessageFactory.end(actual_time)
+                        file.write(">>> " +message.body+"\n")
 
                         file.flush()
                         file.close()
@@ -561,7 +843,7 @@ class dispatcher(Agent):
                 if(WasEnable):
                     print("Ho rilevato un segnale di stop")
             if(finish == False):
-                message = MessageFactory.end()
+                message = MessageFactory.end(actual_time)
                 await self.send(message)
                 await self.agent.stop()
 

@@ -19,6 +19,6 @@ services:
      depends_on:
        - greencharge.local
      volumes:
-       - ./users/demo/Simulations:/home/gc/Simulations
+       - ./users/demo:/home/gc
      stdin_open: true
      tty: true

@@ -1,9 +1,8 @@
 FROM ubuntu:20.04
 
 
-RUN mkdir -p /home/gc/Simulations
-RUN mkdir -p /var/www/Simulations/demo
-WORKDIR /home/gc
+
+WORKDIR /home/gc/bin
 RUN apt-get update
 RUN echo 'debconf debconf/frontend select Noninteractive' |  debconf-set-selections
 RUN apt-get -y -q install apt-utils 
@@ -13,7 +12,10 @@ RUN ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime
 RUN dpkg-reconfigure -f noninteractive tzdata
 COPY requirements.txt ./
 RUN pip3 install --no-cache-dir -r requirements.txt
-COPY users/demo/bin .
-RUN chmod +x ./starter.sh
+RUN mkdir -p /home/gc
+RUN mkdir -p /var/www/Simulations/demo
+#COPY users/demo/bin /home/gc/bin
+#RUN chmod +x ./starter.sh
 COPY GCSimulator/Simulator/greenchargeSoloDim/bin /usr/local/lib/python3.8/dist-packages/gcsimulator
-#CMD [ "python", "./bin/gcsimulator.py" ]
+#ENTRYPOINT [ "./starter.sh"]
+#CMD ["trivial"]
