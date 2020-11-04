@@ -22,3 +22,13 @@ services:
        - ./users/demo:/home/gc
      stdin_open: true
      tty: true
+  gcscheduler:
+     image: gcscheduler:latest
+     ports:
+       - "10023:10023"
+     depends_on:
+       - greencharge.local
+     volumes:
+       - ./users/scheduler:/home/scheduler
+     stdin_open: true
+     tty: true
