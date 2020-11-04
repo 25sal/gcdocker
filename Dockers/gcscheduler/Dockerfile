@@ -12,7 +12,7 @@ RUN ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime
 RUN dpkg-reconfigure -f noninteractive tzdata
 #COPY requirements.txt ./
 #RUN pip3 install --no-cache-dir -r requirements.txt
-RUN mkdir -p /home/gc
+RUN mkdir -p /home/scheduler
 #RUN mkdir -p /var/www/Simulations/demo
 #COPY users/demo/bin /home/gc/bin
 #RUN chmod +x ./starter.sh
