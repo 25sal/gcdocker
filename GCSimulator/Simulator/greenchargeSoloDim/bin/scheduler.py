@@ -1,34 +1,27 @@
-import time
-
-from multidict import MultiDict
 from spade.agent import Agent
 from spade.behaviour import PeriodicBehaviour
 from spade.message import Message
-from spade.template import Template
 from datetime import datetime,timedelta
 import queue
-import os
-import asyncio
 from aiohttp import web
-from shutil import copyfileobj
-global dispatched
-import aiohttp_cors
 from aiohttp import web as aioweb
 import yaml
 from yaml import Loader
 import json
 import externalSourceAgent as es
+from shutil import copy2
 
-dispatched = queue.Queue()
-mexToSend = queue.Queue()
-simulated_time = 0
-last_object_type = 0
-interval = 0
-nextInterval = 0
-oldStart = 0
+
 
 
 class scheduler(Agent):
+    dispatched = queue.Queue()
+    mexToSend = queue.Queue()
+    simulated_time = 0
+    last_object_type = 0
+    interval = 0
+    nextInterval = 0
+    oldStart = 0
 
     async def setup(self):
         simulated_time = 0
@@ -49,21 +42,20 @@ class scheduler(Agent):
         start_at = datetime.now() + timedelta(seconds=3)
         global interval
         interval = 0
-        global oldStart
-        oldStart = 0
+        self.agent.oldStart = 0
         Behaviour2 = self.consumeEvent2(1, start_at=start_at)
         self.add_behaviour(Behaviour2)
         #self.traces.reset()
 
     async def get_message(self, request):
-        global dispatched
-        global simulated_time
 
-        if(dispatched.empty()):
-                res = {"sim_id": "demo", "time": str(simulated_time), "message": "no new message"}
+
+
+        if self.dispatched.empty():
+                res = {"sim_id": "demo", "time": str(self.simulated_time), "message": "no new message"}
 
                 return aioweb.json_response(res)
-        nextmsg = dispatched.get_nowait()
+        nextmsg = self.dispatched.get_nowait()
 		
         print(nextmsg["message"])
         dictB = json.loads(nextmsg["message"])
@@ -81,13 +73,11 @@ class scheduler(Agent):
         return aioweb.json_response(z)
 
     async def get_time(self, request):
-        global simulated_time
-        res = {"sim_id": '"demo"', "time": str(simulated_time)}
+        res = {"sim_id": '"demo"', "time": str(self.simulated_time)}
         return aioweb.json_response(res)
 
     async def post_answer(self,request):
         data = await request.post()
-        global mexToSend
         with open("config.yml", 'r') as ymlfile:
             cfg = yaml.load(ymlfile, Loader = Loader)
             date = cfg['config']['date'] + " 00:00:00"
@@ -104,7 +94,7 @@ class scheduler(Agent):
                         ast = parsed_json['ast']
                         producer = parsed_json['producer']
                         mex = sub + " ID " + id_load + " " + ast + " PV " + producer
-                        mexToSend.put_nowait(mex)
+                        self.agent.mexToSend.put_nowait(mex)
 
             elif(sub == "HC_PROFILE"):
                     id_load = parsed_json['id']
@@ -145,11 +135,9 @@ class scheduler(Agent):
             print("A ConsumeEvent queue is Starting...")
         async def run(self):
             print("adaptor is running")
-            global dispatched
             global interval
             global last_object_type
             global nextInterval
-            global mexToSend
             with open("config.yml", 'r') as ymlfile:
                  cfg = yaml.load(ymlfile, Loader = Loader)
             port = cfg['config']['adaptor_port']
@@ -166,13 +154,13 @@ class scheduler(Agent):
             msg = await self.receive(timeout=5)
             print(msg)
             if(isinstance(msg, type(None))):
-                   for i in range(mexToSend.qsize()):
+                   for i in range(self.agent.mexToSend.qsize()):
                              mex = Message(to=basejid+"/"+simjid)
-                             message = mexToSend.get_nowait()
+                             message = self.agent.mexToSend.get_nowait()
                              mex.body = message
                              await self.send(mex)
             else:
-                    #dispatched.put_nowait({"time": msg.metadata, "message": msg.body})
+                    # dispatched.put_nowait({"time": msg.metadata, "message": msg.body})
                     try:
                         dictB = json.loads(msg.body)
                         last_object_type = dictB['message']['subject']
@@ -184,20 +172,20 @@ class scheduler(Agent):
                         if(int(msg.metadata) < int(oldStart) + 900):
                             print("sonoqui")
                             print(last_object_type)
-                            dispatched.put_nowait({"time": msg.metadata, "message": msg.body})
+                            self.agent.dispatched.put_nowait({"time": msg.metadata, "message": msg.body})
                             if(last_object_type == "LOAD" and interval == nextInterval):
                                 mex = Message(to=basejid+"/"+simjid)
                                 message = "AckMessage"
                                 mex.body = message
                                 await self.send(mex)
-                            elif(last_object_type == "LOAD" and interval != nextInterval and mexToSend.qsize() != 0):
-                                for i in range(mexToSend.qsize()):
+                            elif(last_object_type == "LOAD" and interval != nextInterval and self.agent.mexToSend.qsize() != 0):
+                                for i in range(self.agent.mexToSend.qsize()):
                                      mex = Message(to=basejid+"/"+simjid)
-                                     message = mexToSend.get_nowait()
+                                     message = self.agent.mexToSend.get_nowait()
                                      mex.body = message
                                      await self.send(mex)
                                 nextInterval = interval
-                            elif(last_object_type == "LOAD" and interval != nextInterval and mexToSend.qsize() == 0):
+                            elif(last_object_type == "LOAD" and interval != nextInterval and self.agent.mexToSend.qsize() == 0):
                                 msg = Message(to=basejid+"/"+simjid)
                                 message = "AckMessage"
                                 msg.body = message
@@ -206,18 +194,18 @@ class scheduler(Agent):
                                 nextInterval = interval
                         else:
                             print("sono quiD")
-                            dispatched.put_nowait({"time": msg.metadata, "message": msg.body})
-                            if(last_object_type == "LOAD" and mexToSend.qsize() != 0):
+                            self.agent.dispatched.put_nowait({"time": msg.metadata, "message": msg.body})
+                            if(last_object_type == "LOAD" and self.agent.mexToSend.qsize() != 0):
                                 print("sono quiE")
-                                for i in range(mexToSend.qsize()):
+                                for i in range(self.agent.mexToSend.qsize()):
                                      mex = Message(to=basejid+"/"+simjid)
-                                     message = mexToSend.get_nowait()
+                                     message = self.agent.mexToSend.get_nowait()
                                      mex.body = message
                                      print(message)
                                      await self.send(mex)
                                 interval += 1
                                 nextInterval = interval
-                            elif(last_object_type == "LOAD" and mexToSend.qsize() == 0):
+                            elif(last_object_type == "LOAD" and self.agent.mexToSend.qsize() == 0):
                                 print("sono quiF")
                                 mex = Message(to=basejid+"/"+simjid)
                                 message = "AckMessage"
