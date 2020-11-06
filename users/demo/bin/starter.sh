@@ -1,3 +1,3 @@
 #!/bin/bash
-export PYTHONPATH=/usr/local/lib/python3.8/dist-packages/gcsimulator/
+export PYTHONPATH=/home/gc/simulator
 python3 $PYTHONPATH/starter.py

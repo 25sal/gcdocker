@@ -14,8 +14,9 @@ COPY requirements.txt ./
 RUN pip3 install --no-cache-dir -r requirements.txt
 RUN mkdir -p /home/gc
 RUN mkdir -p /var/www/Simulations/demo
+RUN mkdir -p /home/gc/simulator
 #COPY users/demo/bin /home/gc/bin
-#RUN chmod +x ./starter.sh
-COPY GCSimulator/Simulator/greenchargeSoloDim/bin /usr/local/lib/python3.8/dist-packages/gcsimulator
+# RUN chmod +x /home/gc/bin/starter.sh
+#COPY ./GCSimulator/Simulator/greenchargeSoloDim/bin /usr/local/lib/python3.8/dist-packages/gcsimulator
 #ENTRYPOINT [ "./starter.sh"]
 #CMD ["trivial"]

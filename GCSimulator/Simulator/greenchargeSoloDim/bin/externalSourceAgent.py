@@ -255,7 +255,7 @@ class ChargingPoint():
 
 
 ###########################****************** UTIL VARIABLES SECTION ************************###################################################
-
+'''
 listDevice = []  #IN THIS LIST WILL BE STORED ALL THE LOADS
 listPanels = [] #IN THIS LIST WILL BE STORED ALL THE PRODUCERS
 listEvent = []
@@ -304,7 +304,7 @@ while(os.path.exists(dir1+"/Simulations/"+newdir2+"_"+str(dirCount1))):
 workingdir1 = dir1+"/Simulations/"+newdir2+"_"+str(dirCount1)
 mydir = workingdir1.split("/")[-1]
 #fine codice aggiunto
-
+'''
 
 
 
