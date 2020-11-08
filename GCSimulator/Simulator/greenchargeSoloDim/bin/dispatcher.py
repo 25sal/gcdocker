@@ -6,10 +6,11 @@ from spade.template import Template
 from datetime import datetime, timedelta
 import externalSourceAgent as es
 import csv
-import yaml
 from yaml import Loader
 from sys import path
+from aioxmpp import PresenceShow
 from configure import Configuration
+import logging
 
 path.append(".")
 """
@@ -62,7 +63,7 @@ class MessageFactory:
 
     @classmethod
     def end(cls, actual_time):
-
+        protocol_version = Configuration.parameters["protocol"]
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
             message = "SIMULATION END " + str(actual_time)
@@ -78,30 +79,32 @@ class MessageFactory:
 
     @classmethod
     def energyCost(cls, device, time, protocol_version):
+        mydir = Configuration.parameters['user_dir']
         if protocol_version == "1.0":
             name = cls.basejid.split('@')[0]
             url = cls.basejid.split('@')[1]
             mex = Message(to=cls.basejid + "/actormanager")
             message = "ENERGY_COST [0] " + "http://" + str(url) + "/~gcdemo/" + cls.realpath + "/" + str(
-                es.mydir) + "/" + str(device.profile) + " " + str(time)
+                Configuration.mydir) + "/" + str(device.profile) + " " + str(time)
             mex.body = message
             return mex
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
             message = '{"message" : {"subject" : "ENERGY_COST",id: "[0]","profile" : "http://parsec2.unicampania.it/~gcdemo/' + cls.realpath + "/" + str(
-                es.mydir) + '/' + str(device.profile) + '"}}'
+                self.mydir) + '/' + str(device.profile) + '"}}'
             mex.body = message
             mex.metadata = '0'
             return mex
 
     @classmethod
     def energyCostProducer(cls, device, time, protocol_version):
+        mydir = Configuration.parameters['user_dir']
         if protocol_version == "1.0":
             name = cls.basejid.split('@')[0]
             url = cls.basejid.split('@')[1]
             mex = Message(to=cls.basejid + "/actormanager")
             message = "ENERGY_COST [" + str(device.house) + "]:[" + str(device.device.id) + "] " + "http://" + str(
-                url) + "/~gcdemo/" + cls.realpath + "/Simulations/" + str(es.mydir) + "/" + str(
+                url) + "/~gcdemo/" + cls.realpath + "/Simulations/" + str(mydir) + "/" + str(
                 device.energycost) + " " + str(time)
             mex.body = message
             return mex
@@ -109,7 +112,7 @@ class MessageFactory:
             mex = Message(to=cls.basejid + "/" + cls.jid)
             message = '{"message" : {"subject" : "ENERGY_COST",id: "["' + str(device.house) + '"]:["' + str(
                 device.device.id) + '"]","profile" : "http://parsec2.unicampania.it/~gcdemo/' + cls.realpath + "/" + str(
-                es.mydir) + '/' + str(device.energycost) + '"}}'
+                mydir) + '/' + str(device.energycost) + '"}}'
             mex.body = message
             mex.metadata = '0'
             return mex
@@ -117,17 +120,15 @@ class MessageFactory:
     @classmethod
     def energyMix(cls, device, time, protocol_version):
         url = cls.basejid.split('@')[1]
+        mydir = Configuration.parameters['user_dir']
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
-            message = "ENERGY_MIX " + "http://" + str(url) + "/~gcdemo/" + cls.realpath + "/" + str(
-                es.mydir) + "/" + str(
-                device.profile) + " " + str(time)
+            message = "ENERGY_MIX " + "http://" + str(url) + "/~gcdemo/" + cls.realpath + "/" + str(mydir) + "/" + str(device.profile) + " " + str(time)
             mex.body = message
             return mex
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = """{"message" : {"subject" : "ENERGY_MIX","profile" : "http://parsec2.unicampania.it/~gcdemo/""" + cls.realpath + "/" + str(
-                es.mydir) + """/""" + str(device.profile) + """ "}}"""
+            message = """{"message" : {"subject" : "ENERGY_MIX","profile" : "http://parsec2.unicampania.it/~gcdemo/""" + cls.realpath + "/" + str(mydir) + """/""" + str(device.profile) + """ "}}"""
             mex.body = message
             mex.metadata = '0'
             return (mex)
@@ -198,29 +199,30 @@ class MessageFactory:
 
     @classmethod
     def heatercooler(cls, device, time, protocol_version):
+        mydir = Configuration.parameters['user_dir']
         if protocol_version == "1.0":
             url = cls.basejid.split('@')[1]
             mex = Message(to=cls.basejid + "/actormanager")
             message = "HC [" + str(device.house) + "]:[" + str(device.device.id) + "] 0 " + "http://" + str(
-                url) + "/~gcdemo/" + cls.realpath + "/" + str(es.mydir) + "/" + str(device.profile) + " " + str(time)
+                url) + "/~gcdemo/" + cls.realpath + "/" + str(mydir) + "/" + str(device.profile) + " " + str(time)
             mex.body = message
             return (mex)
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
             message = """{"message" : {"subject" : "HC","id" : "[""" + str(device.house) + """]:[""" + str(
-                device.device.id) + """]","profile" : "http://parsec2.unicampania.it/~gcdemo/""" + cls.realpath + "/" + str(
-                es.mydir) + """/""" + str(device.profile) + """ "}}"""
+                device.device.id) + """]","profile" : "http://parsec2.unicampania.it/~gcdemo/""" + cls.realpath + "/" + str(mydir) + """/""" + str(device.profile) + """ "}}"""
             mex.body = message
             mex.metadata = time
             return mex
 
     @classmethod
     def background(cls, device, time, protocol_version):
+        mydir = Configuration.parameters['user_dir']
         if protocol_version == "1.0":
             url = cls.basejid.split('@')[1]
             mex = Message(to=cls.basejid + "/actormanager")
             message = "BG  [" + str(device.house) + "]:[" + str(device.device.id) + "] 0 " + "http://" + str(
-                url) + "/~gcdemo/" + cls.realpath + "/" + str(es.mydir) + "/" + str(device.profile) + " " + str(time)
+                url) + "/~gcdemo/" + cls.realpath + "/" + str(mydir) + "/" + str(device.profile) + " " + str(time)
             mex.body = message
             return mex
         else:
@@ -228,14 +230,14 @@ class MessageFactory:
             mex = Message(to=cls.basejid + "/" + cls.jid)
             message = """{"message" : {"subject" : "BG","id" : "[""" + str(device.house) + """]:[""" + str(
                 device.device.id) + """]","profile" : "http://parsec2.unicampania.it/~gcdemo/""" + cls.realpath + "/" + str(
-                es.mydir) + """/""" + str(device.profile) + """ "}}"""
+                mydir) + """/""" + str(device.profile) + """ "}}"""
             mex.body = message
             mex.metadata = time
-            return (mex)
+            return mex
 
     @classmethod
     def charge_on_demand(cls, device, time, protocol_version):
-
+        mydir = Configuration.parameters['user_dir']
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
             message = '"message: {"subject": "EV", "capacity":' + str(
@@ -429,13 +431,14 @@ class MessageFactory:
 
     @classmethod
     def create_load(cls, device, time, protocol_version):
+        mydir = Configuration.parameters['user_dir']
         if protocol_version == "1.0":
             url = cls.basejid.split('@')[1]
             mex = Message(to=cls.basejid + "/actormanager")
             message = "LOAD [" + str(device.house) + "]:[" + str(device.device.id) + "]:[1] 1 " + str(
                 device.est) + " " + str(device.lst) + " " + "http://" + str(
                 url) + "/~gcdemo/" + cls.realpath + "/" + str(
-                es.mydir) + "/" + str(device.profile) + " " + str(time)
+                mydir) + "/" + str(device.profile) + " " + str(time)
             mex.body = message
             return mex
         else:
@@ -445,7 +448,7 @@ class MessageFactory:
                 device.device.id) + """]:[1]", "sequence" : "1", "est" : " """ + str(
                 device.est) + """ ", "lst" : " """ + str(
                 device.lst) + """ ","profile" : "http://parsec2.unicampania.it/~gcdemo/""" + cls.realpath + "/" + str(
-                es.mydir) + """/""" + str(device.profile) + """ "}} """
+                mydir) + """/""" + str(device.profile) + """ "}} """
             mex.body = message
             mex.metadata = time
             return mex
@@ -453,11 +456,12 @@ class MessageFactory:
     @classmethod
     def update_producer(cls, device, time, protocol_version):
         url = cls.basejid.split('@')[1]
+        mydir = Configuration.parameters['user_dir']
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
             message = "PREDICTION_UPDATE [" + str(device.house) + "]:[" + str(
                 device.device.id) + "]  " + "http://" + str(url) + "/~gcdemo/" + cls.realpath + "/" + str(
-                es.mydir) + "/" + str(device.profile) + " " + str(time)
+                mydir) + "/" + str(device.profile) + " " + str(time)
             mex.body = message
             return mex
         else:
@@ -465,7 +469,7 @@ class MessageFactory:
             message = """{"message" : {"subject" : "PREDICTION_UPDATE","type" : "PV","id" : "[""" + str(
                 device.house) + """]:[""" + str(
                 device.device.id) + """]","profile" : "http://parsec2.unicampania.it/~gcdemo/""" + cls.realpath + "/" + str(
-                es.mydir) + """/""" + str(device.profile) + """ "}}"""
+                mydir) + """/""" + str(device.profile) + """ "}}"""
             mex.body = message
             mex.metadata = time
             return mex
@@ -514,53 +518,50 @@ class dispatcher(Agent):
 
     class disRecvBehav(PeriodicBehaviour):
         async def run(self):
-            print("DisRecvBehav running")
+            logging.info("DisRecvBehav running")
             global abilitation
             msg = await self.receive(timeout=40)
-            try:
-                if msg.body == "start":
-                    print("Message received with content: {}".format(msg.body))
-                    abilitation = True
+            if msg:
+                try:
+                    if msg.body == "start":
+                        logging.info("Message received with content: {}".format(msg.body))
+                        abilitation = True
 
-                elif msg.body == "stop":
-                    print("Message received with content: {}".format(msg.body))
-                    abilitation = False
-                else:
-                    print("Did not received any message after 40 seconds")
-            except:
-                None
+                    elif msg.body == "stop":
+                        logging.info("Message received with content: {}".format(msg.body))
+                        abilitation = False
+                    else:
+                        print("Did not received any message after 40 seconds")
+                except:
+                    None
+            else:
+                logging.debug(" receive timeout ")
 
     class consumeEvent(PeriodicBehaviour):
 
         async def onstart(self):
-            print("A ConsumeEvent queue is Starting...")
+            logging.info("A ConsumeEvent queue is Starting...")
+            self.mydir = Configuration.parameters['user_dir']
 
         async def run(self):
             global firstTime
             global abilitation
-            global protocol_version
             finish = True
             WasEnable = False
-            with open("config.yml", 'r') as ymlfile:
-                cfg = yaml.load(ymlfile, Loader=Loader)
-            protocol_version = cfg['config']['protocol']
-            date = cfg['config']['date'] + " 00:00:00"
+            protocol_version = Configuration.parameters['protocol']
+            date = Configuration.parameters['date'] + " 00:00:00"
             datetime_object = datetime.strptime(date, '%m/%d/%y %H:%M:%S')
             timestamp = str(datetime.timestamp(datetime_object)).split(".")[0]
             completed = 0
-            total = es.sharedQueue.qsize()
+            total = es.Entities.sharedQueue.qsize()
             percent = 0
             deletedList = []
-            with open("config.yml", 'r') as ymlfile:
-                cfg = yaml.load(ymlfile, Loader=Loader)
-            path = cfg['config']['simulation_dir']
-            sim = cfg['config']['simulation']
-            path = path + "/" + sim
-            with open(path + "/Simulations/" + es.mydir + "/output/output.txt", "w+") as file:
+          
+            path = Configuration.parameters['current_sim_dir']
+            with open(path + "/Simulations/" + Configuration.parameters['user_dir'] + "/output/output.txt", "w+") as file:
                 finish = 0
-                while (finish == 0):
-                    next2 = es.sharedQueue.get()
-                    print(next2[2].type)
+                while finish == 0:
+                    next2 = es.Entities.next_event()
                     if (next2[2].type == "neighborhood"):
                         message = MessageFactory.neighborhood(next2[2], timestamp, protocol_version)
                         await self.send(message)
@@ -604,19 +605,16 @@ class dispatcher(Agent):
                         file.write(message.body + "\n")
                         file.flush()
                     elif next2[2].type == "heatercooler":
-                        print("condiz")
                         message = MessageFactory.heatercooler(next2[2], next2[0], protocol_version)
                         await self.send(message)
-                        print("inviato")
                         file.write(">>> " + message.body + "\n")
                         file.flush()
                     elif next2[2].type == "background":
                         message = MessageFactory.background(next2[2], next2[0], protocol_version)
-                        print(protocol_version)
                         await self.send(message)
                     else:
                         finish = 1
-                        es.sharedQueue.put((int(next2[0]), int(next2[1]), next2[2]))
+                        es.Entities.enqueue_event(int(next2[0]), next2[2],  int(next2[1]))
 
                     file.write(next2[2].type + "\n")
                     file.flush()
@@ -628,7 +626,7 @@ class dispatcher(Agent):
                     #    f=open(path+"/output/output.txt", "w+")
                     #    firstTime=False
                     WasEnable = True
-                    next2 = es.sharedQueue.get()
+                    next2 = es.Entities.next_event()
                     file.write(next2[2].device.type + "\n")
                     file.flush()
                     nextload = next2[2]
@@ -643,7 +641,6 @@ class dispatcher(Agent):
                         f2.write(str(next2[0]))
                         f2.close()
                     completed += 1
-                    print(nextload)
                     if nextload.device.type == "Producer" and nextload.type == "load":
 
                         message = MessageFactory.create_producer(nextload, next2[0], protocol_version)
@@ -662,7 +659,7 @@ class dispatcher(Agent):
                         nextload.type = "LoadUpdate"
                         nextload.creation_time = int(nextload.creation_time) + 21600
                         nextload.count = 1
-                        es.sharedQueue.put((int(nextload.creation_time), int(next2[1]), nextload))
+                        es.Entities.enqueue_event(int(nextload.creation_time),  nextload)
                         file.flush()
                     elif nextload.device.type == "Producer" and nextload.type == "LoadUpdate":
                         message = MessageFactory.update_producer(nextload, next2[0], protocol_version)
@@ -671,7 +668,7 @@ class dispatcher(Agent):
                         if nextload.count < 2:
                             nextload.creation_time = int(nextload.creation_time) + 21600
                             nextload.count += 1
-                            es.sharedQueue.put((int(nextload.creation_time), int(next2[1]), nextload))
+                            es.Entities.enqueue_event(int(nextload.creation_time),  nextload, int(next2[1]))
                         file.write(">>> " + message.body + "\n")
                         file.flush()
                     if nextload.device.type == "battery":
@@ -686,18 +683,17 @@ class dispatcher(Agent):
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
 
-                        print(message.body)
                         # msg2 = await self.receive()
                         # time.sleep(4)
                         messageFromScheduler = None
                         if protocol_version == "1.0":
                             while isinstance(messageFromScheduler, type(None)):
-                                print("sono in attesa di un messaggio")
+                                logging.debug("sono in attesa di un messaggio")
                                 messageFromScheduler = await self.receive(timeout=20)
                             while messageFromScheduler.body.split(" ")[0] != "SCHEDULED":
-                                print("messaggio:" + messageFromScheduler.body)
+                                logging.info("messaggio:" + messageFromScheduler.body)
                                 try:
-                                    print(messageFromScheduler.body)
+                                    logging.debug(messageFromScheduler.body)
                                     delta = calculateTime(nextload.profile)
                                     newTime = str(int(messageFromScheduler.body.split(" ")[3]) + int(delta))
                                     # es.sharedQueue.put((newTime,es.count,es.eventDelete(nextload.device,
@@ -713,16 +709,14 @@ class dispatcher(Agent):
                                     # date = cfg['config']['date'] + " 00:00:00"
 
                                     path = Configuration.parameters['current_sim_dir']
-                                    with open(path + "/Simulations/" + es.mydir + "/inputs/" + nextload.profile,
+                                    with open(path + "/Simulations/" + Configuration.mydir + "/inputs/" + nextload.profile,
                                               "r") as f:
-                                        with open(path + "/Simulations/" + es.mydir + "/output/" + nextload.profile,
+                                        with open(path + "/Simulations/" + Configuration.mydir + "/output/" + nextload.profile,
                                                   "w") as f2:
                                             reader = csv.reader(f)
                                             writer = csv.writer(f2, delimiter=' ')
-                                            print(nextload.profile)
                                             data = next(reader)
                                             absolute = int(data[0].split(" ")[0])
-                                            print(absolute)
                                             entry = []
                                             entry.append(int(messageFromScheduler.body.split(" ")[3]))
                                             entry.append(data[0].split(" ")[1])
@@ -734,21 +728,19 @@ class dispatcher(Agent):
                                                 entry.append(str(data[0].split(" ")[1]))
                                                 writer.writerow(entry)
 
-                                    es.sharedQueue.put((int(newTime), int(es.count), mydel))
-                                    es.count += 1
-                                    print(es.count)
+                                    es.Entities.enqueue_event(int(newTime),  mydel)
                                     file.write("<<< " + messageFromScheduler.body + "\r\n")
                                     file.flush()
                                     # time.sleep(2)
 
 
                                 except:
-                                    print("unrecognized Message")
+                                    logging.warning("unrecognized Message")
                                 messageFromScheduler = await self.receive()
                                 while (isinstance(messageFromScheduler, type(None))):
                                     messageFromScheduler = await self.receive(timeout=20)
-                                    print("attendo")
-                                print("messaggio:" + messageFromScheduler.body)
+                                    
+                                logging.info("messaggio:" + messageFromScheduler.body)
 
                             file.write("<<< " + messageFromScheduler.body + "\r\n")
                             file.flush()
@@ -757,7 +749,7 @@ class dispatcher(Agent):
                             while not isinstance(messageFromScheduler, type(None)):
                                 print(messageFromScheduler.body)
                                 if messageFromScheduler.body == "AckMessage":
-                                    print("Ack Received")
+                                    logging.info("Ack Received")
 
                                 else:
                                     try:
@@ -770,16 +762,14 @@ class dispatcher(Agent):
                                                                messageFromScheduler.body.split(" ")[5])
 
                                         path = Configuration.parameters['current_sim_dir']
-                                        with open(path + "/Simulations/" + es.mydir + "/inputs/" + nextload.profile,
+                                        with open(path + "/Simulations/" + self.mydir + "/inputs/" + nextload.profile,
                                                   "r") as f:
-                                            with open(path + "/Simulations/" + es.mydir + "/output/" + nextload.profile,
+                                            with open(path + "/Simulations/" + self.mydir + "/output/" + nextload.profile,
                                                       "w") as f2:
                                                 reader = csv.reader(f)
                                                 writer = csv.writer(f2, delimiter=' ')
-                                                print(nextload.profile)
                                                 data = next(reader)
                                                 absolute = int(data[0].split(" ")[0])
-                                                print(absolute)
                                                 entry = []
                                                 entry.append(int(messageFromScheduler.body.split(" ")[3]))
                                                 entry.append(data[0].split(" ")[1])
@@ -791,9 +781,8 @@ class dispatcher(Agent):
                                                     entry.append(str(data[0].split(" ")[1]))
                                                     writer.writerow(entry)
 
-                                        es.sharedQueue.put((int(newTime), int(es.count), mydel))
-                                        es.count += 1
-                                        print(es.count)
+                                        es.Entities.enqueue_event(int(newTime),  mydel)
+                                      
                                         file.write(">>> " + message.body + "\n")
 
                                         file.write("<<< " + messageFromScheduler.body + "\r\n")
@@ -851,7 +840,7 @@ class dispatcher(Agent):
                         file.write(">>> " + message.body + "\n")
                         file.flush()
 
-                    if es.sharedQueue.empty():
+                    if es.Entities.sharedQueue.empty():
 
                         if protocol_version == "2.0":
 
@@ -869,9 +858,9 @@ class dispatcher(Agent):
                                                                calculate_consum(nextload.profile),
                                                                messageFromScheduler.body.split(" ")[4])
 
-                                        with open(path + "/Simulations/" + es.mydir + "/inputs/" + nextload.profile,
+                                        with open(path + "/Simulations/" + self.mydir + "/inputs/" + nextload.profile,
                                                   "r") as f:
-                                            with open(path + "/Simulations/" + es.mydir + "/output/" + nextload.profile,
+                                            with open(path + "/Simulations/" + self.mydir + "/output/" + nextload.profile,
                                                       "w") as f2:
                                                 reader = csv.reader(f)
                                                 writer = csv.writer(f2, delimiter=' ')
@@ -890,7 +879,7 @@ class dispatcher(Agent):
                                                     entry.append(str(data[0].split(" ")[1]))
                                                     writer.writerow(entry)
 
-                                        es.sharedQueue.put((int(newTime), int(es.count), mydel))
+                                        es.Entities.enqueue_event(int(newTime),mydel)
                                         es.count += 1
                                         file.write(">>> " + message.body + "\n")
                                         file.write("<<< " + messageFromScheduler.body + "\r\n")
@@ -899,7 +888,7 @@ class dispatcher(Agent):
                                     except:
                                         print("unrecognized Message")
                                 messageFromScheduler = await self.receive(timeout=10)
-                    if es.sharedQueue.empty():
+                    if es.Entities.sharedQueue.empty():
                         message = MessageFactory.end(actual_time)
                         file.write(">>> " + message.body + "\n")
 
@@ -923,9 +912,7 @@ class dispatcher(Agent):
         template = Template()
         template2 = Template()
         template = Template()
-        with open("config.yml", 'r') as ymlfile:
-            cfg = yaml.load(ymlfile, Loader=Loader)
-        protocol_version = cfg['config']['protocol']
+        protocol_version = Configuration.parameters['protocol']
         if protocol_version == "1.0":
             template2.sender = basejid + "/actormanager"
         else:
@@ -934,3 +921,4 @@ class dispatcher(Agent):
         self.add_behaviour(b, template)
         Behaviour2 = self.consumeEvent(1, start_at=start_at)
         self.add_behaviour(Behaviour2, template2)
+        self.presence.set_available(show=PresenceShow.CHAT)

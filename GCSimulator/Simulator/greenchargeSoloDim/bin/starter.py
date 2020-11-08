@@ -8,11 +8,13 @@ import scheduler1 as sche1
 import threading
 import aiohttp_cors
 from configure import Configuration
+import logging
+import argparse
 import ptvsd
 
 ptvsd.enable_attach(address=('0.0.0.0', 5678))
 ptvsd.wait_for_attach()
-
+logging.basicConfig(level=logging.INFO)
 
 def adaptor():
     port = Configuration.parameters['adaptor_port']
@@ -21,11 +23,11 @@ def adaptor():
 
     protocol_version = Configuration.parameters['protocol']
     simulation_dir = Configuration.parameters['simulation_dir']
-    print("simdir:" + simulation_dir)
+    logging.debug("simdir:" + simulation_dir)
     hostname = Configuration.parameters['adaptor_address']
     password = Configuration.parameters['xmpp_password']
     if protocol_version == "2.0":
-        print("Starting Adaptor")
+        logging.info("Starting Adaptor")
         scheduler = sche.scheduler(basejid + "/" + jid, password)
         # scheduler.web.add_get("/gettime", scheduler.get_time, "message.html")
         # scheduler.web.add_post("/postanswer", scheduler.post_answer, "message2.html")
@@ -105,40 +107,35 @@ def start_disp():
     future = dispatcher.start()
 
 
-class MyThread(threading.Thread):
-    abilit = 1
-
-    def __init__(self):
-        super(MyThread, self).__init__()
-
-    def run(self):
-        adaptor()
-        basejid = Configuration.parameters['userjid']
-        simulation_dir = Configuration.parameters['current_sim_dir']
-        password = Configuration.parameters['xmpp_password']
-        external = es.ExternalSourceAgent(basejid + "/externalSource", password,
-                                          simulation_dir + "/xml/buildingNeighborhood.xml",
+def setup_simulation():
+    adaptor()
+    basejid = Configuration.parameters['userjid']
+    simulation_dir = Configuration.parameters['current_sim_dir']
+    password = Configuration.parameters['xmpp_password']
+    external = es.ExternalSourceAgent(basejid + "/externalSource", password, simulation_dir + "/xml/buildingNeighborhood.xml",
                                           simulation_dir + "/xml/buildingLoad.xml")
-        print(simulation_dir + "/xml/buildingNeighborhood.xml")
-        ex = external.start()
-        ex.result()
-        external.stop()
-        setupmodule = sm.setupModule(basejid + "/setupmodule", password)
-        setupmodule.start()
-        while self.abilit == 0:
-            None
-        while setupmodule.is_alive():
-            setupmodule.stop()
-
-    @staticmethod
-    def stop():
-        b = sm.stopService()
-        sm.add_behaviour(b)
+    logging.debug(simulation_dir + "/xml/buildingNeighborhood.xml")
+    external.simulation_setup()
+        
 
 
 if __name__ == "__main__":
+
+    
+
     Configuration.load()
-    mythread = MyThread()
+    logging.info("configuration loaded")
+    di.MessageFactory.init_parameters()
+    setup_simulation()
+    logging.info("simulation runtime built")
     start_disp()
-    mythread.start()
-    time.sleep(.9)
+    setup_jid = Configuration.parameters['userjid'] + "/setupmodule"
+    password =  Configuration.parameters['xmpp_password']
+    setupmodule = sm.setupModule(setup_jid, password)
+    setupmodule.start()
+    logging.info("waiting for termination")
+    while True:
+        try:
+            time.sleep(5)
+        except KeyboardInterrupt:
+            break

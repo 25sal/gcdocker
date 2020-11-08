@@ -60,14 +60,14 @@ class Configuration:
             if len(sim_temp2[1]) == 1:
                 sim_temp2[1] = "0" + sim_temp2[1]
                 lock1 = True
-
             if lock1:
                 newdir2 = sim_temp2[0] + "_" + sim_temp2[1] + "_" + sim_temp2[2]
             dirCount1 = 1
             while os.path.exists(cls.parameters['current_sim_dir'] + "/Simulations/" + newdir2 + "_" + str(dirCount1)):
                 dirCount1 += 1
-            workingdir1 = cls.parameters['current_sim_dir'] + "/Simulations/" + newdir2+"_"+str(dirCount1)
-            cls.mydir = workingdir1.split("/")[-1]
+            cls.parameters['runtime_dir'] = cls.parameters['current_sim_dir'] + "/Simulations/" + newdir2+"_"+str(dirCount1)
+            temp =  cls.parameters['runtime_dir'].split("/")
+            cls.parameters['user_dir'] = temp[-1]
             cls.dirCount1 = dirCount1
             # fine codice aggiunto
 

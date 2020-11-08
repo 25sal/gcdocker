@@ -19,6 +19,7 @@ import csv
 import shutil
 from configure import Configuration
 import sqlite3
+import logging
 
 
 
@@ -92,10 +93,6 @@ class device(abstract_device):
 
     def __init__(self, id='0', type='0', name='0', house='0'):
         super().__init__(id, house, type, name)
-        self.id = id
-        self.type = type
-        self.name = name
-        self.house = house
 
 
 class abstract_event:
@@ -234,13 +231,55 @@ class ChargingPoint():
 
 
 ###########################****************** UTIL VARIABLES SECTION ************************###################################################
+from dataclasses import dataclass, field
+
+
+@dataclass(order=False)
+class EnqueuedEvent:
+    unique_id = 0
+
+    def __init__(self, timestamp, event, unique_id=None):
+        self.timestamp = timestamp
+        self.event = event
+        if unique_id is None:
+            EnqueuedEvent.unique_id +=1
+            self.unique_id = EnqueuedEvent.unique_id
+        else:
+            self.unique_id = unique_id
+    
+    def __lt__(self, other):
+        if self.timestamp == other.timestamp:
+            return self.unique_id < other.unique_id
+        else:
+            return self.timestamp < other.timestamp
+    
+    def __gt__(self, other):
+        if self.timestamp == other.timestamp:
+            return self.unique_id > other.unique_id
+        return self.timestamp > other.timestamp
+    
+    def __eq__(self, other):
+        return self.timestamp == other.timestamp and self.unique_id == other.id
+
+    def __ne__(self, other):
+        return not  self.timestamp == other.timestamp and self.unique_id == other.id
+
+
+
 class Entities:
     listDevice = []  # IN THIS LIST WILL BE STORED ALL THE LOADS
     listPanels = []  # IN THIS LIST WILL BE STORED ALL THE PRODUCERS
     listEvent = []
     sharedQueue = queue.PriorityQueue()
 
+    @classmethod
+    def enqueue_event(cls, timestamp, event, unique_id=None):
+        cls.sharedQueue.put(EnqueuedEvent(timestamp, event, unique_id))
 
+    @classmethod
+    def next_event(cls):
+        item = cls.sharedQueue.get()  
+        return   (item.timestamp, item.unique_id, item.event)
 
 ###########################****************** END UTIL VARIABLES SECTION ************************###################################################
 
@@ -440,38 +479,34 @@ def createTable():
 
 
 def createDevicesList():
-    workingdir = Configuration.parameters['workingdir']
+    workingdir = Configuration.parameters['runtime_dir']
     date = Configuration.parameters['date'] + " 00:00:00"
     datetime_object = datetime.strptime(date, '%m/%d/%y %H:%M:%S')
-    global count
+    
     date = Configuration.parameters['date'] + " 00:00:00"
     datetime_object = datetime.strptime(date, '%m/%d/%y %H:%M:%S')
     timestamp = datetime.timestamp(datetime_object)
 
-    Entities.sharedQueue = queue.PriorityQueue()
-    count = 0
-    print("guarda in " + workingdir)
+  
+    logging.debug("runtime folder: " + workingdir)
     f = open(workingdir + "/xml/neighborhood.xml", "r")
     fileIntero = f.read()
     root = ET.fromstring(fileIntero)
     neigh = Neighborhood('neighborhood', root.get('peakLoad2'))
-    Entities.sharedQueue.put((timestamp, int(count), neigh))
-    count += 1
+    Entities.enqueue_event(timestamp, neigh)
     for energycost in root.findall('energyCost'):
         energycost = Energy_Cost('energyCost', energycost.find('profile').text)
-        Entities.sharedQueue.put((timestamp, int(count), energycost))
-        count += 1
+        Entities.enqueue_event(timestamp, energycost)
     for energyMix in root.findall('energyMix'):
         energyMix = Energy_Mix('energyMix', energyMix.find('profile').text)
-        Entities.sharedQueue.put((timestamp, int(count), energyMix))
-        count += 1
-
+        Entities.enqueue_event(timestamp, energyMix)
+       
     # Inserisci qui il codice per la creazione del neighborhood
     for house in root.findall('house'):  # READ XML FILE
         # inserisci qui il codice per la creazione di una house
         houseId = house.get('id')
         housedev = House('house', houseId, house.get('peakLoad'), 0)
-        count += 1
+       
         for user in house.findall('user'):
             userId = user.get('id')
             for deviceElement in user.findall('device'):
@@ -481,20 +516,20 @@ def createDevicesList():
                 c = device(deviceId, type, name, houseId)
                 Entities.listDevice.append(c)
             for OtherElement in user.findall('heatercooler'):
-                print("TROVATO")
+                logging.debug("new heatercooler")
                 deviceId = OtherElement.find('id').text
                 name = OtherElement.find('name').text
                 c = heaterCooler(deviceId, houseId, name)
                 Entities.listDevice.append(c)
 
             for OtherElement in user.findall('backgroundload'):
-                print("trovatobg")
+                logging.debug("new bg")
                 deviceId = OtherElement.find('id').text
                 name = OtherElement.find('name').text
                 c = backGroundLoad(deviceId, houseId, name)
                 Entities.listDevice.append(c)
             for OtherElement in user.findall('battery'):
-                print("found")
+                logging.debug("new battery")
                 deviceId = OtherElement.find('id').text
                 name = OtherElement.find('name').text
                 capacity = OtherElement.find('capacity').text
@@ -515,7 +550,7 @@ def createDevicesList():
                 cpId = cp.get('id')
                 cpdev = ChargingPoint('house', houseId, cpId, cp.get('ConnectorsType'), cp.get('peakLoad'))
                 # sharedQueue.put((0,int(count),cpdev))
-                count += 1
+               
                 housedev.numcp += 1
                 # inserisci qui il codice per la creazione del Cp
                 for OtherElement in cp.findall('ecar'):
@@ -536,12 +571,12 @@ def createDevicesList():
                     c = EV(deviceId, houseId, cpId, name, capacity, maxchpowac, maxchpowcc, maxdispowac, maxdispowcc
                            , maxallen, minallen, sbch, sbdis, cheff, dis_eff)
                     Entities.listDevice.append(c)
-        Entities.sharedQueue.put((timestamp, int(count), housedev))
+        Entities.enqueue_event(timestamp, housedev)
     for house in root.findall('chargingStation'):  # READ XML FILE
         # inserisci qui il codice per la creazione di una cs
         houseId = house.get('id')
         housedev = ChargingStation('house', houseId, house.get('peakLoad'), 0)
-        count += 1
+        
         for user in house.findall('user'):
             userId = user.get('id')
             for deviceElement in user.findall('device'):
@@ -551,20 +586,20 @@ def createDevicesList():
                 c = device(deviceId, type, name, houseId)
                 Entities.listDevice.append(c)
             for OtherElement in user.findall('heatercooler'):
-                print("TROVATO")
+                logging.debug("new heatercooler")
                 deviceId = OtherElement.find('id').text
                 name = OtherElement.find('name').text
                 c = heaterCooler(deviceId, houseId, name)
                 Entities.listDevice.append(c)
 
             for OtherElement in user.findall('backgroundload'):
-                print("trovatobg")
+                logging.debug("new bg")
                 deviceId = OtherElement.find('id').text
                 name = OtherElement.find('name').text
                 c = backGroundLoad(deviceId, houseId, name)
                 Entities.listDevice.append(c)
             for OtherElement in user.findall('battery'):
-                print("found cs")
+                logging.debug("new buttery")
                 deviceId = OtherElement.find('id').text
                 name = OtherElement.find('name').text
                 capacity = OtherElement.find('capacity').text
@@ -585,7 +620,7 @@ def createDevicesList():
                 cpId = cp.get('id')
                 # cpdev = ChargingPoint('house',houseId,cpId, cp.get('ConnectorsType'), cp.get('peakLoad'))
                 # sharedQueue.put((0,int(count),cpdev))
-                count += 1
+                
                 # inserisci qui il codice per la creazione del Cp
                 for OtherElement in cp.findall('ecar'):
                     deviceId = OtherElement.find('id').text
@@ -605,7 +640,7 @@ def createDevicesList():
                     c = EV(deviceId, houseId, cpId, name, capacity, maxchpowac, maxchpowcc, maxdispowac, maxdispowcc
                            , maxallen, minallen, sbch, sbdis, cheff, dis_eff)
                     Entities.listDevice.append(c)
-        Entities.sharedQueue.put((timestamp, int(count), housedev))
+        Entities.enqueue_event(timestamp,  housedev)
 
     for fleet in root.findall('fleet'):
         for OtherElement in fleet.findall('ecar'):
@@ -634,7 +669,7 @@ def createDevicesList():
 # createEventList() READS FROM A FILE EVENT INFORMATIONS AND APPEND THEM TO LOADSLIST
 
 def createEventList():
-    workingdir = Configuration.parameters['workingdir']
+    workingdir = Configuration.parameters['runtime_dir']
     path = Configuration.parameters['current_sim_dir']
     f = open(workingdir + "/xml/loads.xml", "r")
     fileIntero = f.read();
@@ -653,10 +688,10 @@ def createEventList():
                     type2 = device.find("type").text
                     if device.find('profile').text.endswith(' '):
                         profile = device.find('profile').text[:-1]
-                        copy2(path + "/Inputs/ " + profile, workingdir + "/inputs")
+                        copy2(path + "/Inputs/" + profile, workingdir + "/inputs")
                     else:
                         profile = device.find('profile').text
-                        copy2(path + "/Inputs/ " + profile, workingdir + "/inputs")
+                        copy2(path + "/Inputs/" + profile, workingdir + "/inputs")
 
                     for c in Entities.listDevice:
                         if deviceId == c.id and houseId == c.house:
@@ -665,8 +700,8 @@ def createEventList():
                                 Entities.listEvent.append(e)
                             elif c.type == "Producer":
                                 energycost = device.find('energy_cost').text
-                                copy2(path + "/Inputs/" + profile, workingdir + " /inputs")
-                                e = eventProducer(c, houseId, est, lst, creation_time, profile, " load ", energycost)
+                                copy2(path + "/Inputs/" + profile, workingdir + "/inputs")
+                                e = eventProducer(c, houseId, est, lst, creation_time, profile, "load", energycost)
                                 Entities.listEvent.append(e)
                                 # CODICE PROVVISORIO
                                 # H = int(creation_time) + 21600
@@ -689,11 +724,11 @@ def createEventList():
                     if device.find('profile').text.endswith(' '):
                         profile = device.find('profile').text[:-1]
                         copy2(path + "/Inputs/" + profile, workingdir + "/inputs")
-                        copy2(path + "/Inputs/" + profile, path + "/Sim u lations/" + mydir + "/out put/ B G/")
+                        copy2(path + "/Inputs/" + profile, path + "/Simulations/" + mydir + "/output/BG/")
                     else:
                         profile = device.find('profile').text
                         copy2(path + "/Inputs/" + profile, workingdir + "/inputs")
-                        copy2(path + "/Inputs/" + profile, path + "/Sim u lations/" + mydir + "/out put/ B G/")
+                        copy2(path + "/Inputs/" + profile, path + "/Simulations/" + mydir + "/output/BG/")
                     for c in Entities.listDevice:
                         if deviceId == c.id and houseId == c.house:
                             if c.type == "backgroundLoad":
@@ -717,7 +752,6 @@ def createEventList():
                     for c in Entities.listDevice:
                         if deviceId == c.id and houseId == c.house:
                             if c.type == "battery":
-                                print("found")
                                 aat = device.find('startTime').text
                                 adt = device.find('endTime').text
                                 creation_time = device.find('creation_time').text
@@ -763,21 +797,21 @@ def createEventList():
 
 
 def adjustTime():
-    workingdir = Configuration.parameters['workingdir']
+    workingdir = Configuration.parameters['runtime_dir']
     date = Configuration.parameters['date'] + " 00:00:00"
     datetime_object = datetime.strptime(date, '%m/%d/%y %H:%M:%S')
     timestamp = datetime.timestamp(datetime_object)
     entry = []
     for e in Entities.listEvent:
-        if e.device.type == "Producer" or e.device.type == "Con s umer":
-            with open(workingdir + "/input s /" + e.profile, "r ") as f:
-                with open(workingdir + "/inputs/temp" + e.profile, "") as f2:
+        if e.device.type == "Producer" or e.device.type == "Consumer":
+            with open(workingdir + "/inputs/" + e.profile, "r") as f:
+                with open(workingdir + "/inputs/temp" + e.profile, "w") as f2:
                     reader = csv.reader(f)
                     writer = csv.writer(f2, delimiter=' ')
                     for data in reader:
                         entry = []
-                        oldtimestamp = datetime.fromtimesamp(int(data[0].split(" ")[0]))
-                        datetime_new = datetime(yer=datetime_object.year, month=datetime_object.month,
+                        oldtimestamp = datetime.fromtimestamp(int(data[0].split(" ")[0]))
+                        datetime_new = datetime(year=datetime_object.year, month=datetime_object.month,
                                                 day=datetime_object.day, hour=oldtimestamp.hour,
                                                 minute=oldtimestamp.minute, second=oldtimestamp.second)
                         seconds = datetime.timestamp(datetime_new)
@@ -791,14 +825,13 @@ def adjustTime():
 # UPLOADINPUTREPOSITORY() UPLOADS DEVICES IN INPUT REPOSITORY, CLEANES TABLES BEFORE UPLOAD
 
 def uploadInInputRepository():
-    global count
+    
     date = Configuration.parameters['date'] + " 00:00:00"
     datetime_object = datetime.strptime(date, '%m/%d/%y %H:%M:%S')
 
     timestamp = datetime.timestamp(datetime_object)
     for c in Entities.listEvent:
         if c.device.type == "Consumer" or c.device.type == "Producer":
-            print("iamhere")
             est_data = datetime.fromtimestamp(int(c.est))
             lst_data = datetime.fromtimestamp(int(c.lst))
             ct_data = datetime.fromtimestamp(int(c.creation_time))
@@ -816,13 +849,13 @@ def uploadInInputRepository():
             else:
                 c.est = str(int(timestamp))
             if c.device.type == "Consumer":
-                Entities.sharedQueue.put((int(c.creation_time) + 100, int(count) + 100, c))
+                Entities.enqueue_event(int(c.creation_time) + 100, c)
             if c.device.type == "Producer":
-                Entities.sharedQueue.put((int(c.creation_time), int(count), c))
+                Entities.enqueue_event(int(c.creation_time),  c)
 
         # print("inserito")
         elif c.device.type == "EV":
-            print("EV found")
+            logging.debug("new EV")
             book_time = datetime.fromtimestamp(int(c.creation_time))
             planned_arrival_time = datetime.fromtimestamp(int(c.planned_arrival_time))
             planned_departure_time = datetime.fromtimestamp(int(c.planned_departure_time))
@@ -843,25 +876,27 @@ def uploadInInputRepository():
             c.actual_arrival_time = str(int(timestamp + midseconds_actual_arrival_time))
             c.actual_departure_time = str(int(timestamp + midseconds_actual_departure_time))
             c.device.type = "CREATE_EV"
+            '''
             print(c.device.id)
             print("timestamp = " + str(timestamp))
-            print("B ookingTime  = " + str(c.creation_time))
+            print("BookingTime  = " + str(c.creation_time))
             print("arrival_Time =  " + str(c.actual_arrival_time))
             print("departure_Time = " + str(c.actual_departure_time))
-            Entities.sharedQueue.put((int(timestamp), int(count), c))
+            '''
+            Entities.enqueue_event(int(timestamp), c)
 
-            Entities.sharedQueue.put((int(c.creation_time), int(count), c))
+            Entities.enqueue_event(int(c.creation_time),  c)
 
-            Entities.sharedQueue.put((int(c.actual_arrival_time), int(count), c))
+            Entities.enqueue_event(int(c.actual_arrival_time),  c)
 
-            Entities.sharedQueue.put((int(c.actual_departure_time), int(count), c))
+            Entities.enqueue_event(int(c.actual_departure_time),  c)
 
         elif c.device.type == "heaterCooler":
             c.creation_time = str(int(timestamp))
-            Entities.sharedQueue.put((int(c.creation_time), int(count), c))
+            Entities.enqueue_event(int(c.creation_time),  c)
         elif c.device.type == "backgroundLoad":
             c.creation_time = str(int(timestamp))
-            Entities.sharedQueue.put((int(c.creation_time), int(count), c))
+            Entities.enqueue_event(int(c.creation_time),  c)
         elif c.device.type == "battery":
             est_data = datetime.fromtimestamp(int(c.start_time))
             lst_data = datetime.fromtimestamp(int(c.end_time))
@@ -872,8 +907,8 @@ def uploadInInputRepository():
             c.start_time = str(int(timestamp + midsecondsEST))
             c.end_time = str(int(timestamp + midsecondsLST))
             c.creation_time = str(int(timestamp + midsecondsCT))
-            Entities.sharedQueue.put((int(c.creation_time), int(count), c))
-        count += 1
+            Entities.enqueue_event(int(c.creation_time),  c)
+        
 
 
 def makeNewSimulation(pathneigh, pathload):
@@ -881,12 +916,12 @@ def makeNewSimulation(pathneigh, pathload):
     datetime_object = datetime.strptime(date, '%m/%d/%y %H:%M:%S')
     date2 = date.split()
     dir1 = Configuration.parameters['current_sim_dir']
-    print(dir1)
+
     with open("./tt", "w") as f:
         f.write(str(datetime.timestamp(datetime_object)).split(".")[0])
         f.close()
     newdir = date2[0].replace('/', '_')
-    print(newdir)
+
     sim_temp = newdir.split("_")
     lock = False
     if len(sim_temp[0]) == 1:
@@ -900,30 +935,27 @@ def makeNewSimulation(pathneigh, pathload):
         newdir = sim_temp[0] + "_" + sim_temp[1] + "_" + sim_temp[2]
 
     dirCount = 1
-    while os.path.exists(dir1 + "/Simul a tions/" + newdir + "_" + str(dirCount)):
+    while os.path.exists(dir1 + "/Simulations/" + newdir + "_" + str(dirCount)):
         dirCount += 1
-    os.mkdir(dir1 + " /Simulatio n s/" + newdir + "_" + str(dirCount), 0o755)
-    workingdir = Configuration.parameters['workingdir']
+    os.mkdir(dir1 + "/Simulations/" + newdir + "_" + str(dirCount), 0o755)
+    workingdir = Configuration.parameters['runtime_dir']
 
-    workingdir = dir1 + "/Simulations/" + newdir + "_" + str(dirCount)
-    print(workingdir)
-    print(dir1)
+    
     os.mkdir(workingdir + "/xml", 0o755)
-    os.mkdir(workingdir + " / output", 0o755)
-    print("creo: " + workingdir + "/output")
+    os.mkdir(workingdir + "/output", 0o755)
 
     path = Configuration.parameters['current_sim_dir']
 
     os.mkdir(workingdir + "/inputs", 0o755)
     os.mkdir(workingdir + "/output/HC/", 0o755)
-    os.mkdir(workingdir + "/output/BG / ", 0o755)
+    os.mkdir(workingdir + "/output/BG/", 0o755)
     os.mkdir(workingdir + "/output/EV/", 0o755)
 
     if os.path.exists(path + "/output/"):
         shutil.rmtree(path + "/output/")
         os.mkdir(path + "/output/", 0o755)
-        os.mkdir(path + "/BG/", 0o755)
-        os.mkdir(path + "/HC/", 0o755)
+        os.mkdir(path + "/output/BG/", 0o755)
+        os.mkdir(path + "/output/HC/", 0o755)
         os.mkdir(path + "/output/EV/", 0o755)
 
     else:
@@ -941,6 +973,8 @@ def makeNewSimulation(pathneigh, pathload):
 
     for csvfile in csvfiles:
         copy2(csvfile, workingdir + "/inputs")
+    logging.info("runtime folders created")
+
     """for filename in os.listdir(workingdir+"/inputs"):
         src = workingdir+"/inputs/"+filename
         dst= os.path.splitext(filename)
@@ -960,11 +994,11 @@ def makeNewSimulation(pathneigh, pathload):
 ###########################*************** ANY ACTION IS DEFINED BY A METHOD *** * *** * ********################## # ### # ##### # ######################
 
 def copyInscheduler():
-    workingdir = Configuration.parameters['workingdir']
-    global mydir
+    workingdir = Configuration.parameters['runtime_dir']
+    mydir = Configuration.parameters['user_dir']
     webdir = Configuration.parameters['webdir']
     src_files = os.listdir(workingdir + "/inputs/")
-    # mydir = workingdir.split("/")[-1]
+    # mydir = .split("/")[-1]
     # print ( myd i r)
 
     os.mkdir(webdir + "/" + mydir)
@@ -974,52 +1008,35 @@ def copyInscheduler():
         full_file_name = os.path.join(workingdir + "/inputs/", file_name)
         if os.path.isfile(full_file_name):
             shutil.copy(
-                full_file_name, webdir + "/" +
-                                mydir)
+                full_file_name, webdir + "/" +mydir)
 
 
 class ExternalSourceAgent(spade.agent.Agent):
     def __init__(self, address, passw,
                  pathneigh, pathload):
         super(ExternalSourceAgent, self).__init__(address, passw)
-        global pathneighbor
-        global pathload2
-        pathneighbor = pathneigh
-        pathload2 = pathload
+        self.pathneighbor = pathneigh
+        self.pathload2 = pathload
 
-    class LoadsManager(OneShotBehaviour):
-        async def onstart(self):
-            print("Starting...")
 
-        async def run(self):
-            global pathneighbor
-            global pathload2
+    def simulation_setup(self):
+        Entities.sharedQueue.queue.clear()
+        Entities.listDevice = []  # IN THIS LIST WILL BE STORED ALL THE LOADS
+        Entities.listPanels = []  # IN THIS LIST WILL BE STORED ALL THE PRODUCERS
+        Entities.listEvent = []
+        makeNewSimulation(self.pathneighbor, self.pathload2)
+        createDevicesList()
+        logging.info("List Created.")
+        createEventList()
+        logging.info("Information Added.")
+        uploadInInputRepository()
+        adjustTime()
+        copyInscheduler()
 
-            Entities.sharedQueue.queue.clear()
-            Entities.listDevice = []  # IN THIS LIST WILL BE STORED ALL THE LOADS
-            Entities.listPanels = []  # IN THIS LIST WILL BE STORED ALL THE PRODUCERS
-            Entities.listEvent = []
-            makeNewSimulation(pathneighbor, pathload2)
-            createDevicesList()
-            print("List Created.")
-            createEventList()
-            print("Information Added.")
-            uploadInInputRepository()
-            adjustTime()
-
-            copyInscheduler()
-
-            date = Configuration.parameters['date'] + " 00:00:00"
-            datetime_object = datetime.strptime(date, '%m/%d/%y %H:%M:%S')
-            print(datetime_object)
-            print("Information Uploaded.")
-            await asyncio.sleep(1)
-            # createTable()
-
-    async def setup(self):
-        print("Agent External Agent Starting")
-        Behaviour = self.LoadsManager()
-        self.add_behaviour(Behaviour)
+        date = Configuration.parameters['date'] + " 00:00:00"
+        datetime_object = datetime.strptime(date, '%m/%d/%y %H:%M:%S')
+        logging.info(datetime_object)
+        logging.info("Information Uploaded.")
 
 ###########################********************** END SPADE METHODS SECTION ***************************###################################################
 ###########################*************** ANY ACTION IS DEFINED BY A METHOD ****************###################################################

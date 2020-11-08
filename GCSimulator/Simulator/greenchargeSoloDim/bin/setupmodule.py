@@ -8,24 +8,20 @@ import externalSourceAgent as es
 import datetime
 import yaml
 global abilit
-from yaml import Loader
+from configure import Configuration
 
 abilit = 0
+
+class SimLifeCycle:
+    # status 0: reset, 1: runtime built, 2: running, 
+    #
+    status = 0
 
 class setupModule(Agent):
     class startService(OneShotBehaviour):
         async def run(self):
-            with open("config.yml", 'r') as ymlfile:
-                cfg = yaml.load(ymlfile, Loader = Loader)
-            port = cfg['config']['adaptor_port']
-            jid = cfg['config']['adaptor']
-            basejid = cfg['config']['userjid']
-            simjid = cfg['config']['simulator']
-            schejid = cfg['config']['scheduler']
-            protocol_version = cfg['config']['protocol']
-            simulation_dir = cfg['config']['simulation_dir']
-            simulation_date = cfg['config']['date']
-            hostname = cfg['config']['adaptor_address']
+            basejid = Configuration.parameters['userjid']
+            simjid = Configuration.parameters['simulator']
             print("InformBehav running")
             msg = Message(to=basejid+"/"+simjid)     # Instantiate the message
             msg.set_metadata("control", "startorstop")  # Set the "inform" FIPA performative
@@ -36,10 +32,12 @@ class setupModule(Agent):
 
             print("Message start sent!")
             # stop agent from behaviour
-            #await self.agent.stop()
+            # await self.agent.stop()
 
     class stopService(OneShotBehaviour):
         async def run(self):
+            basejid = Configuration.parameters['userjid']
+            simjid = Configuration.parameters['simulator']
             msg = Message(to=basejid+"/"+simjid)     # Instantiate the message
             msg.set_metadata("control", "startorstop")  # Set the "inform" FIPA performative
             msg.body = "stop"                    # Set the message content
@@ -48,5 +46,14 @@ class setupModule(Agent):
 
     async def setup(self):
         print("SenderAgent started")
-        b = self.startService()
-        self.add_behaviour(b)
+        self.presence.on_available = self.my_on_available_handler
+
+    def my_on_available_handler(self, peer_jid, stanza):
+        print(f"My friend {peer_jid} is now available with show {stanza.show}")
+        if peer_jid == Configuration.parameters['userjid'] + '/' + Configuration.parameters['simulator']:
+            if SimLifeCycle.status == 0:
+                SimLifeCycle.status = 1
+                b = self.startService()
+                self.add_behaviour(b)
+
+
