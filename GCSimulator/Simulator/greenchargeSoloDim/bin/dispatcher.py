@@ -71,14 +71,14 @@ class MessageFactory:
             return mex
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = """{"message" : {"subject" : "SIMULATION_END", "simulation_time": " """ + str(
-                actual_time) + """ "}}"""
+            message = '({"message" : {"subject" : "SIMULATION_END", "simulation_time": " ' + str(actual_time) + ' "}}'
             mex.body = message
             mex.metadata = "0"
             return mex
 
     @classmethod
     def energyCost(cls, device, time, protocol_version):
+        web_url = Configuration.parameters['web_url']
         mydir = Configuration.parameters['user_dir']
         if protocol_version == "1.0":
             name = cls.basejid.split('@')[0]
@@ -90,14 +90,14 @@ class MessageFactory:
             return mex
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = '{"message" : {"subject" : "ENERGY_COST",id: "[0]","profile" : "http://parsec2.unicampania.it/~gcdemo/' + cls.realpath + "/" + str(
-                self.mydir) + '/' + str(device.profile) + '"}}'
+            message = '{"message" : {"subject" : "ENERGY_COST",id: "[0]","profile" : "' + web_url + '/' + cls.realpath + "/" + str(mydir) + '/' + str(device.profile) + '"}}'
             mex.body = message
             mex.metadata = '0'
             return mex
 
     @classmethod
     def energyCostProducer(cls, device, time, protocol_version):
+        web_url = Configuration.parameters['web_url']
         mydir = Configuration.parameters['user_dir']
         if protocol_version == "1.0":
             name = cls.basejid.split('@')[0]
@@ -111,7 +111,7 @@ class MessageFactory:
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
             message = '{"message" : {"subject" : "ENERGY_COST",id: "["' + str(device.house) + '"]:["' + str(
-                device.device.id) + '"]","profile" : "http://parsec2.unicampania.it/~gcdemo/' + cls.realpath + "/" + str(
+                device.device.id) + '"]","profile" : "' + web_url + '/' + cls.realpath + "/" + str(
                 mydir) + '/' + str(device.energycost) + '"}}'
             mex.body = message
             mex.metadata = '0'
@@ -119,16 +119,16 @@ class MessageFactory:
 
     @classmethod
     def energyMix(cls, device, time, protocol_version):
-        url = cls.basejid.split('@')[1]
+        web_url = Configuration.parameters['web_url']
         mydir = Configuration.parameters['user_dir']
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
-            message = "ENERGY_MIX " + "http://" + str(url) + "/~gcdemo/" + cls.realpath + "/" + str(mydir) + "/" + str(device.profile) + " " + str(time)
+            message = "ENERGY_MIX " +  str(web_url) + "/" + cls.realpath + "/" + str(mydir) + "/" + str(device.profile) + " " + str(time)
             mex.body = message
             return mex
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = """{"message" : {"subject" : "ENERGY_MIX","profile" : "http://parsec2.unicampania.it/~gcdemo/""" + cls.realpath + "/" + str(mydir) + """/""" + str(device.profile) + """ "}}"""
+            message = '{"message" : {"subject" : "ENERGY_MIX","profile" : "' + web_url + '/' + cls.realpath + "/" + str(mydir) + '/' + str(device.profile) + ' "}}'
             mex.body = message
             mex.metadata = '0'
             return (mex)
@@ -142,8 +142,8 @@ class MessageFactory:
             return mex
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = """{"message" : {"subject" : "CREATE_ENERGY_GROUP","powerpeak" : " """ + str(
-                device.peakload) + """ "}}"""
+            message = '{"message" : {"subject" : "CREATE_ENERGY_GROUP","powerpeak" : " ' + str(
+                device.peakload) + ' "}}'
             mex.body = message
             mex.metadata = '0'
             return mex
@@ -157,8 +157,8 @@ class MessageFactory:
             return mex
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = """{"message" : {"subject" : "CREATE_ENERGY_GROUP", "id" : " """ + str(
-                device.id) + """ ", "powerpeak" : " """ + str(device.peakload) + """ "}}"""
+            message = '{"message" : {"subject" : "CREATE_ENERGY_GROUP", "id" : " ' + str(
+                device.id) + ' ", "powerpeak" : " ' + str(device.peakload) + ' "}}'
             mex.body = message
             mex.metadata = '0'
             return mex
@@ -172,9 +172,9 @@ class MessageFactory:
             return (mex)
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = """{"message" : {"subject" : "CREATE_ENERGY_GROUP", "id" : " """ + str(
-                device.id) + """ ", "powerpeak" : " """ + str(device.peakload) + """ ", "numcp" : " """ + str(
-                device.numcp) + """ "}}"""
+            message = '{"message" : {"subject" : "CREATE_ENERGY_GROUP", "id" : " ' + str(
+                device.id) + ' ", "powerpeak" : " ' + str(device.peakload) + ' ", "numcp" : " ' + str(
+                device.numcp) + ' "}}'
             mex.body = message
             mex.metadata = '0'
             return mex
@@ -190,15 +190,16 @@ class MessageFactory:
             return mex
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = """{"message" : {"subject" : "CREATE_ENERGY_GROUP", "id" : "[""" + str(
-                device.houseid) + """]:[""" + str(device.id) + """]", "connectors_type" : " """ + str(
-                device.connection_type) + """ ", "powerpeak" : " """ + str(device.peakload) + """ "}}"""
+            message = '{"message" : {"subject" : "CREATE_ENERGY_GROUP", "id" : "[' + str(
+                device.houseid) + ']:[' + str(device.id) + ']", "connectors_type" : " ' + str(
+                device.connection_type) + ' ", "powerpeak" : " ' + str(device.peakload) + ' "}}'
             mex.body = message
             mex.metadata = '0'
             return mex
 
     @classmethod
     def heatercooler(cls, device, time, protocol_version):
+        web_url = Configuration.parameters['web_url']
         mydir = Configuration.parameters['user_dir']
         if protocol_version == "1.0":
             url = cls.basejid.split('@')[1]
@@ -209,8 +210,8 @@ class MessageFactory:
             return (mex)
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = """{"message" : {"subject" : "HC","id" : "[""" + str(device.house) + """]:[""" + str(
-                device.device.id) + """]","profile" : "http://parsec2.unicampania.it/~gcdemo/""" + cls.realpath + "/" + str(mydir) + """/""" + str(device.profile) + """ "}}"""
+            message = '{"message" : {"subject" : "HC","id" : "[' + str(device.house) + ']:[' + str(
+                device.device.id) + ']","profile" : "' + web_url + '/' + cls.realpath + "/" + str(mydir) + '/' + str(device.profile) + ' "}}'
             mex.body = message
             mex.metadata = time
             return mex
@@ -218,6 +219,7 @@ class MessageFactory:
     @classmethod
     def background(cls, device, time, protocol_version):
         mydir = Configuration.parameters['user_dir']
+        web_url = Configuration.parameters['web_url']
         if protocol_version == "1.0":
             url = cls.basejid.split('@')[1]
             mex = Message(to=cls.basejid + "/actormanager")
@@ -228,16 +230,15 @@ class MessageFactory:
         else:
 
             mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = """{"message" : {"subject" : "BG","id" : "[""" + str(device.house) + """]:[""" + str(
-                device.device.id) + """]","profile" : "http://parsec2.unicampania.it/~gcdemo/""" + cls.realpath + "/" + str(
-                mydir) + """/""" + str(device.profile) + """ "}}"""
+            message = '{"message" : {"subject" : "BG","id" : "[' + str(device.house) + ']:[' + str(
+                device.device.id) + ']","profile" : "' + web_url + '/' + cls.realpath + "/" + str(
+                mydir) + '/' + str(device.profile) + ' "}}'
             mex.body = message
             mex.metadata = time
             return mex
 
     @classmethod
     def charge_on_demand(cls, device, time, protocol_version):
-        mydir = Configuration.parameters['user_dir']
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
             message = '"message: {"subject": "EV", "capacity":' + str(
@@ -255,18 +256,18 @@ class MessageFactory:
             return mex
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = """{"message" : {"subject" : "EV", "capacity" : " """ + str(
-                device.device.capacity) + """ " , "max_ch_pow_ac" : " """ + str(
-                device.device.max_ch_pow_ac) + """ " , "max_ch_cc" : " """ + str(
-                device.device.max_ch_pow_cc) + """ " , "max_all_en" : " """ + str(
-                device.device.max_all_en) + """ " , "min_all_en" : " """ + str(
-                device.device.min_all_en) + """ " , "sb_ch" : " """ + str(
-                device.device.sb_ch) + """ " , "ch_eff" :  " """ + str(
-                device.device.ch_eff) + """ " , "soc_at_arrival": " """ + str(
-                device.Soc_at_arrival) + """ " , "planned_departure_time" : " """ + str(
-                device.planned_departure_time) + """ " , "arrival_time" : " """ + str(
-                device.actual_arrival_time) + """ " , "v2g" : " """ + str(
-                device.v2g) + """ " , "target_soc" : " """ + str(device.target_soc) + """ " }}"""
+            message = '{"message" : {"subject" : "EV", "capacity" : " ' + str(
+                device.device.capacity) + ' " , "max_ch_pow_ac" : " ' + str(
+                device.device.max_ch_pow_ac) + ' " , "max_ch_cc" : " ' + str(
+                device.device.max_ch_pow_cc) + ' " , "max_all_en" : " ' + str(
+                device.device.max_all_en) + ' " , "min_all_en" : " ' + str(
+                device.device.min_all_en) + ' " , "sb_ch" : " ' + str(
+                device.device.sb_ch) + ' " , "ch_eff" :  " ' + str(
+                device.device.ch_eff) + ' " , "soc_at_arrival": " ' + str(
+                device.Soc_at_arrival) + ' " , "planned_departure_time" : " ' + str(
+                device.planned_departure_time) + ' " , "arrival_time" : " ' + str(
+                device.actual_arrival_time) + ' " , "v2g" : " ' + str(
+                device.v2g) + ' " , "target_soc" : " ' + str(device.target_soc) + ' " }}'
             mex.body = message
             mex.metadata = time
             return (mex)
@@ -287,13 +288,13 @@ class MessageFactory:
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
 
-            message = """{"message" : {"subject" : "EV" , "id" : "[""" + str(
-                device.device.id) + """]", "soc_at_arrival": " """ + str(
-                device.Soc_at_arrival) + """ " , "planned_departure_time" : " """ + str(
-                device.planned_departure_time) + """ " , "arrival_time" : " """ + str(
-                device.actual_arrival_time) + """ " ,"charging_point" : "[""" + str(device.house) + """]:[""" + str(
-                device.device.cp) + """]", "v2g" : " """ + str(device.v2g) + """ " , "target_soc" : " """ + str(
-                device.target_soc) + """ " }}"""
+            message = '{"message" : {"subject" : "EV" , "id" : "[' + str(
+                device.device.id) + ']", "soc_at_arrival": " ' + str(
+                device.Soc_at_arrival) + ' " , "planned_departure_time" : " ' + str(
+                device.planned_departure_time) + ' " , "arrival_time" : " ' + str(
+                device.actual_arrival_time) + ' " ,"charging_point" : "[' + str(device.house) + ']:[' + str(
+                device.device.cp) + ']", "v2g" : " ' + str(device.v2g) + ' " , "target_soc" : " ' + str(
+                device.target_soc) + ' " }}'
             mex.body = message
             mex.metadata = time
             return (mex)
@@ -311,19 +312,19 @@ class MessageFactory:
             return mex
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = """{"message" : {"subject" : "CREATE_EV" , "id" : "[""" + str(
-                device.device.id) + """]", "capacity" : " """ + str(
-                device.device.capacity) + """ " , "max_ch_pow_ac" : " """ + str(
-                device.device.max_ch_pow_ac) + """ " , "max_ch_pow_cc" : " """ + str(
-                device.device.max_ch_pow_cc) + """ " , "max_dis_pow_ac" : " """ + str(
-                device.device.max_dis_pow_ac) + """ " , "max_dis_pow_cc" : " """ + str(
-                device.device.max_dis_pow_cc) + """ " , "max_all_en" : " """ + str(
-                device.device.max_all_en) + """ " , "min_all_en" : " """ + str(
-                device.device.min_all_en) + """ " , "sb_ch" : " """ + str(
-                device.device.sb_ch) + """ " , "sb_dis" : " """ + str(
-                device.device.sb_dis) + """ " , "ch_eff" :  " """ + str(
-                device.device.ch_eff) + """ " , "dis_eff": " """ + str(
-                device.device.dis_eff) + """ " , "v2g" : " """ + str(device.v2g) + """ "}}"""
+            message = '{"message" : {"subject" : "CREATE_EV" , "id" : "[' + str(
+                device.device.id) + ']", "capacity" : " ' + str(
+                device.device.capacity) + ' " , "max_ch_pow_ac" : " ' + str(
+                device.device.max_ch_pow_ac) + ' " , "max_ch_pow_cc" : " ' + str(
+                device.device.max_ch_pow_cc) + ' " , "max_dis_pow_ac" : " ' + str(
+                device.device.max_dis_pow_ac) + ' " , "max_dis_pow_cc" : " ' + str(
+                device.device.max_dis_pow_cc) + ' " , "max_all_en" : " ' + str(
+                device.device.max_all_en) + ' " , "min_all_en" : " ' + str(
+                device.device.min_all_en) + ' " , "sb_ch" : " ' + str(
+                device.device.sb_ch) + ' " , "sb_dis" : " ' + str(
+                device.device.sb_dis) + ' " , "ch_eff" :  " ' + str(
+                device.device.ch_eff) + ' " , "dis_eff": " ' + str(
+                device.device.dis_eff) + ' " , "v2g" : " ' + str(device.v2g) + ' "}}'
             mex.body = message
             mex.metadata = time
             return mex
@@ -346,18 +347,18 @@ class MessageFactory:
 
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = """{"message" : {"subject" : "EV_ARRIVAL" , "capacity" : " """ + str(
-                device.device.capacity) + """ " , "max_ch_pow_ac" : " """ + str(
-                device.device.max_ch_pow_ac) + """ " , "max_ch_pow_cc" : " """ + str(
-                device.device.max_ch_pow_cc) + """ " , "max_all_en" : " """ + str(
-                device.device.max_all_en) + """ " , "min_all_en" : " """ + str(
-                device.device.min_all_en) + """ " , "sb_ch" : " """ + str(
-                device.device.sb_ch) + """ " , "ch_eff" :  " """ + str(
-                device.device.ch_eff) + """ " , "soc_at_arrival": " """ + str(
-                device.Soc_at_arrival) + """ " , "planned_departure_time" : " """ + str(
-                device.planned_departure_time) + """ " , "arrival_time" : " """ + str(
-                device.actual_arrival_time) + """ " , "v2g" : " """ + str(
-                device.v2g) + """ " , "target_soc" : " """ + str(device.target_soc) + """ " }}"""
+            message = '{"message" : {"subject" : "EV_ARRIVAL" , "capacity" : " ' + str(
+                device.device.capacity) + ' " , "max_ch_pow_ac" : " ' + str(
+                device.device.max_ch_pow_ac) + ' " , "max_ch_pow_cc" : " ' + str(
+                device.device.max_ch_pow_cc) + ' " , "max_all_en" : " ' + str(
+                device.device.max_all_en) + ' " , "min_all_en" : " ' + str(
+                device.device.min_all_en) + ' " , "sb_ch" : " ' + str(
+                device.device.sb_ch) + ' " , "ch_eff" :  " ' + str(
+                device.device.ch_eff) + ' " , "soc_at_arrival": " ' + str(
+                device.Soc_at_arrival) + ' " , "planned_departure_time" : " ' + str(
+                device.planned_departure_time) + ' " , "arrival_time" : " ' + str(
+                device.actual_arrival_time) + ' " , "v2g" : " ' + str(
+                device.v2g) + ' " , "target_soc" : " ' + str(device.target_soc) + ' " }}'
             mex.body = message
             mex.metadata = time
             return mex
@@ -371,18 +372,18 @@ class MessageFactory:
             return mex
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = """{"message" : {"subject" : "EV_DEPARTURE" , "capacity" : " """ + str(
-                device.device.capacity) + """ " , "max_ch_pow_ac" : " """ + str(
-                device.device.max_ch_pow_ac) + """ " , "max_ch_pow_cc" : " """ + str(
-                device.device.max_ch_pow_cc) + """ " , "max_all_en" : " """ + str(
-                device.device.max_all_en) + """ " , "min_all_en" : " """ + str(
-                device.device.min_all_en) + """ " , "sb_ch" : " """ + str(
-                device.device.sb_ch) + """ " , "ch_eff" :  " """ + str(
-                device.device.ch_eff) + """ " , "soc_at_arrival": " """ + str(
-                device.Soc_at_arrival) + """ " , "planned_departure_time" : " """ + str(
-                device.planned_departure_time) + """ " , "arrival_time" : " """ + str(
-                device.actual_arrival_time) + """ " , "v2g" : " """ + str(
-                device.v2g) + """ " , "target_soc" : " """ + str(device.target_soc) + """ " }}"""
+            message = '{"message" : {"subject" : "EV_DEPARTURE" , "capacity" : " ' + str(
+                device.device.capacity) + ' " , "max_ch_pow_ac" : " ' + str(
+                device.device.max_ch_pow_ac) + ' " , "max_ch_pow_cc" : " ' + str(
+                device.device.max_ch_pow_cc) + ' " , "max_all_en" : " ' + str(
+                device.device.max_all_en) + ' " , "min_all_en" : " ' + str(
+                device.device.min_all_en) + ' " , "sb_ch" : " ' + str(
+                device.device.sb_ch) + ' " , "ch_eff" :  " ' + str(
+                device.device.ch_eff) + ' " , "soc_at_arrival": " ' + str(
+                device.Soc_at_arrival) + ' " , "planned_departure_time" : " ' + str(
+                device.planned_departure_time) + ' " , "arrival_time" : " ' + str(
+                device.actual_arrival_time) + ' " , "v2g" : " ' + str(
+                device.v2g) + ' " , "target_soc" : " ' + str(device.target_soc) + ' " }}'
             mex.body = message
             mex.metadata = time
             return mex
@@ -399,16 +400,16 @@ class MessageFactory:
 
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = """{"message" : {"subject" : "CREATE_BATTERY" , "capacity" : " """ + str(
-                device.device.capacity) + """ " , "max_ch_pow_ac" : " """ + str(
-                device.device.max_ch_pow_ac) + """ " , "max_ch_pow_cc" : " """ + str(
-                device.device.max_ch_pow_cc) + """ " , "max_all_en" : " """ + str(
-                device.device.max_all_en) + """ " , "min_all_en" : " """ + str(
-                device.device.min_all_en) + """ " , "sb_ch" : " """ + str(
-                device.device.sb_ch) + """ " , "ch_eff" :  " """ + str(
-                device.device.ch_eff) + """ " , "soc_at_arrival": " """ + str(
-                device.Soc_at_arrival) + """ " , "start_time" : " """ + str(
-                device.start_time) + """ " , "end_time" : " """ + str(device.end_time) + """ " }}"""
+            message = '{"message" : {"subject" : "CREATE_BATTERY" , "capacity" : " ' + str(
+                device.device.capacity) + ' " , "max_ch_pow_ac" : " ' + str(
+                device.device.max_ch_pow_ac) + ' " , "max_ch_pow_cc" : " ' + str(
+                device.device.max_ch_pow_cc) + ' " , "max_all_en" : " ' + str(
+                device.device.max_all_en) + ' " , "min_all_en" : " ' + str(
+                device.device.min_all_en) + ' " , "sb_ch" : " ' + str(
+                device.device.sb_ch) + ' " , "ch_eff" :  " ' + str(
+                device.device.ch_eff) + ' " , "soc_at_arrival": " ' + str(
+                device.Soc_at_arrival) + ' " , "start_time" : " ' + str(
+                device.start_time) + ' " , "end_time" : " ' + str(device.end_time) + ' " }}'
             mex.body = message
             mex.metadata = time
             return mex
@@ -423,8 +424,8 @@ class MessageFactory:
         else:
 
             mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = """{"message" : {"subject" : "CREATE_PRODUCER","type" : "PV","id" : "[""" + str(
-                device.house) + """]:[""" + str(device.device.id) + """]"}}"""
+            message = '{"message" : {"subject" : "CREATE_PRODUCER","type" : "PV","id" : "[' + str(
+                device.house) + ']:[' + str(device.device.id) + ']"}}'
             mex.body = message
             mex.metadata = time
             return mex
@@ -432,6 +433,7 @@ class MessageFactory:
     @classmethod
     def create_load(cls, device, time, protocol_version):
         mydir = Configuration.parameters['user_dir']
+        web_url = Configuration.parameters['web_url']
         if protocol_version == "1.0":
             url = cls.basejid.split('@')[1]
             mex = Message(to=cls.basejid + "/actormanager")
@@ -444,32 +446,32 @@ class MessageFactory:
         else:
 
             mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = """ {"message" :  {"subject" : "LOAD", "id" : "[""" + str(device.house) + """]:[""" + str(
-                device.device.id) + """]:[1]", "sequence" : "1", "est" : " """ + str(
-                device.est) + """ ", "lst" : " """ + str(
-                device.lst) + """ ","profile" : "http://parsec2.unicampania.it/~gcdemo/""" + cls.realpath + "/" + str(
-                mydir) + """/""" + str(device.profile) + """ "}} """
+            message = ' {"message" :  {"subject" : "LOAD", "id" : "[' + str(device.house) + ']:[' + str(
+                device.device.id) + ']:[1]", "sequence" : "1", "est" : " ' + str(
+                device.est) + ' ", "lst" : " ' + str(
+                device.lst) + ' ","profile" : "' + web_url + '/' + cls.realpath + "/" + str(
+                mydir) + '/' + str(device.profile) + ' "}} '
             mex.body = message
             mex.metadata = time
             return mex
 
     @classmethod
     def update_producer(cls, device, time, protocol_version):
-        url = cls.basejid.split('@')[1]
+        web_url = Configuration.parameters['web_url']
         mydir = Configuration.parameters['user_dir']
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
             message = "PREDICTION_UPDATE [" + str(device.house) + "]:[" + str(
-                device.device.id) + "]  " + "http://" + str(url) + "/~gcdemo/" + cls.realpath + "/" + str(
+                device.device.id) + "]  " + str(web_url) + "/" + cls.realpath + "/" + str(
                 mydir) + "/" + str(device.profile) + " " + str(time)
             mex.body = message
             return mex
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = """{"message" : {"subject" : "PREDICTION_UPDATE","type" : "PV","id" : "[""" + str(
-                device.house) + """]:[""" + str(
-                device.device.id) + """]","profile" : "http://parsec2.unicampania.it/~gcdemo/""" + cls.realpath + "/" + str(
-                mydir) + """/""" + str(device.profile) + """ "}}"""
+            message = '{"message" : {"subject" : "PREDICTION_UPDATE","type" : "PV","id" : "[' + str(
+                device.house) + ']:[' + str(
+                device.device.id) + ']","profile" : "' + web_url + '/' + cls.realpath + "/" + str(
+                mydir) + '/' + str(device.profile) + ' "}}'
             mex.body = message
             mex.metadata = time
             return mex
@@ -486,9 +488,9 @@ class MessageFactory:
         else:
             mex = Message(to=cls.basejid + "/" + cls.jid)
 
-            message = """{ "message":  {"subject": "DELETE_LOAD", "id": "[""" + str(device.house) + """]:[""" + str(
-                device.device.id) + """]:[1]" , "energy": " """ + str(
-                device.consumption) + """ ", "producer" : " """ + str(device.panel) + """ " }} """
+            message = '{ "message":  {"subject": "DELETE_LOAD", "id": "[' + str(device.house) + ']:[' + str(
+                device.device.id) + ']:[1]" , "energy": " ' + str(
+                device.consumption) + ' ", "producer" : " ' + str(device.panel) + ' " }} '
             mex.body = message
             mex.metadata = time
             return mex
