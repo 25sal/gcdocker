@@ -1,4 +1,5 @@
-version: "3.7"
+version: '3.4'
+
 services:
   greencharge.local:
     image: prosody/prosody
@@ -13,22 +14,17 @@ services:
         - DOMAIN=greencharge.local
         - PASSWORD=demo
   gcsimulator:
-     image: gcsim:latest
-     ports:
-       - "10021:10021"
-     depends_on:
-       - greencharge.local
-     volumes:
-       - ./users/demo:/home/gc
-     stdin_open: true
-     tty: true
-  gcscheduler:
-     image: gcscheduler:latest
-     ports:
-       - "10023:10023"
-     depends_on:
-       - greencharge.local
-     volumes:
-       - ./users/scheduler:/home/scheduler
-     stdin_open: true
-     tty: true
+      image: gcsim:latest
+      ports:
+        - "10021:10021"
+        - "5678:5678"
+      depends_on:
+        - greencharge.local
+      volumes:
+        - ./users/demo:/home/gc
+        - ./GCSimulator/Simulator/greenchargeSoloDim/bin:/home/gc/simulator
+      stdin_open: true
+      tty: true
+      # command: ["sh", "-c", "pip3 install debugpy -t /tmp && python3 /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678 /usr/local/lib/python3.8/dist-packages/gcsimulator/starter.py "]
+
+    

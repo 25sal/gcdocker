@@ -1,0 +1,10 @@
+>>> CREATE_ENERGY_GROUP [99] 10000 1449878400
+neighborhood
+>>> ENERGY_COST [0] http://greencharge.local/~gcdemo//var/www/Simulations/demo/None/cost.csv 1449878400
+energy_cost
+>>> ENERGY_MIX http://localhost/demo//var/www/Simulations/demo/12_12_15_14/energy_mix.csv 1449878400
+energy_mix
+>>> CREATE_ENERGY_GROUP [1] 3000 1449878400
+>>> CREATE_ENERGY_GROUP  [1] 3000 1449878400
+house
+load

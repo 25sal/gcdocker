@@ -12,3 +12,4 @@ config:
   webdir: /var/www/Simulations/demo
   workingdir: /home/gc/bin
   xmpp_password: demo
+  web_url: http://localhost/demo
