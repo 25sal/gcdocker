@@ -16,7 +16,7 @@ from configure import Configuration
 ##########################################
 class scheduler(Agent):
     ###############################
-    #  Initializing Parameters    #
+    #  Initializing Parameters   #
     ###############################
     async def setup(self):
         self.start_at = datetime.now() + timedelta(seconds=3)
