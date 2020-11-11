@@ -141,12 +141,12 @@ if __name__ == "__main__":
     setup_simulation()
     logging.info("simulation runtime built")
         
-    start_disp()
+   
     setup_jid = Configuration.parameters['userjid'] + "/setupmodule"
     password =  Configuration.parameters['xmpp_password']
     setupmodule = sm.setupModule(setup_jid, password)
     setupmodule.start()
-
+    start_disp()
 
     logging.info("waiting for termination")
     while True:
