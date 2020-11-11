@@ -54,8 +54,8 @@ class setupModule(Agent):
 
     async def setup(self):
         print("SenderAgent started")
-        b = self.startService()
-        self.add_behaviour(b)
+        # b = self.startService()
+        # self.add_behaviour(b)
         self.presence.on_available = self.my_on_available_handler
 
     def my_on_available_handler(self, peer_jid, stanza):

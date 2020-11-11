@@ -1,6 +1,6 @@
 config:
   adaptor: adaptor
-  adaptor_address: localhost
+  adaptor_address: greencharge.simulator
   adaptor_port: 10024
   date: 12/12/15
   protocol: '1.0'

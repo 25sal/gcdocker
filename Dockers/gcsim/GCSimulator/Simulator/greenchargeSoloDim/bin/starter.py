@@ -75,7 +75,8 @@ def adaptor():
             scheduler.web.app.router.add_route(method=route2['method'], path=route2['path'], handler=route2['handler'],
                                                name=route2['name']))
 
-        scheduler.web.start(hostname=hostname, port=port)
+        temp=scheduler.web.start(hostname=hostname, port=port)
+        temp2=scheduler.web.is_started()
         sc2.result()
     if protocol_version == "1.0":
         scheduler = sche1.scheduler(basejid + "/" + jid, password)
@@ -101,7 +102,8 @@ def adaptor():
         cors.add(
             scheduler.web.app.router.add_route(method=route['method'], path=route['path'], handler=route['handler'],
                                                name=route['name']))
-        scheduler.web.start(hostname=hostname, port=port)
+        temp=scheduler.web.start(hostname=hostname, port=port)
+        temp2=scheduler.web.is_started()
         sc2.result()
 
 ############################################
@@ -114,12 +116,11 @@ def start_disp():
     dispatcher = di.dispatcher(basejid + "/" + simjid, password)
     future = dispatcher.start()
     future.result()
-
 ######################################################
 #  This Method is used to start externalSource Agent #
 ######################################################
 def setup_simulation():
-    adaptor()
+    
     basejid = Configuration.parameters['userjid']
     simulation_dir = Configuration.parameters['current_sim_dir']
     password = Configuration.parameters['xmpp_password']
@@ -127,6 +128,7 @@ def setup_simulation():
                                           simulation_dir + "/xml/buildingLoad.xml")
     logging.debug(simulation_dir + "/xml/buildingNeighborhood.xml")
     external.simulation_setup()
+    adaptor()
 
 
 

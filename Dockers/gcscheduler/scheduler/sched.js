@@ -9,9 +9,9 @@ const Blob = require("cross-blob");
 global.Blob = Blob;
 var FormData = require('form-data');
 
-var server = "172.22.0.2";
+var server = "greencharge.simulator";
 var BOSH_SERVICE = 'http://greencharge.local:5280/http-bind';
-var http_post_port=10021;
+var http_post_port=10024;
 var jid="demo@greencharge.local/actormanager";
 var passwd = "demo";
 
