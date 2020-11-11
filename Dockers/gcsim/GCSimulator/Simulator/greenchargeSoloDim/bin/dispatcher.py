@@ -695,6 +695,24 @@ class dispatcher(Agent):
                     elif next2[1].type == "background":
                         message = MessageFactory.background(next2[1], next2[0], protocol_version)
                         await self.send(message)
+                    elif next2[1].type == "load" and next2[1].device.type == "Producer":
+                        message = MessageFactory.create_producer(next2[1], next2[0], protocol_version)
+                        await self.send(message)
+                        file.write(">>> " + message.body + "\n")
+                        file.flush()
+                        message = MessageFactory.update_producer(next2[1], next2[0], protocol_version)
+                        await self.send(message)
+                        msg2 = await self.receive(timeout=3)
+                        file.write(">>> " + message.body + "\n")
+                        message = MessageFactory.energyCostProducer(next2[1], next2[0], protocol_version)
+                        await self.send(message)
+                        file.write(">>> " + message.body + "\n")
+                        file.flush()
+                        next2[1].type = "LoadUpdate"
+                        next2[1].creation_time = int(next2[1].creation_time) + 21600
+                        next2[1].count = 1
+                        es.Entities.enqueue_event(int(next2[1].creation_time),  next2[1])
+                        file.flush()
                     else:
                         finish = 1
                         es.Entities.enqueue_event(int(next2[0]), next2[1],  int(next2[2]))
@@ -708,8 +726,8 @@ class dispatcher(Agent):
                 while self.agent.abilitation and finish:
                     WasEnable = True
                     next2 = es.Entities.next_event()
-                    file.write(next2[1].device.type + "\n")
-                    file.flush()
+                    #file.write(next2[1].device.type + "\n")
+                    #file.flush()
                     nextload = next2[1]
                     actual_time = next2[0]
 

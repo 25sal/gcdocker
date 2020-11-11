@@ -892,7 +892,7 @@ def uploadInInputRepository():
             print("arrival_Time =  " + str(c.actual_arrival_time))
             print("departure_Time = " + str(c.actual_departure_time))
             '''
-            Entities.enqueue_event(int(timestamp), c)
+            Entities.enqueue_event(timestamp, c)
 
             Entities.enqueue_event(int(c.creation_time),  c)
 

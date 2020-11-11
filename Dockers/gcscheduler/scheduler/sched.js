@@ -9,9 +9,9 @@ const Blob = require("cross-blob");
 global.Blob = Blob;
 var FormData = require('form-data');
 
-var server = "greencharge.local";
+var server = "172.22.0.2";
 var BOSH_SERVICE = 'http://greencharge.local:5280/http-bind';
-var http_post_port=10024;
+var http_post_port=10021;
 var jid="demo@greencharge.local/actormanager";
 var passwd = "demo";
 
@@ -174,7 +174,10 @@ function log(msg, msgid)
 		method: 'POST'//,
 		//headers: {'x-test-header': 'test-header-value'}
 	  }, function(err, res) {
-		//console.log(err);$.notify("EV Profile Uploaded");
+            console.log("AAAAAAAAAAAAAAAAAAAAAAAA");
+	    console.log(err);
+            //$.notify("EV Profile Uploaded");
+	    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAA");
 	    console.log("EV_PROFILE sent");
 	 	 });
               
