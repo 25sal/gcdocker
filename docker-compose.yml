@@ -1,4 +1,7 @@
 version: '3.4'
+networks:
+  isolation-network:
+    driver: bridge
 
 services:
   greencharge.local:
@@ -13,13 +16,19 @@ services:
         - LOCAL=demo
         - DOMAIN=greencharge.local
         - PASSWORD=demo
+    networks:
+      - isolation-network
+
   gcsimulator:
+      hostname: 
+         greencharge.simulator
       image: gcsim:latest
       ports:
         - "10021:10021"
         - "5678:5678"
-      depends_on:
-        - greencharge.local
+      networks:
+        - isolation-network
+
       volumes:
         - ./users/demo:/home/gc
         - ./Dockers/gcsim/GCSimulator/Simulator/greenchargeSoloDim/bin:/home/gc/simulator
@@ -30,8 +39,8 @@ services:
      image: gcscheduler:latest
      ports:
        - "10023:10023"
-     depends_on:
-       - greencharge.local
+     networks:
+       - isolation-network
      volumes:
        - ./Dockers/gcscheduler/scheduler:/home/scheduler
      stdin_open: true

@@ -31,17 +31,15 @@ class scheduler(Agent):
     #######################################################################
     async def post_answer(self,request):
         data = await request.post()
-        with open("config.yml", 'r') as ymlfile:
-            cfg = yaml.load(ymlfile, Loader = Loader)
-            path = cfg['config']['simulation_dir']
-            simdir = cfg['config']['simulation']
+        path = Configuration.parameters['simulation_dir']
+        simdir = Configuration.parameters['simulation']
         message = data['response']
         parsed_json = (json.loads(message))
         sub = parsed_json['subject']
         f = open(path +"file222.csv", 'w')
         f.write(sub)
         f.close
-        
+
 
         print("riceveid")
 
