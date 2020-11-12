@@ -26,7 +26,7 @@ for i in range(1,len(dir2)-1):
 ######################################################################################################################################
 
 def calculateTime(file):
-    dirPath2 = Configuration.parameters['current_sim_di'] + "/Inputs/" + file
+    dirPath2 = Configuration.parameters['current_sim_dir'] + "/Inputs/" + file
     f = open(dirPath2)
     csv_f = csv.reader(f)
     data = []
@@ -806,9 +806,9 @@ class dispatcher(Agent):
                                     # date = cfg['config']['date'] + " 00:00:00"
 
                                     path = Configuration.parameters['current_sim_dir']
-                                    with open(path + "/Results/" + Configuration.mydir + "/inputs/" + nextload.profile,
+                                    with open(path + "/Results/" +Configuration.parameters['user_dir'] + "/inputs/" + nextload.profile,
                                               "r") as f:
-                                        with open(path + "/Results/" + Configuration.mydir + "/output/" + nextload.profile,
+                                        with open(path + "/Results/" + Configuration.parameters['user_dir'] + "/output/" + nextload.profile,
                                                   "w") as f2:
                                             reader = csv.reader(f)
                                             writer = csv.writer(f2, delimiter=' ')
@@ -828,7 +828,8 @@ class dispatcher(Agent):
                                     es.Entities.enqueue_event(int(newTime),  mydel)
                                     file.write("<<< " + messageFromScheduler.body + "\r\n")
                                     file.flush()
-                                except:
+                                except Exception as e:
+                                    logging.warning(e)
                                     logging.warning("unrecognized Message")
                                 messageFromScheduler = await self.receive()
                                 while (isinstance(messageFromScheduler, type(None))):
@@ -854,9 +855,9 @@ class dispatcher(Agent):
                                                                messageFromScheduler.body.split(" ")[5])
 
                                         path = Configuration.parameters['current_sim_dir']
-                                        with open(path + "/Results/" + self.mydir + "/inputs/" + nextload.profile,
+                                        with open(path + "/Results/" + Configuration.parameters['user_dir'] + "/inputs/" + nextload.profile,
                                                   "r") as f:
-                                            with open(path + "/Results/" + self.mydir + "/output/" + nextload.profile,
+                                            with open(path + "/Results/" + Configuration.parameters['user_dir'] + "/output/" + nextload.profile,
                                                       "w") as f2:
                                                 reader = csv.reader(f)
                                                 writer = csv.writer(f2, delimiter=' ')
@@ -942,9 +943,9 @@ class dispatcher(Agent):
                                                                calculate_consum(nextload.profile),
                                                                messageFromScheduler.body.split(" ")[4])
 
-                                        with open(path + "/Results/" + self.mydir + "/inputs/" + nextload.profile,
+                                        with open(path + "/Results/" + Configuration.parameters['user_dir'] + "/inputs/" + nextload.profile,
                                                   "r") as f:
-                                            with open(path + "/Results/" + self.mydir + "/output/" + nextload.profile,
+                                            with open(path + "/Results/" + Configuration.parameters['user_dir'] + "/output/" + nextload.profile,
                                                       "w") as f2:
                                                 reader = csv.reader(f)
                                                 writer = csv.writer(f2, delimiter=' ')
@@ -986,7 +987,7 @@ class dispatcher(Agent):
             if finish == False:
                 message = MessageFactory.end(actual_time)
                 await self.send(message)
-                await self.agent.stop()
+                #await self.agent.stop()
 
     ################################################################
     # Setup the dispatcher agent, create behaviours and start them #

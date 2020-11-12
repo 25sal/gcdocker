@@ -1,7 +1,7 @@
 config:
   adaptor: adaptor
   adaptor_address: greencharge.simulator
-  adaptor_port: 10024
+  adaptor_port: 10021
   date: 12/12/15
   protocol: '1.0'
   scheduler: actormanager

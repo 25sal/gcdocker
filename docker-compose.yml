@@ -19,7 +19,7 @@ services:
     networks:
       - isolation-network
 
-  greencharge.gcsimulator:
+  greencharge.simulator:
       hostname: 
          greencharge.simulator
       image: gcsim:latest

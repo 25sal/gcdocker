@@ -9,7 +9,7 @@ import json
 import externalSourceAgent as es
 from shutil import copy2
 from configure import Configuration
-
+import logging
 
 ##########################################
 #  Adaptor used for the rest protocol    #
@@ -27,7 +27,7 @@ class scheduler(Agent):
         self.dispatched = queue.Queue()
         self.simulated_time = 0
         self.last_object_type = 0
-        Behaviour2 = self.consumeEvent2(1, start_at=start_at)
+        Behaviour2 = self.consumeEvent2(1, start_at=self.start_at)
         self.add_behaviour(Behaviour2)
         #self.traces.reset()
 
@@ -93,7 +93,7 @@ class scheduler(Agent):
                             f = open(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/HC/"+id_load+".csv", "w+")
                             for line in input_file:
                                   f.write(line.decode("utf-8"))
-                    copy2(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/HC/"+id_load+".csv","/home/gcdemo/public_html/Simulations/uio/"+Configuration.parameters['user_dir']+"/output")
+                    copy2(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/HC/"+id_load+".csv","/var/www/Simulations/demo/"+Configuration.parameters['user_dir']+"/output")
                     
             elif sub == "EV_PROFILE":
                     id_load = parsed_json['id']
@@ -104,7 +104,7 @@ class scheduler(Agent):
                             f = open(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/EV/"+id_load+".csv", "w+")
                             for line in input_file:
                                   f.write(line.decode("utf-8"))
-                    copy2(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/EV/"+id_load+".csv","/home/gcdemo/public_html/Simulations/uio/"+Configuration.parameters['user_dir']+"/output")
+                    copy2(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/EV/"+id_load+".csv","/var/www/Simulations/demo/"+Configuration.parameters['user_dir']+"/output")
 
         except Exception as e:
             print(e)
@@ -190,4 +190,5 @@ class scheduler(Agent):
                                 self.agent.interval += 1
                             self.agent.oldStart = msg.metadata
                     except Exception as e:
+                        
                         logging.warning(e)

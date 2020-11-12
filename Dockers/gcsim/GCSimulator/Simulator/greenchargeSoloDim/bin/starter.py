@@ -81,7 +81,7 @@ def adaptor():
     if protocol_version == "1.0":
         scheduler = sche1.scheduler(basejid + "/" + jid, password)
         # scheduler.web.add_get("/gettime", scheduler.get_time, "message.html")
-        # scheduler.web.add_post("/postanswer", scheduler.post_answer, "message2.html")
+        #scheduler.web.add_post("/postanswer", scheduler.post_answer, "message2.html")
         sc2 = scheduler.start()
         cors = aiohttp_cors.setup(scheduler.web.app, defaults={
             "*": aiohttp_cors.ResourceOptions(
@@ -103,6 +103,7 @@ def adaptor():
             scheduler.web.app.router.add_route(method=route['method'], path=route['path'], handler=route['handler'],
                                                name=route['name']))
         temp=scheduler.web.start(hostname=hostname, port=port)
+        temp.result()
         temp2=scheduler.web.is_started()
         sc2.result()
 
@@ -144,9 +145,10 @@ if __name__ == "__main__":
    
     setup_jid = Configuration.parameters['userjid'] + "/setupmodule"
     password =  Configuration.parameters['xmpp_password']
+    start_disp()
     setupmodule = sm.setupModule(setup_jid, password)
     setupmodule.start()
-    start_disp()
+
 
     logging.info("waiting for termination")
     while True:
