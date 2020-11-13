@@ -1,0 +1,24 @@
+version: "3.7"
+services:
+  greencharge.local:
+    image: prosody/prosody
+    hostname: greencharge.local
+    ports:
+      - "5222:5222"
+      - "5280:5280"
+    volumes:
+        - ./etc/prosody:/etc/prosody
+    environment:
+        - LOCAL=demo
+        - DOMAIN=greencharge.local
+        - PASSWORD=demo
+  gcsimulator:
+     image: gcsim:latest
+     ports:
+       - "10021:10021"
+     depends_on:
+       - greencharge.local
+     volumes:
+       - ./users/demo:/home/gc
+     stdin_open: true
+     tty: true

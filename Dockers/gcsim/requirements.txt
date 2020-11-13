@@ -1,3 +1,4 @@
  spade
  pyyaml
  aiohttp_cors
+ ptvsd

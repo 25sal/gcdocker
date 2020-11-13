@@ -1,6 +1,5 @@
+
 FROM ubuntu:20.04
-
-
 
 WORKDIR /home/scheduler
 RUN apt-get update

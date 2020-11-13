@@ -30,7 +30,7 @@
         <est>35000</est>
         <lst>35000</lst>
         <type>load</type>
-        <creation_time>7200</creation_time>
+        <creation_time>15000</creation_time>
         <energy_cost>0_run_0_1.csv</energy_cost>
         <profile>consumer.csv </profile>
       </device>
