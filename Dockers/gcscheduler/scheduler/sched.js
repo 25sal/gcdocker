@@ -133,7 +133,7 @@ function log(msg, msgid)
 	  if(auto!=0)
 		{
 		var tokens = body.split(' ');
-                var csvresponse="";
+                
 		var ev_id = tokens[1];
 		var capacity = devices[ev_id]["capacity"];
 		var max_ch_pow_ac = devices[ev_id]["max_ch_pow_ac"];
@@ -151,8 +151,8 @@ function log(msg, msgid)
           if(available_energy>=booked_charge)
              charged_energy = booked_charge;
           var charging_time = 3600*charged_energy/max_ch_pow_ac;
-          var csvstr = arr_time+","+ charged_0+"\n";
-          csvstr += (charging_time+arr_time)+","+(charged_energy+charged_0);
+          var csvstr = arr_time+" "+ charged_0+"\n";
+          csvstr += (charging_time+arr_time)+" "+(charged_energy+charged_0);
           console.log(csvstr);
 	  var form = new FormData();
           var b =new Blob([csvstr]);
@@ -163,7 +163,7 @@ function log(msg, msgid)
           jsonResponse["time"]=tokens[27];
           jsonResponse["id"]=tokens[2];
 	  form.append("response", JSON.stringify(jsonResponse));
-	  const fileBuffer = Buffer.from(csvresponse, 'utf-8');
+	  const fileBuffer = Buffer.from(csvstr, 'utf-8');
 	  form.append('csvfile',fileBuffer ,'test.csv');
            console.log("ciao");
           console.log(JSON.stringify(form));
