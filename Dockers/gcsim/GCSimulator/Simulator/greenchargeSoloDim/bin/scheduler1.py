@@ -64,6 +64,8 @@ class scheduler(Agent):
                         f = open(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/EV/"+id_load+".csv", "w+")
                         for line in input_file:
                             f.write(line.decode("utf-8"))
+                        f.flush()    
+                        f.close()
                     copy2(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/EV/"+id_load+".csv","/var/www/Simulations/demo/"+Configuration.parameters['user_dir']+"/output")
         except Exception as e:
             print(e)

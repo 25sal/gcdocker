@@ -987,7 +987,7 @@ class dispatcher(Agent):
             if finish == False:
                 message = MessageFactory.end(actual_time)
                 await self.send(message)
-                #await self.agent.stop()
+                await self.agent.stop()
 
     ################################################################
     # Setup the dispatcher agent, create behaviours and start them #
@@ -1011,3 +1011,7 @@ class dispatcher(Agent):
         start_at = datetime.now() + timedelta(seconds=3)
         Behaviour2 = self.consumeEvent(1, start_at=start_at)
         self.add_behaviour(Behaviour2, template2)
+
+
+
+
