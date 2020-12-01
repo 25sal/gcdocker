@@ -497,7 +497,7 @@ class MessageFactory:
         if protocol_version == "1.0":
             url = cls.basejid.split('@')[1]
             mex = Message(to=cls.basejid + "/actormanager")
-            message = "LOAD [" + str(device.house) + "]:[" + str(device.device.id) + "]:[1] 1 " + str(
+            message = "LOAD [" + str(device.house) + "]:[" + str(device.device.id) + "] 1 " + str(
                 device.est) + " " + str(device.lst) + " " + "http://" + str(
                 url) + "/~gcdemo/" + cls.realpath + "/" + str(
                 mydir) + "/" + str(device.profile) + " " + str(time)
@@ -507,7 +507,7 @@ class MessageFactory:
 
             mex = Message(to=cls.basejid + "/" + cls.jid)
             message = ' {"message" :  {"subject" : "LOAD", "id" : "[' + str(device.house) + ']:[' + str(
-                device.device.id) + ']:[1]", "sequence" : "1", "est" : " ' + str(
+                device.device.id) + ']", "sequence" : "1", "est" : " ' + str(
                 device.est) + ' ", "lst" : " ' + str(
                 device.lst) + ' ","profile" : "' + web_url + '/' + cls.realpath + "/" + str(
                 mydir) + '/' + str(device.profile) + ' "}} '
@@ -544,7 +544,7 @@ class MessageFactory:
     def delete_load(cls, device, time, protocol_version):
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
-            message = "DELETE_LOAD [" + str(device.house) + "]:[" + str(device.device.id) + "]:[1] " + str(
+            message = "DELETE_LOAD [" + str(device.house) + "]:[" + str(device.device.id) + "] " + str(
                 device.consumption) + " " + " " + str(time)
             mex.body = message
             return mex
@@ -552,7 +552,7 @@ class MessageFactory:
             mex = Message(to=cls.basejid + "/" + cls.jid)
 
             message = '{ "message":  {"subject": "DELETE_LOAD", "id": "[' + str(device.house) + ']:[' + str(
-                device.device.id) + ']:[1]" , "energy": " ' + str(
+                device.device.id) + ']" , "energy": " ' + str(
                 device.consumption) + ' ", "producer" : " ' + str(device.panel) + ' " }} '
             mex.body = message
             mex.metadata = time

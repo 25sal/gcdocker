@@ -1,8 +1,13 @@
 import os
 import csv
 import glob
+import xml.etree.ElementTree as ET
 
 def doChecks(path, startTime, pathXML):
+    try:
+        os.remove(path+"/checks/outputParam.csv")
+    except:
+        pass
 
     allfiles = [os.path.join(dp, f) for dp, dn, filenames in os.walk(path) for f in filenames if f.endswith('.csv')]
     energyDict = {}
@@ -45,15 +50,15 @@ def doChecks(path, startTime, pathXML):
     
     totalEnergyConsumption = 0
     for key,energy in energyDict.items():
-        totalEnergyConsumption += int(energy)
+        totalEnergyConsumption += float(energy)
 
     totalEnergyCharged = 0
     for key,energy in energyEVDict.items():
-        totalEnergyCharged += int(energy)
+        totalEnergyCharged += float(energy)
 
     totalEnergyProduced = 0
     for key,energy in energyProducerDict.items():
-        totalEnergyProduced += int(energy)
+        totalEnergyProduced += float(energy)
     
     totalEnergyConsumption = totalEnergyConsumption - totalEnergyProduced
 
@@ -97,19 +102,47 @@ def doChecks(path, startTime, pathXML):
     else:
         selfC = 0
     
+    try:
+        os.mkdir(path+"/checks")
+    except:
+        pass
+    with open(path+"/checks/outputParam.csv", "w") as csv_file:
+                param_writer = csv.writer(csv_file, delimiter=' ', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                param_writer.writerow(["Total_Energy_Consumption", str(totalEnergyConsumption)])
+                param_writer.writerow(["Total_Energy_Production", str(totalEnergyProduced)])
+                param_writer.writerow(["Assigned Start Time List", str(astDict)])
+                param_writer.writerow(["Number_of_Timeseries", str(num_of_timeseries)])
+                param_writer.writerow(["Energy_charged", str(totalEnergyCharged)])
+                param_writer.writerow(["Self_Consumption", str(selfC)])
 
-
-
-    print("Total Energy Consumption: " + str(totalEnergyConsumption))
-    print("Total Energy Production: " + str(totalEnergyProduced))
+    print("Total_Energy_Consumption: " + str(totalEnergyConsumption))
+    print("Total_Energy_Production: " + str(totalEnergyProduced))
     print("Assigned Start Time List: ") 
     print(astDict)
-    print("Number of Timeseries: " + str(num_of_timeseries))
-    print("Energy charged: " + str(totalEnergyCharged))
-    print("Self Consumption " + str(selfC))
+    print("Number_of_Timeseries: " + str(num_of_timeseries))
+    print("Energy_charged: " + str(totalEnergyCharged))
+    print("Self_Consumption " + str(selfC))
 
 
-
+    tree = ET.parse(pathXML +'/loads.xml')
+    neighborhood = tree.getroot()
+    peakLoadList = {}
+    buildingID = "["
+    for elem in neighborhood:
+        buildingID = "["
+        if 'peakLoad' in elem.attrib:
+            buildingID += elem.attrib['id']+"]"
+            peakLoadList[buildingID] = elem.attrib['peakLoad']
+            buildingID += ":["
+            for subelement in elem:
+                if 'peakLoad' in subelement.attrib:
+                    tempo = buildingID + subelement.attrib['id']+"]"
+                    peakLoadList[tempo] = subelement.attrib['peakLoad']
+                for subsubelement in subelement:
+                    if 'peakLoad' in subsubelement.attrib:
+                        tempo = buildingID + subsubelement.attrib['id']+"]"
+                        peakLoadList[tempo] = subsubelement.attrib['peakLoad']
+    print(peakLoadList)
 
 
 
@@ -148,7 +181,6 @@ def generateTimeSeries(file, startTime):
             for row in csv_reader:
 
                 if(int(energyTimeSeries[index][0])>=List[i][0] and int(energyTimeSeries[index][0])<List[i+1][0]):
-                    print("iamhere")
                     List[i][1] += float(energyTimeSeries[index][1])
                     line_count +=1
                 index +=1
@@ -160,7 +192,7 @@ def generateTimeSeries(file, startTime):
 
 if __name__ == "__main__":
 
-    doChecks("/home/gc/Simulations/trivial/Results/12_12_15_16/output", 1449878400,"/home/gc/Simulations/trivial/xml")
+    doChecks("/home/gc/Simulations/trivial/Results/12_12_15_16/output", 1449878400,"/home/gc/Simulations/trivial/Results/12_12_15_16/xml")
 
 
 
