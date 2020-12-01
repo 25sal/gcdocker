@@ -2,6 +2,7 @@ import os
 import csv
 import glob
 import xml.etree.ElementTree as ET
+import shutil
 
 def doChecks(path, startTime, pathXML):
     try:
@@ -106,6 +107,7 @@ def doChecks(path, startTime, pathXML):
         os.mkdir(path+"/checks")
     except:
         pass
+    '''
     with open(path+"/checks/outputParam.csv", "w") as csv_file:
                 param_writer = csv.writer(csv_file, delimiter=' ', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 param_writer.writerow(["Total_Energy_Consumption", str(totalEnergyConsumption)])
@@ -114,6 +116,30 @@ def doChecks(path, startTime, pathXML):
                 param_writer.writerow(["Number_of_Timeseries", str(num_of_timeseries)])
                 param_writer.writerow(["Energy_charged", str(totalEnergyCharged)])
                 param_writer.writerow(["Self_Consumption", str(selfC)])
+	'''
+
+    with open(path+"/checks/parameters.js", "w") as json_file:
+        json_file.write("data={rows:[")
+        json_file.write('{id:1,data:[ "Total_Energy_Consumption","'+ str(totalEnergyConsumption)+'","","",""]},')
+        json_file.write('{id:2,data:[ "Total_Energy_Production","'+ str(totalEnergyProduced)+'","","",""]},')
+        json_file.write('{id:3,data:[ "Assigned Start Time List","'+ str(astDict)+'","","",""]},')
+        json_file.write('{id:4,data:[ "Energy_charged","'+ str(totalEnergyCharged)+'","","",""]},')
+        json_file.write('{id:5,data:[ "Number_of_Timeseries","'+ str(num_of_timeseries)+'","","",""]},')
+        json_file.write('{id:6,data:[ "Self_Consumption","'+ str(selfC)+'","","",""]}')
+        json_file.write(']};')
+    
+    # temporary
+
+    with open(path+"/checks/checks.js", "w") as json_file:
+        json_file.write("coherence_checks={rows:[")
+        json_file.write('{id:1,data:[ "Total_Energy_Consumption","'+ str(totalEnergyConsumption)+'","","",""]},')
+        json_file.write('{id:2,data:[ "Total_Energy_Production","'+ str(totalEnergyProduced)+'","","",""]},')
+        json_file.write('{id:3,data:[ "Assigned Start Time List","'+ str(astDict)+'","","",""]},')
+        json_file.write('{id:4,data:[ "Energy_charged","'+ str(totalEnergyCharged)+'","","",""]},')
+        json_file.write('{id:5,data:[ "Number_of_Timeseries","'+ str(num_of_timeseries)+'","","",""]},')
+        json_file.write('{id:6,data:[ "Self_Consumption","'+ str(selfC)+'","","",""]}')
+        json_file.write(']};')
+                
 
     print("Total_Energy_Consumption: " + str(totalEnergyConsumption))
     print("Total_Energy_Production: " + str(totalEnergyProduced))
@@ -192,7 +218,7 @@ def generateTimeSeries(file, startTime):
 
 if __name__ == "__main__":
 
-    doChecks("/home/gc/Simulations/trivial/Results/12_12_15_16/output", 1449878400,"/home/gc/Simulations/trivial/Results/12_12_15_16/xml")
+    doChecks("/home/gc/Simulations/trivial/Results/12_12_15_82/output", 1449878400,"/home/gc/Simulations/trivial/Results/12_12_15_82/xml")
 
 
 
