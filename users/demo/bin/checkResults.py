@@ -1,7 +1,8 @@
 import os
 import csv
 import glob
-def doChecks(path, startTime):
+
+def doChecks(path, startTime, pathXML):
 
     allfiles = [os.path.join(dp, f) for dp, dn, filenames in os.walk(path) for f in filenames if f.endswith('.csv')]
     energyDict = {}
@@ -75,9 +76,8 @@ def doChecks(path, startTime):
     for key,energy in energyDict.items():
         if(key not in PVListResampled):
             ConsumerResampled[key] = generateTimeSeries(key,startTime)
-    print(PVListResampled)
 
-    print(ConsumerResampled)
+    #print(ConsumerResampled)
     totalCon = 0
     totalProd = 0
     for i in range(144):
@@ -97,6 +97,9 @@ def doChecks(path, startTime):
     else:
         selfC = 0
     
+
+
+
     print("Total Energy Consumption: " + str(totalEnergyConsumption))
     print("Total Energy Production: " + str(totalEnergyProduced))
     print("Assigned Start Time List: ") 
@@ -107,20 +110,48 @@ def doChecks(path, startTime):
 
 
 
+
+
+
+
+
 def generateTimeSeries(file, startTime):
     List = [[None] * 2 for i in range(0,144)]
     for i in range(144):
         List[i][0] = int(startTime) + i*600
-        
+    previous = 0
+    i = 0
+    with open(file) as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter= ' ')
+        data = list(csv_reader)
+        row_count = len(data)
+        energyTimeSeries = [[None] * 2 for i in range(0,row_count)]
+
+
+    with open(file) as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter= ' ')
+        for row in csv_reader:
+            if(float(row[1]) != 0):
+                energyTimeSeries[i][1] = float(row[1]) - previous
+            else:
+                energyTimeSeries[i][1] = 0
+            energyTimeSeries[i][0] = float(row[0])
+            previous = float(row[1])
+            i+=1
+
     for i in range(0,143):
         line_count = 0
         List[i][1] = 0
         with open(file) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=' ')
+            index = 0
             for row in csv_reader:
-                if(int(row[0])>List[i][0] and int(row[0])<List[i+1][0]):
-                    List[i][1] += float(row[1])
+
+                if(int(energyTimeSeries[index][0])>=List[i][0] and int(energyTimeSeries[index][0])<List[i+1][0]):
+                    print("iamhere")
+                    List[i][1] += float(energyTimeSeries[index][1])
                     line_count +=1
+                index +=1
         if(line_count != 0):
             List[i][1] = List[i][1]/line_count
     List[143][1] = 0
@@ -129,7 +160,7 @@ def generateTimeSeries(file, startTime):
 
 if __name__ == "__main__":
 
-    doChecks("/home/gc/Simulations/trivial/Results/12_12_15_16/output", 1449878400)
+    doChecks("/home/gc/Simulations/trivial/Results/12_12_15_16/output", 1449878400,"/home/gc/Simulations/trivial/xml")
 
 
 
