@@ -3,6 +3,25 @@ import csv
 import glob
 import xml.etree.ElementTree as ET
 
+
+class Node:
+    def __init__(self, name):
+        self.name = name
+        self.children = []
+        self.data = [[0] for i in range(0,144)]
+
+    def addChild(self, name):
+        node = Node(name)
+        self.children.append(node)
+        return node
+    
+    def addData(self, dataList):
+        for i in range (0,144):
+            self.data[i] += dataList[i]
+
+
+
+
 def doChecks(path, startTime, pathXML):
     try:
         os.remove(path+"/checks/outputParam.csv")
@@ -106,14 +125,8 @@ def doChecks(path, startTime, pathXML):
         os.mkdir(path+"/checks")
     except:
         pass
-    with open(path+"/checks/outputParam.csv", "w") as csv_file:
-                param_writer = csv.writer(csv_file, delimiter=' ', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                param_writer.writerow(["Total_Energy_Consumption", str(totalEnergyConsumption)])
-                param_writer.writerow(["Total_Energy_Production", str(totalEnergyProduced)])
-                param_writer.writerow(["Assigned Start Time List", str(astDict)])
-                param_writer.writerow(["Number_of_Timeseries", str(num_of_timeseries)])
-                param_writer.writerow(["Energy_charged", str(totalEnergyCharged)])
-                param_writer.writerow(["Self_Consumption", str(selfC)])
+
+
 
     print("Total_Energy_Consumption: " + str(totalEnergyConsumption))
     print("Total_Energy_Production: " + str(totalEnergyProduced))
@@ -128,8 +141,12 @@ def doChecks(path, startTime, pathXML):
     neighborhood = tree.getroot()
     peakLoadList = {}
     buildingID = "["
+    estlstList = {}
     for elem in neighborhood:
         buildingID = "["
+        root = Node("root")
+        elemNode = root.addChild("["+elem.attrib['id']+"]")
+
         if 'peakLoad' in elem.attrib:
             buildingID += elem.attrib['id']+"]"
             peakLoadList[buildingID] = elem.attrib['peakLoad']
@@ -138,12 +155,46 @@ def doChecks(path, startTime, pathXML):
                 if 'peakLoad' in subelement.attrib:
                     tempo = buildingID + subelement.attrib['id']+"]"
                     peakLoadList[tempo] = subelement.attrib['peakLoad']
+                    elemNode.addChild(tempo)
                 for subsubelement in subelement:
                     if 'peakLoad' in subsubelement.attrib:
                         tempo = buildingID + subsubelement.attrib['id']+"]"
                         peakLoadList[tempo] = subsubelement.attrib['peakLoad']
-    print(peakLoadList)
+                        elemNode.addChild(tempo)
+                    elif(subsubelement.tag == "device"):
+                        tempo = buildingID + subelement.attrib['id']+"]"
+                        if(subsubelement.find("est").text != "0" and subsubelement.find("lst").text != "0"):
+                            estlstList[tempo] = [int(subsubelement.find("est").text) + int(startTime), int(subsubelement.find("lst").text) + int(startTime)]
 
+
+    printChilds(root)
+    with open(path+"/checks/outputParam.csv", "w") as csv_file:
+                param_writer = csv.writer(csv_file, delimiter=' ', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                param_writer.writerow(["Total_Energy_Consumption", str(totalEnergyConsumption)])
+                param_writer.writerow(["Total_Energy_Production", str(totalEnergyProduced)])
+                param_writer.writerow(["Assigned Start Time List", str(astDict)])
+                param_writer.writerow(["Number_of_Timeseries", str(num_of_timeseries)])
+                param_writer.writerow(["Energy_charged", str(totalEnergyCharged)])
+                param_writer.writerow(["Self_Consumption", str(selfC)])
+                param_writer.writerow(["ast_lst_List", str(estlstList)])
+
+def printChilds(node):
+    print(node.name)
+    for childNode in node.children:
+        printChilds(childNode)
+
+
+def sumForPowerPeak(node, dictConsumer):
+    for nodechild in node.children:
+        powerList = sumForPowerPeak(nodechild)
+        for i in range(0,144):
+            node.data[i] += powerList[i]
+    for key,consumer in dictConsumer:
+        if(key == node.name):
+            for i in range(0,144):
+                node.data[i] += consumer[i]
+            dictConsumer.remove(key)
+    return node.data
 
 
 
