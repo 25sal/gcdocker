@@ -35,9 +35,9 @@ class Checker:
     totalEnergyProduced = 0
     powerPeakListFiles = {}
     energyChargedWithIdAsKey = {}
-    PVListResampled = {}
-    ConsumerResampled = {}
-    SelfConsumedEnergy = 0
+    pvListResampled = {}
+    consumerResampled = {}
+    selfConsumedEnergy = 0
     totalProd = 0
     selfC = 0
     peakLoadList = {}
@@ -55,7 +55,7 @@ class Checker:
     minCHList = {}
     energy_respected_to_capacity = {}
     energy_charged_respect_to_Connection = {}
-    SelfConsumedEnergyRespectToPVProduction = ''
+    selfConsumedEnergyRespectToPVProduction = ''
     idTofilenameEV = {}
     chargingPowerLowerThanMaxChPowConstraint = {}
 
@@ -82,10 +82,10 @@ class Checker:
         for key,value in self.powerPeakListFiles.items():
             self.powerPeakListFiles[key] = generatePowerTimeSeries(value,startTime)
         for key,energy in self.energyProducerDict.items():
-            self.PVListResampled[key] = generateEnergyTimeSeries(key,startTime)
+            self.pvListResampled[key] = generateEnergyTimeSeries(key,startTime)
         for key,energy in self.energyDict.items():
-            if(key not in self.PVListResampled):
-                self.ConsumerResampled[key] = generateEnergyTimeSeries(key,startTime)
+            if(key not in self.pvListResampled):
+                self.consumerResampled[key] = generateEnergyTimeSeries(key,startTime)
         self.calculateSelfConsumption()
         self.readLoadXML(pathXML, startTime)
         sumForPowerPeak(self.root, self.powerPeakListFiles)
@@ -94,7 +94,7 @@ class Checker:
         self.readNeighborhoodXML(pathXML, startTime)
         self.checkEnergyRespectToCapacityConstraint()
         self.checkEnergyRespectToConnectionTime()
-        self.checkSelfConsumedEnergyRespectToProduction()
+        self.checkselfConsumedEnergyRespectToProduction()
         self.checkChargingPowerLowerThanMaxChPowConstraint(startTime)
 
         self.writeOutput(path)
@@ -113,11 +113,11 @@ class Checker:
                 self.chargingPowerLowerThanMaxChPowConstraint[key] = 'Respected'
 
 
-    def checkSelfConsumedEnergyRespectToProduction(self):
-        if(self.SelfConsumedEnergy <= self.totalProd):
-            self.SelfConsumedEnergyRespectToPVProduction = 'Respected'
+    def checkselfConsumedEnergyRespectToProduction(self):
+        if(self.selfConsumedEnergy <= self.totalProd):
+            self.selfConsumedEnergyRespectToPVProduction = 'Respected'
         else:
-            self.SelfConsumedEnergyRespectToPVProduction = 'Not Respected'
+            self.selfConsumedEnergyRespectToPVProduction = 'Not Respected'
 
 
 
@@ -211,17 +211,17 @@ class Checker:
         for i in range(288):
             tempCon = 0
             tempProd = 0
-            for key,energy in self.ConsumerResampled.items():
+            for key,energy in self.consumerResampled.items():
                 tempCon += energy[i]
-            for key,energy in self.PVListResampled.items():
+            for key,energy in self.pvListResampled.items():
                 tempProd += energy[i]
             if(tempCon<tempProd):
-                self.SelfConsumedEnergy += tempCon
+                self.selfConsumedEnergy += tempCon
             else:
-                self.SelfConsumedEnergy += tempProd
+                self.selfConsumedEnergy += tempProd
             self.totalProd += tempProd
         if(self.totalProd != 0):
-            self.selfC = self.SelfConsumedEnergy/self.totalProd
+            self.selfC = self.selfConsumedEnergy/self.totalProd
         else:
             self.selfC = 0
 
@@ -324,7 +324,7 @@ class Checker:
                 param_writer.writerow(["PowerPeaksLimitsReached", str(self.reachedLimits)])
                 param_writer.writerow(["Energy_Charged_respect_to_capacity", str(self.energy_respected_to_capacity)])
                 param_writer.writerow(["Energy_Charged_respect_to_Connection", str(self.energy_charged_respect_to_Connection)])
-                param_writer.writerow(["Energy_AutoConsumed_Respect_To_Energy_Produced", str(self.SelfConsumedEnergyRespectToPVProduction)])
+                param_writer.writerow(["Energy_AutoConsumed_Respect_To_Energy_Produced", str(self.selfConsumedEnergyRespectToPVProduction)])
                 param_writer.writerow(["Charging_Power_Lower_than_Maximum", str(self.chargingPowerLowerThanMaxChPowConstraint)])
 
                 
