@@ -3,7 +3,9 @@ import csv
 import glob
 import xml.etree.ElementTree as ET
 import shutil
-
+from scipy import interpolate
+import matplotlib.pyplot as plt
+import numpy as np
 
 class Node:
     def __init__(self, name):
@@ -169,6 +171,7 @@ def doChecks(path, startTime, pathXML):
     print("Self_Consumption " + str(selfC))
 
 
+
     tree = ET.parse(pathXML +'/loads.xml')
     neighborhood = tree.getroot()
     peakLoadList = {}
@@ -199,7 +202,6 @@ def doChecks(path, startTime, pathXML):
                             estlstList[tempo] = [int(subsubelement.find("est").text) + int(startTime), int(subsubelement.find("lst").text) + int(startTime)]
 
 
-    printChilds(root)
     with open(path+"/checks/outputParam.csv", "w") as csv_file:
                 param_writer = csv.writer(csv_file, delimiter=' ', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 param_writer.writerow(["Total_Energy_Consumption", str(totalEnergyConsumption)])
@@ -275,8 +277,7 @@ def generateTimeSeries(file, startTime):
 
 if __name__ == "__main__":
 
-    doChecks("/home/gc/Simulations/trivial/Results/12_12_15_82/output", 1449878400,"/home/gc/Simulations/trivial/Results/12_12_15_82/xml")
 
-
-
-
+    doChecks("/home/gc/Simulations/trivial/Results/12_12_15_16/output", 1449878400,"/home/gc/Simulations/trivial/Results/12_12_15_16/xml")
+    
+  

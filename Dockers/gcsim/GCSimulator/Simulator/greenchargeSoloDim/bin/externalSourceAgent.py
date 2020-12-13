@@ -706,7 +706,10 @@ def createEventList():
                             elif c.type == "Producer":
                                 energycost = device.find('energy_cost').text
                                 copy2(path + "/Inputs/" + profile, workingdir + "/inputs")
+                                copy2(path + "/Inputs/" + profile, workingdir + "/output/PV")
+
                                 e = eventProducer(c, houseId, est, lst, creation_time, profile, "load", energycost)
+
                                 Entities.listEvent.append(e)
                                 # CODICE PROVVISORIO
                                 # H = int(creation_time) + 21600
@@ -961,7 +964,7 @@ def makeNewSimulation(pathneigh, pathload):
     os.mkdir(workingdir + "/output/HC/", 0o755)
     os.mkdir(workingdir + "/output/BG/", 0o755)
     os.mkdir(workingdir + "/output/EV/", 0o755)
-
+    os.mkdir(workingdir + "/output/PV/", 0o755)
     if os.path.exists(path + "/output/"):
         shutil.rmtree(path + "/output/")
         os.mkdir(path + "/output/", 0o755)
