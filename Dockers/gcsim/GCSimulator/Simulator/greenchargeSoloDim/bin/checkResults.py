@@ -429,6 +429,6 @@ def generatePowerTimeSeries(file, startTime):
 if __name__ == "__main__":
 
     checker = Checker()
-    checker.doChecks("/home/gc/Simulations/trivial/Results/12_12_15_20/output", 1449878400,"/home/gc/Simulations/trivial/Results/12_12_15_20/xml")
+    checker.doChecks("/home/gc/Simulations/trivial/Results/12_12_15_82/output", 1449878400,"/home/gc/Simulations/trivial/Results/12_12_15_82/xml")
     
   
