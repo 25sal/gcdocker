@@ -16,7 +16,6 @@ def start_optimizer(optimizer, policy):
     :return:  None
     """
     if args.optimizer == 'dummy':
-        # docker lexec docker_gcscheduler_1
         process = subprocess.Popen(['docker', 'exec', 'docker_gcscheduler_1', '/home/scheduler/scheduler', 'start'],
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE)
