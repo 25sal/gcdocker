@@ -18,7 +18,7 @@ class Configuration:
     """
     pathneighbor = 0
     pathload2 = 0
-    config_file = 'config.yml'
+    config_file = '/home/gc/bin/config.yml'
     parameters = None
     mydir = None
 
