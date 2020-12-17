@@ -160,15 +160,8 @@ class GCDaemon(run.RunDaemon):
 
 
 if __name__ == "__main__":
-    '''parser = argparse.ArgumentParser(description='complete example')
-    parser.add_argument('--debug', dest='debug', action='store_true', default=False,
-                        help='skip the spline stage')'''
-    PIDFILE = '/home/gc/simulator/gcdaemon.pid'
 
-    #args = parser.parse_args()
-    '''if args.debug:
-        ptvsd.enable_attach(address=('0.0.0.0', 5678))
-        ptvsd.wait_for_attach()'''
+    PIDFILE = '/home/gc/simulator/gcdaemon.pid'
     daemon = GCDaemon(pidfile=PIDFILE)
     daemon.start()
     if len(sys.argv) == 2:
@@ -227,8 +220,6 @@ if __name__ == "__main__":
                     di.MessageFactory.init_parameters()
                     setup_simulation()
                     logging.info("simulation runtime built")
-				    
-				    
                     setup_jid = Configuration.parameters['userjid'] + "/setupmodule"
                     password =  Configuration.parameters['xmpp_password']
                     start_disp()
