@@ -11,7 +11,9 @@ from shutil import copy2
 from configure import Configuration
 import logging
 
+LOGFILE = '/home/gc/simulator/gcdaemon.log'
 
+logging.basicConfig(filename=LOGFILE, filemode= 'w', level=logging.INFO)
 
 ##########################################
 #  Adaptor used for the XMPP protocol    #
@@ -39,7 +41,7 @@ class scheduler(Agent):
             sub = parsed_json['subject']
 
 
-            print("riceveid")
+            logging.info("riceveid")
 
             if(sub == "ASSIGNED_START_TIME"):
                     id_load = parsed_json['id']
@@ -68,9 +70,9 @@ class scheduler(Agent):
                         f.close()
                     copy2(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/EV/"+id_load+".csv","/var/www/Simulations/demo/"+Configuration.parameters['user_dir']+"/output")
         except Exception as e:
-            print(e)
-            print("not valid request")
-        print("AAAAAA RICEVUTOOO")
+            logging.info(e)
+            logging.info("not valid request")
+        logging.info("AAAAAA RICEVUTOOO")
         response = web.StreamResponse(
         status=200,
         reason='OK'
@@ -82,8 +84,8 @@ class scheduler(Agent):
     class consumeEvent2(PeriodicBehaviour):
 
         async def onstart(self):
-            print("A ConsumeEvent queue is Starting...")
+            logging.info("A ConsumeEvent queue is Starting...")
         async def run(self):
-            print("adaptor is running")
+            logging.info("adaptor is running")
 
 

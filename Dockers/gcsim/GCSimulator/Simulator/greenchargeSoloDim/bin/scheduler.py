@@ -10,6 +10,9 @@ import externalSourceAgent as es
 from shutil import copy2
 from configure import Configuration
 import logging
+LOGFILE = '/home/gc/simulator/gcdaemon.log'
+
+logging.basicConfig(filename=LOGFILE, filemode= 'w', level=logging.INFO)
 
 ##########################################
 #  Adaptor used for the rest protocol    #
@@ -42,7 +45,7 @@ class scheduler(Agent):
                 return aioweb.json_response(res)
         nextmsg = self.dispatched.get_nowait()
 		
-        print(nextmsg["message"])
+        logging.info(nextmsg["message"])
         dictB = json.loads(nextmsg["message"])
         if(nextmsg["time"] != "0"):
                 self.simulated_time = nextmsg["time"]
@@ -88,7 +91,7 @@ class scheduler(Agent):
                     id_load = parsed_json['id']
                     input_file = data['csvfile'].file
                     file_name = data['csvfile'].filename
-                    print(file_name)
+                    logging.info(file_name)
                     if input_file:
                             f = open(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/HC/"+id_load+".csv", "w+")
                             for line in input_file:
@@ -99,7 +102,7 @@ class scheduler(Agent):
                     id_load = parsed_json['id']
                     input_file = data['csvfile'].file
                     file_name = data['csvfile'].filename
-                    print(file_name)
+                    logging.info(file_name)
                     if input_file:
                             f = open(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/EV/"+id_load+".csv", "w+")
                             for line in input_file:
@@ -107,8 +110,8 @@ class scheduler(Agent):
                     copy2(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/EV/"+id_load+".csv","/var/www/Simulations/demo/"+Configuration.parameters['user_dir']+"/output")
 
         except Exception as e:
-            print(e)
-            print("not valid request")
+            logging.info(e)
+            logging.info("not valid request")
         response = web.StreamResponse(
         status=200,
         reason='OK'
@@ -125,7 +128,7 @@ class scheduler(Agent):
     class consumeEvent2(PeriodicBehaviour):
 
         async def onstart(self):
-            print("A ConsumeEvent queue is Starting...")
+            logging.info("A ConsumeEvent queue is Starting...")
 
         async def run(self):
             logging.info("adaptor is running")

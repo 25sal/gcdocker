@@ -12,7 +12,8 @@ import logging
 import argparse
 import ptvsd
 
-
+ptvsd.enable_attach(address=('0.0.0.0', 5678))
+ptvsd.wait_for_attach()
 logging.basicConfig(level=logging.INFO)
 
 
@@ -134,14 +135,6 @@ def setup_simulation():
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='complete example')
-    parser.add_argument('--debug', dest='debug', action='store_true', default=False,
-                        help='skip the spline stage')
-
-    args = parser.parse_args()
-    if args.debug:
-        ptvsd.enable_attach(address=('0.0.0.0', 5678))
-        ptvsd.wait_for_attach()
 
     Configuration.load()
     logging.info("configuration loaded")
