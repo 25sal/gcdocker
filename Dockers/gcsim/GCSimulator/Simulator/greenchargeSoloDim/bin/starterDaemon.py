@@ -17,6 +17,7 @@ import os
 import signal
 import subprocess
 
+
 LOGFILE = '/home/gc/simulator/gcdaemon.log'
 logging.basicConfig(filename=LOGFILE, filemode= 'w', level=logging.INFO)
 
@@ -163,7 +164,6 @@ if __name__ == "__main__":
 
     PIDFILE = '/home/gc/simulator/gcdaemon.pid'
     daemon = GCDaemon(pidfile=PIDFILE)
-    daemon.start()
     if len(sys.argv) == 2:
 
         if 'start' == sys.argv[1]:
@@ -173,15 +173,17 @@ if __name__ == "__main__":
                 pass
 
         elif 'stop' == sys.argv[1]:
+            ptvsd.enable_attach(address=('0.0.0.0', 5678))
+            ptvsd.wait_for_attach()
             print("Stopping ...")
             pf = open(PIDFILE,'r')
             pid = int(pf.read().strip())
             logging.info(pid)
             pf.close()
-            os.killpg(os.getpgid(pid), signal.SIGHUP)
-            os.killpg(os.getpgid(pid), signal.SIGKILL)
-            os.kill(pid,signal.SIGKILL)
-            #daemon.stop()
+            #os.killpg(os.getpgid(pid), signal.SIGHUP)
+            #os.killpg(os.getpgid(pid), signal.SIGKILL)
+            #os.kill(pid,signal.SIGKILL)
+            daemon.stop()
 
         elif 'restart' == sys.argv[1]:
             print("Restarting ...")
@@ -240,8 +242,4 @@ if __name__ == "__main__":
         print("usage: %s start|stop|restart|status   optional: --debug --nodaemon" % sys.argv[0])
         sys.exit(2)
     logging.info("waiting for termination")
-    while True:
-        try:
-            time.sleep(5)
-        except KeyboardInterrupt:
-            break
+
