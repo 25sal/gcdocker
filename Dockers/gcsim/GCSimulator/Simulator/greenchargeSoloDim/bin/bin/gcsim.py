@@ -1,21 +1,15 @@
 #!/usr/bin/env python3.7
 import time
-import dispatcher as di
-import setupmodule as sm
-import externalSourceAgent as es
-import scheduler as sche
-import scheduler1 as sche1
-import threading
+from agents import xmppscheduler as sche, restscheduler as sche1, setup as es, manager as sm, \
+    dispatcher as di
 import aiohttp_cors
-from configure import Configuration
+from utils.config import Configuration
 import logging
-import argparse
 import ptvsd
 from daemons.prefab import run
 import sys
 import os 
 import signal
-import subprocess
 
 LOGFILE = '/home/gc/simulator/gcdaemon.log'
 logging.basicConfig(filename=LOGFILE, filemode= 'w', level=logging.INFO)
@@ -163,7 +157,6 @@ if __name__ == "__main__":
 
     PIDFILE = '/home/gc/simulator/gcdaemon.pid'
     daemon = GCDaemon(pidfile=PIDFILE)
-    daemon.start()
     if len(sys.argv) == 2:
 
         if 'start' == sys.argv[1]:

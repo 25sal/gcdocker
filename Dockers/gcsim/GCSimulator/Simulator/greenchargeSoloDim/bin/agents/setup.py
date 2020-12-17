@@ -17,7 +17,7 @@ import glob
 from shutil import copy2
 import csv
 import shutil
-from configure import Configuration
+from utils.config import Configuration
 import sqlite3
 import logging
 LOGFILE = '/home/gc/simulator/gcdaemon.log'
@@ -48,7 +48,6 @@ class backGroundLoad(abstract_device):
 class heaterCooler(abstract_device):
     def __init__(self, id='0', house='0', name='0'):
         super(abstract_device,self).__init__(id, house, "heaterCooler",  name)
-
 
 
 class EV(abstract_device):
@@ -233,7 +232,8 @@ class ChargingPoint():
 
 
 ###########################****************** UTIL VARIABLES SECTION ************************###################################################
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+
 
 ##########################################################
 # Override the comparison methods for the shared queue   #
@@ -933,7 +933,7 @@ def makeNewSimulation(pathneigh, pathload):
     date2 = date.split()
     dir1 = Configuration.parameters['current_sim_dir']
 
-    with open("./tt", "w") as f:
+    with open("../tt", "w") as f:
         f.write(str(datetime.timestamp(datetime_object)).split(".")[0])
         f.close()
     newdir = date2[0].replace('/', '_')

@@ -1,15 +1,10 @@
 #!/usr/bin/env python3.7
 import time
-import dispatcher as di
-import setupmodule as sm
-import externalSourceAgent as es
-import scheduler as sche
-import scheduler1 as sche1
-import threading
+from agents import xmppscheduler as sche, restscheduler as sche1, setup as es, manager as sm, \
+    dispatcher as di
 import aiohttp_cors
-from configure import Configuration
+from utils.config import Configuration
 import logging
-import argparse
 import ptvsd
 
 ptvsd.enable_attach(address=('0.0.0.0', 5678))
@@ -78,7 +73,7 @@ def adaptor():
         temp=scheduler.web.start(hostname=hostname, port=port)
         temp2=scheduler.web.is_started()
         sc2.result()
-    if protocol_version == "1.0":
+    elif protocol_version == "1.0":
         scheduler = sche1.scheduler(basejid + "/" + jid, password)
         # scheduler.web.add_get("/gettime", scheduler.get_time, "message.html")
         #scheduler.web.add_post("/postanswer", scheduler.post_answer, "message2.html")

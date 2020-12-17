@@ -4,15 +4,14 @@ from spade.behaviour import PeriodicBehaviour
 from spade.message import Message
 from spade.template import Template
 from datetime import datetime, timedelta
-import externalSourceAgent as es
+from agents import setup as es
 import csv
-from yaml import Loader
 from sys import path
 from aioxmpp import PresenceShow
-from configure import Configuration
+from utils.config import Configuration
 import logging
 
-path.append(".")
+path.append("..")
 """
 dir1 = os.path.dirname(os.path.realpath(__file__))
 dir2 = dir1.split("/")
@@ -739,7 +738,7 @@ class dispatcher(Agent):
                     except:
                         None
 
-                    with open("./time.txt", "w") as f2:
+                    with open("../time.txt", "w") as f2:
                         f2.write(str(next2[0]))
                         f2.close()
                     completed += 1

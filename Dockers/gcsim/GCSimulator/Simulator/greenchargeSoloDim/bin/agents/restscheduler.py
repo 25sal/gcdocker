@@ -3,12 +3,9 @@ from spade.behaviour import PeriodicBehaviour
 from datetime import datetime,timedelta
 import queue
 from aiohttp import web
-import yaml
-from yaml import Loader
 import json
-import externalSourceAgent as es
 from shutil import copy2
-from configure import Configuration
+from utils.config import Configuration
 import logging
 
 LOGFILE = '/home/gc/simulator/gcdaemon.log'

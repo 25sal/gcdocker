@@ -1,14 +1,9 @@
-import time
 from spade.agent import Agent
-from spade.behaviour import OneShotBehaviour,PeriodicBehaviour
+from spade.behaviour import OneShotBehaviour
 from spade.message import Message
-from spade.template import Template
-import setupmodule as sm
-import externalSourceAgent as es
-import datetime
-import yaml
+
 global abilit
-from configure import Configuration
+from utils.config import Configuration
 import logging
 
 abilit = 0
