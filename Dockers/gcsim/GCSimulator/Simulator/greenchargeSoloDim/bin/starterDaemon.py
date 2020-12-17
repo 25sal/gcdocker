@@ -173,16 +173,12 @@ if __name__ == "__main__":
                 pass
 
         elif 'stop' == sys.argv[1]:
-            ptvsd.enable_attach(address=('0.0.0.0', 5678))
-            ptvsd.wait_for_attach()
+
             print("Stopping ...")
             pf = open(PIDFILE,'r')
             pid = int(pf.read().strip())
             logging.info(pid)
             pf.close()
-            #os.killpg(os.getpgid(pid), signal.SIGHUP)
-            #os.killpg(os.getpgid(pid), signal.SIGKILL)
-            #os.kill(pid,signal.SIGKILL)
             daemon.stop()
 
         elif 'restart' == sys.argv[1]:
