@@ -20,7 +20,9 @@ import shutil
 from configure import Configuration
 import sqlite3
 import logging
+LOGFILE = '/home/gc/simulator/gcdaemon.log'
 
+logging.basicConfig(filename=LOGFILE, filemode= 'w', level=logging.INFO)
 
 
 # dir1 = os.path.dirname(os.path.realpath(__file__))
@@ -713,14 +715,14 @@ def createEventList():
                                 Entities.listEvent.append(e)
                                 # CODICE PROVVISORIO
                                 # H = int(creation_time) + 21600
-                                # print(H)
-                                # print(int(creation_time))
+                                # logging.info(H)
+                                # logging.info(int(creation_time))
                                 # e1= eventGeneral(c,houseId,est,lst,H,profile, "LoadUpdate")
                                 # H1 = int(creation_time) + 2*21600
-                            # print(H1)
+                            # logging.info(H1)
                             # e2= eventGeneral(c,houseId,est,lst,H1,profile, "LoadUpdate")
                             # H2 = int(creation_time) + 3*21600
-                        # print(H2)
+                        # logging.info(H2)
                         # e3= eventGeneral(c,houseId,est,lst,H2,profile, "LoadUpdate")
                         # Entities.listEvent.append(e1)
                         # Entities.listEvent.append(e2)
@@ -865,7 +867,7 @@ def uploadInInputRepository():
             if c.device.type == "Producer":
                 Entities.enqueue_event(int(c.creation_time),  c)
 
-        # print("inserito")
+        # logging.info("inserito")
         elif c.device.type == "EV":
             logging.debug("new EV")
             book_time = datetime.fromtimestamp(int(c.creation_time))
@@ -889,11 +891,11 @@ def uploadInInputRepository():
             c.actual_departure_time = str(int(timestamp + midseconds_actual_departure_time))
             c.device.type = "CREATE_EV"
             '''
-            print(c.device.id)
-            print("timestamp = " + str(timestamp))
-            print("BookingTime  = " + str(c.creation_time))
-            print("arrival_Time =  " + str(c.actual_arrival_time))
-            print("departure_Time = " + str(c.actual_departure_time))
+            logging.info(c.device.id)
+            logging.info("timestamp = " + str(timestamp))
+            logging.info("BookingTime  = " + str(c.creation_time))
+            logging.info("arrival_Time =  " + str(c.actual_arrival_time))
+            logging.info("departure_Time = " + str(c.actual_departure_time))
             '''
             Entities.enqueue_event(timestamp, c)
 

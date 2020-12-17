@@ -17,8 +17,8 @@ import os
 import signal
 import subprocess
 
-LOGFILE = '/var/log/gcdaemon.log'
-logging.basicConfig(level=logging.INFO)
+LOGFILE = '/home/gc/simulator/gcdaemon.log'
+logging.basicConfig(filename=LOGFILE, filemode= 'w', level=logging.INFO)
 
 
 
@@ -161,15 +161,13 @@ class GCDaemon(run.RunDaemon):
 
 if __name__ == "__main__":
 
-    PIDFILE = '/var/tmp/gcdaemon.pid'
+    PIDFILE = '/home/gc/simulator/gcdaemon.pid'
     daemon = GCDaemon(pidfile=PIDFILE)
     daemon.start()
-    print(len(sys.argv))
     if len(sys.argv) == 2:
 
         if 'start' == sys.argv[1]:
             try:
-                print(os.listdir())
                 daemon.start()
             except:
                 pass
@@ -178,9 +176,12 @@ if __name__ == "__main__":
             print("Stopping ...")
             pf = open(PIDFILE,'r')
             pid = int(pf.read().strip())
+            logging.info(pid)
             pf.close()
-            subprocess.call("kill -9 " + str(pid), shell=True)
-            daemon.stop()
+            os.killpg(os.getpgid(pid), signal.SIGHUP)
+            os.killpg(os.getpgid(pid), signal.SIGKILL)
+            os.kill(pid,signal.SIGKILL)
+            #daemon.stop()
 
         elif 'restart' == sys.argv[1]:
             print("Restarting ...")
@@ -209,6 +210,7 @@ if __name__ == "__main__":
         if 'start' == sys.argv[1]:
             try:
                 if('--debug' == sys.argv[2]):
+                    logging.info('debugger active')
                     ptvsd.enable_attach(address=('0.0.0.0', 5678))
                     ptvsd.wait_for_attach()
                     daemon.start()
@@ -218,8 +220,6 @@ if __name__ == "__main__":
                     di.MessageFactory.init_parameters()
                     setup_simulation()
                     logging.info("simulation runtime built")
-				    
-				    
                     setup_jid = Configuration.parameters['userjid'] + "/setupmodule"
                     password =  Configuration.parameters['xmpp_password']
                     start_disp()

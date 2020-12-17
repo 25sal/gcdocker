@@ -20,6 +20,9 @@ dir1 = ""
 for i in range(1,len(dir2)-1):
     dir1 = dir1 +"/"+ dir2[i]
 """
+LOGFILE = '/home/gc/simulator/gcdaemon.log'
+
+logging.basicConfig(filename=LOGFILE, filemode= 'w', level=logging.INFO)
 
 #################################################################https://calendar.google.com/calendar/u/0/r#####################################################################
 # This function calculates the execution time of a scheduled load. It is used to put DeleteMessage in sharedQueue at the right time. #
@@ -610,7 +613,7 @@ class dispatcher(Agent):
                         logging.info("Message received with content: {}".format(msg.body))
                         self.agent.abilitation = False
                     else:
-                        print("Did not received any message after 5 seconds")
+                        logging.info("Did not received any message after 5 seconds")
                 except:
                     None
             else:
@@ -842,7 +845,7 @@ class dispatcher(Agent):
                         else:
                             messageFromScheduler = await self.receive(timeout=20)
                             while not isinstance(messageFromScheduler, type(None)):
-                                print(messageFromScheduler.body)
+                                logging.info(messageFromScheduler.body)
                                 if messageFromScheduler.body == "AckMessage":
                                     logging.info("Ack Received")
 
@@ -881,7 +884,7 @@ class dispatcher(Agent):
                                         file.write("<<< " + messageFromScheduler.body + "\r\n")
                                         file.flush()
                                     except Exception as e:
-                                        print(e)
+                                        logging.info(e)
                                 messageFromScheduler = await self.receive(timeout=20)
 
                     elif nextload.type == "delete":
@@ -913,15 +916,15 @@ class dispatcher(Agent):
                         file.write(">>> " + message.body + "\n")
                         file.flush()
                     elif nextload.type == "heatercooler":
-                        print("condiz")
+                        logging.info("condiz")
                         message = MessageFactory.heatercooler(nextload, next2[0], protocol_version)
                         await self.send(message)
-                        print("inviato")
+                        logging.info("inviato")
                         file.write(">>> " + message.body + "\n")
                         file.flush()
                     elif nextload.type == "background":
                         message = MessageFactory.background(nextload, next2[0], protocol_version)
-                        print(protocol_version)
+                        logging.info(protocol_version)
                         await self.send(message)
 
                         file.write(">>> " + message.body + "\n")
@@ -934,7 +937,7 @@ class dispatcher(Agent):
                             messageFromScheduler = await self.receive(timeout=10)
                             while not isinstance(messageFromScheduler, type(None)):
                                 if messageFromScheduler.body == "AckMessage":
-                                    print("Ack Received")
+                                    logging.info("Ack Received")
                                 else:
                                     try:
                                         delta = calculateTime(nextload.profile)
@@ -949,10 +952,10 @@ class dispatcher(Agent):
                                                       "w") as f2:
                                                 reader = csv.reader(f)
                                                 writer = csv.writer(f2, delimiter=' ')
-                                                print(nextload.profile)
+                                                logging.info(nextload.profile)
                                                 data = next(reader)
                                                 absolute = int(data[0].split(" ")[0])
-                                                print(absolute)
+                                                logging.info(absolute)
                                                 entry = []
                                                 entry.append(int(messageFromScheduler.body.split(" ")[3]))
                                                 entry.append(data[0].split(" ")[1])
@@ -971,7 +974,7 @@ class dispatcher(Agent):
                                         file.flush()
 
                                     except:
-                                        print("unrecognized Message")
+                                        logging.info("unrecognized Message")
                                 messageFromScheduler = await self.receive(timeout=10)
                     if es.Entities.sharedQueue.empty():
                         message = MessageFactory.end(actual_time)
@@ -980,10 +983,10 @@ class dispatcher(Agent):
                         file.flush()
                         file.close()
                         finish = False
-                        print("Simulazione terminata.")
+                        logging.info("Simulazione terminata.")
 
                 if WasEnable:
-                    print("Ho rilevato un segnale di stop")
+                    logging.info("Ho rilevato un segnale di stop")
             if finish == False:
                 message = MessageFactory.end(actual_time)
                 await self.send(message)
@@ -995,7 +998,7 @@ class dispatcher(Agent):
     async def setup(self):
         basejid = Configuration.parameters["userjid"]
         start_at = datetime.now() + timedelta(seconds=3)
-        print("ReceiverAgent started")
+        logging.info("ReceiverAgent started")
         b = self.disRecvBehav(1, start_at=start_at)
         template = Template()
         template2 = Template()
