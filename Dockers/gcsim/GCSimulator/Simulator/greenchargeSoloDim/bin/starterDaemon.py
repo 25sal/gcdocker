@@ -11,14 +11,14 @@ from configure import Configuration
 import logging
 import argparse
 import ptvsd
-import daemons
 from daemons.prefab import run
 import sys
-import time
-import logging
-import os
+import os 
+import signal
+import subprocess
 
-#logging.basicConfig(level=logging.INFO)
+LOGFILE = '/var/log/gcdaemon.log'
+logging.basicConfig(level=logging.INFO)
 
 
 
@@ -136,116 +136,119 @@ def setup_simulation():
     adaptor()
 
 
-
-
-
-
-# Configure logging
-
 class GCDaemon(run.RunDaemon):
 
 	def run(self):
-		f = open('./out.txt', 'w')
-		sys.stdout = f
-		logging.info(os.listdir)
-		Configuration.load()
-		logging.info("configuration loaded")
-		di.MessageFactory.init_parameters()
-		setup_simulation()
-		logging.info("simulation runtime built")
-		setup_jid = Configuration.parameters['userjid'] + "/setupmodule"
-		password =  Configuration.parameters['xmpp_password']
-		start_disp()
-		setupmodule = sm.setupModule(setup_jid, password)
-		setupmodule.start()
-
-		logging.info("waiting for termination")
-		#!/usr/bin/python
-		try:
-			pass
-		except Exception:
-			logging.exception('Human friendly error message, the exception will be captured and added to the log file automaticaly')
+            Configuration.load()
+            logging.info("configuration loaded")
+            di.MessageFactory.init_parameters()
+            setup_simulation()
+            logging.info("simulation runtime built")
+                
+            
+            setup_jid = Configuration.parameters['userjid'] + "/setupmodule"
+            password =  Configuration.parameters['xmpp_password']
+            start_disp()
+            setupmodule = sm.setupModule(setup_jid, password)
+            setupmodule.start()
+            #!/usr/bin/python
+            try:
+                pass
+            except Exception:
+                logging.exception('Human friendly error message, the exception will be captured and added to the log file automaticaly')
 
 
 
 if __name__ == "__main__":
-	PIDFILE = '/var/tmp/gcdaemon.pid'
-	LOGFILE = '/var/log/gcdaemon.log'
-	logging.basicConfig(filename=LOGFILE,level=logging.INFO)
+    '''parser = argparse.ArgumentParser(description='complete example')
+    parser.add_argument('--debug', dest='debug', action='store_true', default=False,
+                        help='skip the spline stage')'''
+    PIDFILE = '/var/tmp/gcdaemon.pid'
 
-	#daemon = GCDaemon(pidfile=PIDFILE)
+    #args = parser.parse_args()
+    '''if args.debug:
+        ptvsd.enable_attach(address=('0.0.0.0', 5678))
+        ptvsd.wait_for_attach()'''
+    daemon = GCDaemon(pidfile=PIDFILE)
+    daemon.start()
+    print(len(sys.argv))
+    if len(sys.argv) == 2:
 
-	if len(sys.argv) == 2:
+        if 'start' == sys.argv[1]:
+            try:
+                print(os.listdir())
+                daemon.start()
+            except:
+                pass
 
-		if 'start' == sys.argv[1]:
-			try:
-				print(os.listdir())
+        elif 'stop' == sys.argv[1]:
+            print("Stopping ...")
+            pf = open(PIDFILE,'r')
+            pid = int(pf.read().strip())
+            pf.close()
+            subprocess.call("kill -9 " + str(pid), shell=True)
+            daemon.stop()
 
-				daemon.start()
-			except:
-				pass
+        elif 'restart' == sys.argv[1]:
+            print("Restarting ...")
+            daemon.restart()
 
-		elif 'stop' == sys.argv[1]:
-			print("Stopping ...")
-			daemon.stop()
+        elif 'status' == sys.argv[1]:
+            try:
+                pf = open(PIDFILE,'r')
+                pid = int(pf.read().strip())
+                pf.close()
+            except IOError:
+                pid = None
+            except SystemExit:
+                pid = None
 
-		elif 'restart' == sys.argv[1]:
-			print("Restarting ...")
-			daemon.restart()
+            if pid:
+                print('GCDaemon is running as pid %s' % pid)
+            else:
+                print('GCDaemon is not running.')
 
-		elif 'status' == sys.argv[1]:
-			try:
-				pf = open(PIDFILE,'r')
-				pid = int(pf.read().strip())
-				pf.close()
-			except IOError:
-				pid = None
-			except SystemExit:
-				pid = None
-
-			if pid:
-				print('GCDaemon is running as pid %s' % pid)
-			else:
-				print('GCDaemon is not running.')
-
-		else:
-			print("Unknown command")
-			sys.exit(2)
-			sys.exit(0)
-	elif(len(sys.argv) == 3):
-		if 'start' == sys.argv[1]:
-			try:
-				if('--debug' == sys.argv[2]):
-					ptvsd.enable_attach(address=('0.0.0.0', 5678))
-					ptvsd.wait_for_attach()
-					daemon.start()
-				elif('--nodaemon' == sys.argv[2]):
-					f = open('./out.txt', 'w')
-					sys.stdout = f
-					logging.info(os.listdir)
-					Configuration.load()
-					logging.info("configuration loaded")
-					di.MessageFactory.init_parameters()
-					setup_simulation()
-					logging.info("simulation runtime built")
-					setup_jid = Configuration.parameters['userjid'] + "/setupmodule"
-					password =  Configuration.parameters['xmpp_password']
-					start_disp()
-					setupmodule = sm.setupModule(setup_jid, password)
-					setupmodule.start()
-					
-					logging.info("waiting for termination")
-					#!/usr/bin/python
-				else:
-					print("Unknown command")
-					sys.exit(2)
-					sys.exit(0)
-			except:
-				pass
-		else:
-			print("Unknown command")
-			sys.exit(2)
-			sys.exit(0)
-	else:
-		print("usage: %s start|stop|restart|status   optional: --debug --nodaemon" % sys.argv[0])
-		sys.exit(2)
+        else:
+            print("Unknown command")
+            sys.exit(2)
+            sys.exit(0)
+    elif(len(sys.argv) == 3):
+        if 'start' == sys.argv[1]:
+            try:
+                if('--debug' == sys.argv[2]):
+                    ptvsd.enable_attach(address=('0.0.0.0', 5678))
+                    ptvsd.wait_for_attach()
+                    daemon.start()
+                elif('--nodaemon' == sys.argv[2]):
+                    Configuration.load()
+                    logging.info("configuration loaded")
+                    di.MessageFactory.init_parameters()
+                    setup_simulation()
+                    logging.info("simulation runtime built")
+				    
+				    
+                    setup_jid = Configuration.parameters['userjid'] + "/setupmodule"
+                    password =  Configuration.parameters['xmpp_password']
+                    start_disp()
+                    setupmodule = sm.setupModule(setup_jid, password)
+                    setupmodule.start()
+                    #!/usr/bin/python
+                else:
+                    print("Unknown command")
+                    sys.exit(2)
+                    sys.exit(0)
+            except:
+                pass
+        else:
+            print("Unknown command")
+            sys.exit(2)
+            sys.exit(0)
+    else:
+        print("usage: %s start|stop|restart|status   optional: --debug --nodaemon" % sys.argv[0])
+        sys.exit(2)
+    logging.info("waiting for termination")
+    while True:
+        try:
+            time.sleep(5)
+        except KeyboardInterrupt:
+            break
