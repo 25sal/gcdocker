@@ -12,7 +12,7 @@ RUN apt-get -y -q install tzdata
 RUN echo "ENTER" | add-apt-repository -y ppa:deadsnakes/ppa
 RUN apt-get update
 RUN apt-get -y -q install python3.7 python3-pip
-RUN python3.7 -m pip install spade aiohttp_cors pyyaml ptvsd
+RUN python3.7 -m pip install spade aiohttp_cors pyyaml ptvsd daemon
 # Maybe you will need to reconfigure the timezone as well:
 RUN ln -fs /usr/share/zoneinfo/Etc/UTC /etc/localtime
 RUN dpkg-reconfigure -f noninteractive tzdata

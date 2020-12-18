@@ -28,10 +28,9 @@ services:
         - "5678:5678"
       networks:
         - isolation-network
-
       volumes:
         - ./users/demo:/home/gc
-        - ./Dockers/gcsim/GCSimulator/Simulator/greenchargeSoloDim/bin:/home/gc/simulator
+        - ./Dockers/gcsim/gcsimulator:/home/gc/simulator
       stdin_open: true
       tty: true
       # command: ["sh", "-c", "pip3 install debugpy -t /tmp && python3 /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678 /usr/local/lib/python3.8/dist-packages/gcsimulator/starter.py "]

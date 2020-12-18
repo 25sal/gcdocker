@@ -23,11 +23,18 @@ var post_url="http://"+server+":"+http_post_port+"/postanswer";
 var devices ={};
 
 
-
+  var fs = require("fs");
+  var logstream = fs.createWriteStream('/home/scheduler/debug.log', { 
+        flags: "a", encoding: "utf8", mode: 0644 
+    });
   
+  function mylog(msg)
+  {
+	  logstream.write(msg+'\n');
+	  }
   
   connection = new Strophe.Connection(BOSH_SERVICE);
-  connection.rawInput = connection.rawOutput = console.log;
+  connection.rawInput = connection.rawOutput = mylog;
   connection.connect(jid, passwd, onConnect);
   
 
