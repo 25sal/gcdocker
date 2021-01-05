@@ -76,8 +76,8 @@ class EnergyOutput:
         ts_groups = {}
         for ser_typ in typ:
             series = glob.glob(self.folder + "/" + ser_typ + "/*.csv")
+            ts_groups[ser_typ] = {}
             for ts_file in series:
-                ts_groups[ser_typ] = {}
                 ts = np.genfromtxt(ts_file, delimiter=' ')
                 if rel:
                     start_time = ts[0, 0] - np.mod(ts[0, 0], 86400)
