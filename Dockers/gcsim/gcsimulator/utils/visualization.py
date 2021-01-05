@@ -7,7 +7,7 @@ import scipy.interpolate as inter
 
 
 class EnergyOutput:
-    cons_series = {'HC', 'EV', 'BG'}
+    cons_series = {'HC', 'EV', 'BG', 'SH'}
     prod_series = {'PV'}
     sample_time = None
     self_consumption = None
@@ -25,9 +25,9 @@ class EnergyOutput:
         self.max_time = 0
         pass
 
-    def load(self):
-        self.productions = self.load_series(self.prod_series)
-        self.consumptions = self.load_series(self.cons_series)
+    def load(self, rel=False):
+        self.productions = self.load_series(self.prod_series, rel)
+        self.consumptions = self.load_series(self.cons_series, rel)
         self.sample_time = np.arange(0, (self.max_time-self.min_time), self.interval)
 
     def compute_production(self):
@@ -48,9 +48,15 @@ class EnergyOutput:
     def compute_self(self):
         if self.tot_consumption is not None and self.tot_consumption is not None:
             self.self_consumption = np.zeros(len(self.sample_time))
-            for i in range(len(self.sample_time)):
-                if self.tot_consumption[i] > 0:
-                    self.self_consumption[i] = min(self.tot_production[i], self.tot_consumption[i])
+
+            for i in range(1, len(self.sample_time)):
+                cons = self.tot_consumption[i] - self.tot_consumption[i-1]
+                prod = self.tot_production[i] - self.tot_production[i-1]
+                self_incr = 0
+                if cons >= 0:
+                    self_incr = min(prod, cons)
+                self.self_consumption[i] = self.self_consumption[i - 1] + self_incr
+
 
     def __sum_ts(self, ts_sum, ts_new):
         if ts_sum is None:
@@ -62,18 +68,20 @@ class EnergyOutput:
         except:
             ts_spline = inter.interp1d(xx, ts_new[:, 1])
         for i in range(len(self.sample_time)):
-            if xx[0] <= self.sample_time[i] <= xx[-1]:
-                ts_sum[i] += ts_spline(self.sample_time[i])
+            if ts_new[0, 0] <= self.sample_time[i] <= ts_new[-1, 0]:
+                ts_sum[i] += ts_spline(self.sample_time[i]-ts_new[0, 0])
         return ts_sum
 
-
-    def load_series(self, typ):
+    def load_series(self, typ, rel=False):
         ts_groups = {}
         for ser_typ in typ:
             series = glob.glob(self.folder + "/" + ser_typ + "/*.csv")
             for ts_file in series:
                 ts_groups[ser_typ] = {}
                 ts = np.genfromtxt(ts_file, delimiter=' ')
+                if rel:
+                    start_time = ts[0, 0] - np.mod(ts[0, 0], 86400)
+                    ts[:, 0] = ts[:, 0] - start_time
                 if ts[0, 0] < self.min_time or self.min_time == 0:
                     self.min_time = ts[0, 0]
                 if ts[-1, 0] > self.max_time:
@@ -135,8 +143,11 @@ def plot_power(groups, colr=None):
 
 
 if __name__ == "__main__":
-    sim_output = EnergyOutput("/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/trivial/Results/12_12_15_82")
-    sim_output.load()
+    folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/trivial/Results/12_12_15_82"
+    folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/demo1"
+    sim_output = EnergyOutput(folder)
+
+    sim_output.load(True)
     sim_output.compute_production()
     sim_output.compute_consumption()
     sim_output.compute_self()
