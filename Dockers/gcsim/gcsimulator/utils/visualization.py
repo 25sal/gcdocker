@@ -18,6 +18,8 @@ class EnergyOutput:
     interval = 600
     folder = None
 
+
+
     def __init__(self, folder, interval=600):
         self.interval = interval
         self.folder = folder + "/output"
@@ -141,6 +143,35 @@ def plot_power(groups, colr=None):
             else:
                 plt.plot(xx, yy1, linestyle='-', marker='.', label=group_key + "_" + ts_key)
 
+class Performance:
+    @staticmethod
+    def average(groups):
+        energy = 0
+        duration = 0
+        for group_key in groups.keys():
+            for ts_key in groups[group_key].keys():
+                serie = groups[group_key][ts_key]
+                energy += serie[-1, 1]
+                duration += serie[-1, 0] - serie[0, 0]
+        average = 3600 * energy/duration
+        return average
+
+    @staticmethod
+    def peak2average(serie, average):
+        over_average = 0
+        total_time = 0
+        power = e2p(serie[:, 0], serie[:, 1])
+        for i in range(1, len(serie)):
+            if power[i] > average:
+                over_average += serie[i, 0] - serie[i-1, 0]
+            if power[i] > 0:
+                total_time +=  serie[i, 0] - serie[i-1, 0]
+        return over_average/total_time
+
+    @staticmethod
+    def peak2average_g(groups, consumption):
+        return Performance.peak2average(consumption, Performance.average(groups))
+
 
 if __name__ == "__main__":
     folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/trivial/Results/12_12_15_82"
@@ -151,4 +182,10 @@ if __name__ == "__main__":
     sim_output.compute_production()
     sim_output.compute_consumption()
     sim_output.compute_self()
+
+    tot_consumption = np.vstack((sim_output.sample_time, sim_output.tot_consumption)).T
+    print(Performance.average(sim_output.consumptions))
+
+    print(Performance.peak2average_g(sim_output.consumptions, tot_consumption))
+    exit(0)
     plot_output(sim_output)
