@@ -68,7 +68,8 @@ function log(msg, msgid)
 			var to = msg.getAttribute('to');
 			var response = "";
 			var ast =parseInt(tokens[6]) + 600;
-			response = "ASSIGNED_START_TIME " + tokens[1] + " " + tokens[2] + " " + ast  ;
+			response = "ASSIGNED_START_TIME " + tokens[1] + " " + tokens[2] + " " + tokens[3]  ;
+			//REPLACE TOKENS[3] WITH AST
 			
 			var reply = new Strophe.Builder("message",{to: from, from: to, type: 'chat'}).c("body").t(response);
 			connection.send(reply.tree());

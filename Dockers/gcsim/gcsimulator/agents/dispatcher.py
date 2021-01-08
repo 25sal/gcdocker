@@ -41,6 +41,32 @@ def calculateTime(file):
     return delta
 
 
+def switchInTime(file, ast):
+    dirPath2 = Configuration.parameters['runtime_dir'] + "/inputs/" + file
+    dirPathArrival = Configuration.parameters['runtime_dir'] + "/output/SH/" + file
+    f = open(dirPath2)
+    csv_f = csv.reader(f)
+    with open(dirPath2, "r") as f:
+        with open(dirPathArrival, "w") as f2:
+            writer = csv.writer(f2, delimiter=' ')
+            reader = csv.reader(f, delimiter=' ')
+            first = 0
+            firstTime = 0
+            
+            for data in reader:
+                entry = []
+                if(first == 0):
+                    firstTime = data[0]
+                    first = 1
+                
+                entry.append(ast + int(data[0]) - int(firstTime))
+                entry.append(data[1])
+                writer.writerow(entry)
+
+    
+
+
+
 ##################################################################################################################
 # This Class manages all messages between scheduler and dispatcher. It prepares the messages based on subjects.  #
 ##################################################################################################################
@@ -591,7 +617,7 @@ class dispatcher(Agent):
 
     def __init__(self, address, passw):
         super(dispatcher, self).__init__(address, passw)
-        
+        self.idToProfile = {}
         self.abilitation = False
 
     ##################################################################################
@@ -662,7 +688,6 @@ class dispatcher(Agent):
                             await self.send(message)
                             file.write(">>> " + message.body + "\n")
                             file.flush()
-
                     elif next2[1].type == "chargingStation":
                         message = MessageFactory.chargingstation(next2[1], timestamp, protocol_version)
                         await self.send(message)
@@ -728,8 +753,6 @@ class dispatcher(Agent):
                 while self.agent.abilitation and finish:
                     WasEnable = True
                     next2 = es.Entities.next_event()
-                    #file.write(next2[1].device.type + "\n")
-                    #file.flush()
                     nextload = next2[1]
                     actual_time = next2[0]
 
@@ -743,12 +766,10 @@ class dispatcher(Agent):
                         f2.close()
                     completed += 1
                     if nextload.device.type == "Producer" and nextload.type == "load":
-
                         message = MessageFactory.create_producer(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
                         file.flush()
-
                         message = MessageFactory.update_producer(nextload, next2[0], protocol_version)
                         await self.send(message)
                         msg2 = await self.receive(timeout=3)
@@ -777,13 +798,12 @@ class dispatcher(Agent):
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
                         file.flush()
-
                     elif nextload.type == "load" and nextload.device.type == "Consumer":
                         total += 1
                         message = MessageFactory.create_load(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
-
+                        self.agent.idToProfile["[" + str(nextload.house) + ']:[' + str(nextload.device.id) + ']'] = nextload.profile
                         messageFromScheduler = None
                         if protocol_version == "1.0":
                             while isinstance(messageFromScheduler, type(None)):
@@ -795,38 +815,10 @@ class dispatcher(Agent):
                                     logging.debug(messageFromScheduler.body)
                                     delta = calculateTime(nextload.profile)
                                     newTime = str(int(messageFromScheduler.body.split(" ")[3]) + int(delta))
-                                    # es.sharedQueue.put((newTime,es.count,es.eventDelete(nextload.device,
-                                    # nextload.house,messageFromScheduler.body.split(" ")[2],
-                                    # messageFromScheduler.body.split(" ")[2],newTime,nextload.profile,"delete"),
-                                    # messageFromScheduler.body.split(" ")[4]))
-
-                                    # mydel = es.eventDelete(nextload.device, nextload.house, newTime,
-                                    # calculate_consum(nextload.profile),messageFromScheduler.body.split(" ")[4])
                                     mydel = es.eventDelete(nextload.device, nextload.house, newTime,
                                                            calculate_consum(nextload.profile))
-
-                                    # date = cfg['config']['date'] + " 00:00:00"
-
                                     path = Configuration.parameters['current_sim_dir']
-                                    with open(path + "/Results/" +Configuration.parameters['user_dir'] + "/inputs/" + nextload.profile,
-                                              "r") as f:
-                                        with open(path + "/Results/" + Configuration.parameters['user_dir'] + "/output/" + nextload.profile,
-                                                  "w") as f2:
-                                            reader = csv.reader(f)
-                                            writer = csv.writer(f2, delimiter=' ')
-                                            data = next(reader)
-                                            absolute = int(data[0].split(" ")[0])
-                                            entry = []
-                                            entry.append(int(messageFromScheduler.body.split(" ")[3]))
-                                            entry.append(data[0].split(" ")[1])
-                                            writer.writerow(entry)
-                                            for data in reader:
-                                                entry = []
-                                                entry.append(int(str(data[0].split(" ")[0])) - absolute + int(
-                                                    messageFromScheduler.body.split(" ")[3]))
-                                                entry.append(str(data[0].split(" ")[1]))
-                                                writer.writerow(entry)
-
+                                    switchInTime(nextload.profile, int(messageFromScheduler.body.split(" ")[3]))
                                     es.Entities.enqueue_event(int(newTime),  mydel)
                                     file.write("<<< " + messageFromScheduler.body + "\r\n")
                                     file.flush()
@@ -838,7 +830,6 @@ class dispatcher(Agent):
                                     messageFromScheduler = await self.receive(timeout=20)
                                     
                                 logging.info("messaggio:" + messageFromScheduler.body)
-
                             file.write("<<< " + messageFromScheduler.body + "\r\n")
                             file.flush()
                         else:
@@ -847,7 +838,6 @@ class dispatcher(Agent):
                                 logging.info(messageFromScheduler.body)
                                 if messageFromScheduler.body == "AckMessage":
                                     logging.info("Ack Received")
-
                                 else:
                                     try:
                                         delta = calculateTime(nextload.profile)
@@ -857,29 +847,9 @@ class dispatcher(Agent):
                                                                messageFromScheduler.body.split(" ")[5])
 
                                         path = Configuration.parameters['current_sim_dir']
-                                        with open(path + "/Results/" + Configuration.parameters['user_dir'] + "/inputs/" + nextload.profile,
-                                                  "r") as f:
-                                            with open(path + "/Results/" + Configuration.parameters['user_dir'] + "/output/" + nextload.profile,
-                                                      "w") as f2:
-                                                reader = csv.reader(f)
-                                                writer = csv.writer(f2, delimiter=' ')
-                                                data = next(reader)
-                                                absolute = int(data[0].split(" ")[0])
-                                                entry = []
-                                                entry.append(int(messageFromScheduler.body.split(" ")[3]))
-                                                entry.append(data[0].split(" ")[1])
-                                                writer.writerow(entry)
-                                                for data in reader:
-                                                    entry = []
-                                                    entry.append(int(str(data[0].split(" ")[0])) - absolute + int(
-                                                        messageFromScheduler.body.split(" ")[3]))
-                                                    entry.append(str(data[0].split(" ")[1]))
-                                                    writer.writerow(entry)
-
+                                        switchInTime(nextload.profile, int(messageFromScheduler.body.split(" ")[3]))     
                                         es.Entities.enqueue_event(int(newTime),  mydel)
-                                      
                                         file.write(">>> " + message.body + "\n")
-
                                         file.write("<<< " + messageFromScheduler.body + "\r\n")
                                         file.flush()
                                     except Exception as e:
@@ -944,28 +914,7 @@ class dispatcher(Agent):
                                         mydel = es.eventDelete(nextload.device, nextload.house, newTime,
                                                                calculate_consum(nextload.profile),
                                                                messageFromScheduler.body.split(" ")[4])
-
-                                        with open(path + "/Results/" + Configuration.parameters['user_dir'] + "/inputs/" + nextload.profile,
-                                                  "r") as f:
-                                            with open(path + "/Results/" + Configuration.parameters['user_dir'] + "/output/" + nextload.profile,
-                                                      "w") as f2:
-                                                reader = csv.reader(f)
-                                                writer = csv.writer(f2, delimiter=' ')
-                                                logging.info(nextload.profile)
-                                                data = next(reader)
-                                                absolute = int(data[0].split(" ")[0])
-                                                logging.info(absolute)
-                                                entry = []
-                                                entry.append(int(messageFromScheduler.body.split(" ")[3]))
-                                                entry.append(data[0].split(" ")[1])
-                                                writer.writerow(entry)
-                                                for data in reader:
-                                                    entry = []
-                                                    entry.append(int(str(data[0].split(" ")[0])) - absolute + int(
-                                                        messageFromScheduler.body.split(" ")[3]))
-                                                    entry.append(str(data[0].split(" ")[1]))
-                                                    writer.writerow(entry)
-
+                                        #replaceHere
                                         es.Entities.enqueue_event(int(newTime),mydel)
                                         es.count += 1
                                         file.write(">>> " + message.body + "\n")

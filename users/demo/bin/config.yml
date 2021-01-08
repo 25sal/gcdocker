@@ -5,7 +5,7 @@ config:
   date: 12/12/15
   protocol: '1.0'
   scheduler: actormanager
-  simulation: trivial
+  simulation: trivialComplete
   simulation_dir: /home/gc/Simulations
   simulator: taskmanager
   userjid: demo@greencharge.local
