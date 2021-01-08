@@ -9,7 +9,7 @@
         <type>load</type>
         <creation_time>0</creation_time>
         <energy_cost>0_run_0_1.csv</energy_cost>
-        <profile>producer.csv </profile>
+        <profile>10_run_5_1_pv.csv </profile>
       </device>
       <ChargingPoint id="0" peakLoad="3000" ConnectorsType="DC">
          <ecar>
@@ -32,7 +32,25 @@
         <type>load</type>
         <creation_time>15000</creation_time>
         <energy_cost>0_run_0_1.csv</energy_cost>
-        <profile>consumer.csv </profile>
+        <profile>10_run_1_1_dw.csv </profile>
+      </device>
+      	  <device>
+        <id>4</id>
+        <est>22000</est>
+        <lst>22000</lst>
+        <type>load</type>
+        <creation_time>15000</creation_time>
+        <energy_cost>0_run_0_1.csv</energy_cost>
+        <profile>10_run_2_1_wm.csv </profile>
+      </device>
+      	  <device>
+        <id>5</id>
+        <est>50000</est>
+        <lst>50000</lst>
+        <type>load</type>
+        <creation_time>15000</creation_time>
+        <energy_cost>0_run_0_1.csv</energy_cost>
+        <profile>7_freezer.csv </profile>
       </device>
     </user>
   </house>

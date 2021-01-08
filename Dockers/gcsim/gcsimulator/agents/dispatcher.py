@@ -10,15 +10,9 @@ from sys import path
 from aioxmpp import PresenceShow
 from utils.config import Configuration
 import logging
+from utils.MessageFactory import MessageFactory
 
 path.append("..")
-"""
-dir1 = os.path.dirname(os.path.realpath(__file__))
-dir2 = dir1.split("/")
-dir1 = ""
-for i in range(1,len(dir2)-1):
-    dir1 = dir1 +"/"+ dir2[i]
-"""
 LOGFILE = '/home/gc/simulator/gcdaemon.log'
 
 logging.basicConfig(filename=LOGFILE, filemode= 'w', level=logging.INFO)
@@ -63,532 +57,6 @@ def switchInTime(file, ast):
                 entry.append(data[1])
                 writer.writerow(entry)
 
-    
-
-
-
-##################################################################################################################
-# This Class manages all messages between scheduler and dispatcher. It prepares the messages based on subjects.  #
-##################################################################################################################
-class MessageFactory:
-    realpath = None
-    jid = None
-    basejid = None
-    dir1 = None
-
-    @classmethod
-    def init_parameters(cls):
-        cls.jid = Configuration.parameters['adaptor']
-        cls.basejid = Configuration.parameters['userjid']
-        cls.dir1 = Configuration.parameters['current_sim_dir']
-        webdir = Configuration.parameters['webdir']
-        '''
-        webarray = webdir.split("/")
-        found = 0
-        realpath = ""
-        for element in webarray:
-            if (found == 1):
-                realpath = realpath + "/" + element
-            if (element == "public_html"):
-                found = 1
-        '''
-        cls.realpath = webdir
-
-    #######################################
-    # This Method manages "End" message.  #
-    #######################################
-    @classmethod
-    def end(cls, actual_time):
-        protocol_version = Configuration.parameters["protocol"]
-        if protocol_version == "1.0":
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = "SIMULATION END " + str(actual_time)
-            mex.body = message
-            return mex
-        else:
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = '({"message" : {"subject" : "SIMULATION_END", "simulation_time": " ' + str(actual_time) + ' "}}'
-            mex.body = message
-            mex.metadata = "0"
-            return mex
-
-    ##############################################
-    # This Method manages "EnergyCost" message.  #
-    ##############################################
-    @classmethod
-    def energyCost(cls, device, time, protocol_version):
-        web_url = Configuration.parameters['web_url']
-        mydir = Configuration.parameters['user_dir']
-        if protocol_version == "1.0":
-            name = cls.basejid.split('@')[0]
-            url = cls.basejid.split('@')[1]
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = "ENERGY_COST [0] " + "http://" + str(url) + "/~gcdemo/" + cls.realpath + "/" + str(
-                Configuration.mydir) + "/" + str(device.profile) + " " + str(time)
-            mex.body = message
-            return mex
-        else:
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = '{"message" : {"subject" : "ENERGY_COST",id: "[0]","profile" : "' + web_url + '/' + cls.realpath + "/" + str(mydir) + '/' + str(device.profile) + '"}}'
-            mex.body = message
-            mex.metadata = '0'
-            return mex
-
-    ############################################################
-    # This Method manages "EnergyCost" for producers message.  #
-    ############################################################
-    @classmethod
-    def energyCostProducer(cls, device, time, protocol_version):
-        web_url = Configuration.parameters['web_url']
-        mydir = Configuration.parameters['user_dir']
-        if protocol_version == "1.0":
-            name = cls.basejid.split('@')[0]
-            url = cls.basejid.split('@')[1]
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = "ENERGY_COST [" + str(device.house) + "]:[" + str(device.device.id) + "] " + "http://" + str(
-                url) + "/~gcdemo/" + cls.realpath + "/Results/" + str(mydir) + "/" + str(
-                device.energycost) + " " + str(time)
-            mex.body = message
-            return mex
-        else:
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = '{"message" : {"subject" : "ENERGY_COST",id: "["' + str(device.house) + '"]:["' + str(
-                device.device.id) + '"]","profile" : "' + web_url + '/' + cls.realpath + "/" + str(
-                mydir) + '/' + str(device.energycost) + '"}}'
-            mex.body = message
-            mex.metadata = '0'
-            return mex
-
-    #############################################
-    # This Method manages "EnergyMix" message.  #
-    #############################################
-    @classmethod
-    def energyMix(cls, device, time, protocol_version):
-        web_url = Configuration.parameters['web_url']
-        mydir = Configuration.parameters['user_dir']
-        if protocol_version == "1.0":
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = "ENERGY_MIX " +  str(web_url) + "/" + cls.realpath + "/" + str(mydir) + "/" + str(device.profile) + " " + str(time)
-            mex.body = message
-            return mex
-        else:
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = '{"message" : {"subject" : "ENERGY_MIX","profile" : "' + web_url + '/' + cls.realpath + "/" + str(mydir) + '/' + str(device.profile) + ' "}}'
-            mex.body = message
-            mex.metadata = '0'
-            return (mex)
-
-    #################################################################
-    # This Method manages "EnergyGroup" message for Neighborhood.   #
-    #################################################################
-    @classmethod
-    def neighborhood(cls, device, time, protocol_version):
-        if protocol_version == "1.0":
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = "CREATE_ENERGY_GROUP [99] " + str(device.peakload) + " " + time
-            mex.body = message
-            return mex
-        else:
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = '{"message" : {"subject" : "CREATE_ENERGY_GROUP","powerpeak" : " ' + str(
-                device.peakload) + ' "}}'
-            mex.body = message
-            mex.metadata = '0'
-            return mex
-
-    ###########################################################
-    # This Method manages "EnergyGroup" message for houses.   #
-    ###########################################################
-    @classmethod
-    def house(cls, device, time, protocol_version):
-        if protocol_version == "1.0":
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = "CREATE_ENERGY_GROUP [" + str(device.id) + "] " + str(device.peakload) + " " + str(time)
-            mex.body = message
-            return mex
-        else:
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = '{"message" : {"subject" : "CREATE_ENERGY_GROUP", "id" : " ' + str(
-                device.id) + ' ", "powerpeak" : " ' + str(device.peakload) + ' "}}'
-            mex.body = message
-            mex.metadata = '0'
-            return mex
-
-    #####################################################################
-    # This Method manages "EnergyGroup" message for ChargingStations.   #
-    #####################################################################
-    @classmethod
-    def chargingstation(cls, device, time, protocol_version):
-        if protocol_version == "1.0":
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = "CREATE_ENERGY_GROUP  [" + str(device.id) + "] " + str(device.peakload) + " " + str(time)
-            mex.body = message
-            return (mex)
-        else:
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = '{"message" : {"subject" : "CREATE_ENERGY_GROUP", "id" : " ' + str(
-                device.id) + ' ", "powerpeak" : " ' + str(device.peakload) + ' ", "numcp" : " ' + str(
-                device.numcp) + ' "}}'
-            mex.body = message
-            mex.metadata = '0'
-            return mex
-
-    ###################################################################
-    # This Method manages "EnergyGroup" message for ChargingPoints.   #
-    ###################################################################
-    @classmethod
-    def chargingpoint(cls, device, time, protocol_version):
-        if protocol_version == "1.0":
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = "CREATE_ENERGY_GROUP [" + str(device.houseid) + "]:[" + str(
-                device.id) + "]" + " CONNECTORS_TYPE " + str(device.connection_type) + " POWERPEAK " + str(
-                device.peakload) + " " + str(time)
-            mex.body = message
-            return mex
-        else:
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = '{"message" : {"subject" : "CREATE_ENERGY_GROUP", "id" : "[' + str(
-                device.houseid) + ']:[' + str(device.id) + ']", "connectors_type" : " ' + str(
-                device.connection_type) + ' ", "powerpeak" : " ' + str(device.peakload) + ' "}}'
-            mex.body = message
-            mex.metadata = '0'
-            return mex
-
-    #################################################
-    # This Method manages "HeaterCooler" message.   #
-    #################################################
-    @classmethod
-    def heatercooler(cls, device, time, protocol_version):
-        web_url = Configuration.parameters['web_url']
-        mydir = Configuration.parameters['user_dir']
-        if protocol_version == "1.0":
-            url = cls.basejid.split('@')[1]
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = "HC [" + str(device.house) + "]:[" + str(device.device.id) + "] 0 " + "http://" + str(
-                url) + "/~gcdemo/" + cls.realpath + "/" + str(mydir) + "/" + str(device.profile) + " " + str(time)
-            mex.body = message
-            return (mex)
-        else:
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = '{"message" : {"subject" : "HC","id" : "[' + str(device.house) + ']:[' + str(
-                device.device.id) + ']","profile" : "' + web_url + '/' + cls.realpath + "/" + str(mydir) + '/' + str(device.profile) + ' "}}'
-            mex.body = message
-            mex.metadata = time
-            return mex
-
-    #################################################
-    # This Method manages "Background" message.   #
-    #################################################
-    @classmethod
-    def background(cls, device, time, protocol_version):
-        mydir = Configuration.parameters['user_dir']
-        web_url = Configuration.parameters['web_url']
-        if protocol_version == "1.0":
-            url = cls.basejid.split('@')[1]
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = "BG  [" + str(device.house) + "]:[" + str(device.device.id) + "] 0 " + "http://" + str(
-                url) + "/~gcdemo/" + cls.realpath + "/" + str(mydir) + "/" + str(device.profile) + " " + str(time)
-            mex.body = message
-            return mex
-        else:
-
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = '{"message" : {"subject" : "BG","id" : "[' + str(device.house) + ']:[' + str(
-                device.device.id) + ']","profile" : "' + web_url + '/' + cls.realpath + "/" + str(
-                mydir) + '/' + str(device.profile) + ' "}}'
-            mex.body = message
-            mex.metadata = time
-            return mex
-
-
-    ##############################################################
-    # METHOD NOT USED. MAYBE USEFULL IN  FUTURE IMPLEMENTATION   #
-    ##############################################################
-    @classmethod
-    def charge_on_demand(cls, device, time, protocol_version):
-        if protocol_version == "1.0":
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = '"message: {"subject": "EV", "capacity":' + str(
-                device.device.capacity) + ', "max_ch_pow_ac":' + str(
-                device.device.max_ch_pow_ac) + ',"max_ch_cc":' + str(
-                device.device.max_ch_pow_cc) + ', "max_all_en":' + str(
-                device.device.max_all_en) + ',"min_all_en:' + str(device.device.min_all_en) + ',"sb_ch:"' + str(
-                device.device.sb_ch) + ',"ch_eff:"' + str(device.device.ch_eff) + ',"soc_at_arrival":' + str(
-                device.Soc_at_arrival) + ',"planned_departure_time":' + str(
-                device.planned_departure_time) + ',"arrival_time:"' + str(
-                device.actual_arrival_time) + ', "v2g":' + str(device.v2g) + ',"target_soc":' + str(
-                device.target_soc) + '}}'
-            mex.body = message
-
-            return mex
-        else:
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = '{"message" : {"subject" : "EV", "capacity" : " ' + str(
-                device.device.capacity) + ' " , "max_ch_pow_ac" : " ' + str(
-                device.device.max_ch_pow_ac) + ' " , "max_ch_cc" : " ' + str(
-                device.device.max_ch_pow_cc) + ' " , "max_all_en" : " ' + str(
-                device.device.max_all_en) + ' " , "min_all_en" : " ' + str(
-                device.device.min_all_en) + ' " , "sb_ch" : " ' + str(
-                device.device.sb_ch) + ' " , "ch_eff" :  " ' + str(
-                device.device.ch_eff) + ' " , "soc_at_arrival": " ' + str(
-                device.Soc_at_arrival) + ' " , "planned_departure_time" : " ' + str(
-                device.planned_departure_time) + ' " , "arrival_time" : " ' + str(
-                device.actual_arrival_time) + ' " , "v2g" : " ' + str(
-                device.v2g) + ' " , "target_soc" : " ' + str(device.target_soc) + ' " }}'
-            mex.body = message
-            mex.metadata = time
-            return (mex)
-
-    ##########################################
-    # Method used for Ev arrival, departure  #
-    ##########################################
-    @classmethod
-    def booking_request(cls, device, time, protocol_version):
-
-        if protocol_version == "1.0":
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = "EV [" + str(
-                device.device.id) + "] " + device.Soc_at_arrival + " " + device.planned_departure_time + " " + device.actual_arrival_time + " [" + str(
-                device.house) + "]:[" + str(device.device.cp) + "] " + device.v2g + " " + device.target_soc + " " + str(
-                time)
-            mex.body = message
-
-            return (mex)
-
-        else:
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-
-            message = '{"message" : {"subject" : "EV" , "id" : "[' + str(
-                device.device.id) + ']", "soc_at_arrival": " ' + str(
-                device.Soc_at_arrival) + ' " , "planned_departure_time" : " ' + str(
-                device.planned_departure_time) + ' " , "arrival_time" : " ' + str(
-                device.actual_arrival_time) + ' " ,"charging_point" : "[' + str(device.house) + ']:[' + str(
-                device.device.cp) + ']", "v2g" : " ' + str(device.v2g) + ' " , "target_soc" : " ' + str(
-                device.target_soc) + ' " }}'
-            mex.body = message
-            mex.metadata = time
-            return (mex)
-
-    ##############################################
-    # This Method manages "Create_EV" message.   #
-    ##############################################
-    @classmethod
-    def create_ev(cls, device, time, protocol_version):
-        if protocol_version == "1.0":
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = "CREATE_EV [" + str(
-                device.device.id) + "] " + device.device.capacity + " " + device.device.max_ch_pow_ac + " " + \
-                      device.device.max_ch_pow_cc + " " + device.device.max_all_en + " " + device.device.min_all_en + \
-                      " " + device.device.sb_ch + " " + device.device.sb_dis + " " + device.device.ch_eff + " " + \
-                      device.device.dis_eff + " " + device.v2g + " " + str(time)
-            mex.body = message
-            return mex
-        else:
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = '{"message" : {"subject" : "CREATE_EV" , "id" : "[' + str(
-                device.device.id) + ']", "capacity" : " ' + str(
-                device.device.capacity) + ' " , "max_ch_pow_ac" : " ' + str(
-                device.device.max_ch_pow_ac) + ' " , "max_ch_pow_cc" : " ' + str(
-                device.device.max_ch_pow_cc) + ' " , "max_dis_pow_ac" : " ' + str(
-                device.device.max_dis_pow_ac) + ' " , "max_dis_pow_cc" : " ' + str(
-                device.device.max_dis_pow_cc) + ' " , "max_all_en" : " ' + str(
-                device.device.max_all_en) + ' " , "min_all_en" : " ' + str(
-                device.device.min_all_en) + ' " , "sb_ch" : " ' + str(
-                device.device.sb_ch) + ' " , "sb_dis" : " ' + str(
-                device.device.sb_dis) + ' " , "ch_eff" :  " ' + str(
-                device.device.ch_eff) + ' " , "dis_eff": " ' + str(
-                device.device.dis_eff) + ' " , "v2g" : " ' + str(device.v2g) + ' "}}'
-            mex.body = message
-            mex.metadata = time
-            return mex
-
-    ##############################################################
-    # METHOD NOT USED. MAYBE USEFULL IN  FUTURE IMPLEMENTATION   #
-    ##############################################################
-    @classmethod
-    def ev_arrival(cls, device, time, protocol_version):
-
-        if protocol_version == "1.0":
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = "EV_ARRIVAL CAPACITY " + device.device.capacity + " MAX_CH_POW_AC " + \
-                      device.device.max_ch_pow_ac + " MAX_CH_POW_CC " + device.device.max_ch_pow_cc + " MAX_ALL_EN " + \
-                      device.device.max_all_en + " MIN_ALL_EN " + device.device.min_all_en + " SB_CH " + \
-                      device.device.sb_ch + " CH_EFF " + device.device.ch_eff + " SOC_AT_ARRIVAL " + \
-                      device.Soc_at_arrival + " PLANNED_DEPARTURE_TIME " + device.planned_departure_time + \
-                      " ARRIVAL_TIME " + device.actual_arrival_time + " V2G " + device.v2g + " TARGET_SOC " + \
-                      device.target_soc
-            mex.body = message
-
-            return mex
-
-        else:
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = '{"message" : {"subject" : "EV_ARRIVAL" , "capacity" : " ' + str(
-                device.device.capacity) + ' " , "max_ch_pow_ac" : " ' + str(
-                device.device.max_ch_pow_ac) + ' " , "max_ch_pow_cc" : " ' + str(
-                device.device.max_ch_pow_cc) + ' " , "max_all_en" : " ' + str(
-                device.device.max_all_en) + ' " , "min_all_en" : " ' + str(
-                device.device.min_all_en) + ' " , "sb_ch" : " ' + str(
-                device.device.sb_ch) + ' " , "ch_eff" :  " ' + str(
-                device.device.ch_eff) + ' " , "soc_at_arrival": " ' + str(
-                device.Soc_at_arrival) + ' " , "planned_departure_time" : " ' + str(
-                device.planned_departure_time) + ' " , "arrival_time" : " ' + str(
-                device.actual_arrival_time) + ' " , "v2g" : " ' + str(
-                device.v2g) + ' " , "target_soc" : " ' + str(device.target_soc) + ' " }}'
-            mex.body = message
-            mex.metadata = time
-            return mex
-
-    ##############################################################
-    # METHOD NOT USED. MAYBE USEFULL IN  FUTURE IMPLEMENTATION   #
-    ##############################################################
-    @classmethod
-    def ev_departure(cls, device, time, protocol_version):
-        if protocol_version == "1.0":
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = "EV_DEPARTURE CAPACITY " + device.device.capacity + " MAX_CH_POW_AC " + device.device.max_ch_pow_ac + " MAX_CH_POW_CC " + device.device.max_ch_pow_cc + " MAX_ALL_EN " + device.device.max_all_en + " MIN_ALL_EN " + device.device.min_all_en + " SB_CH " + device.device.sb_ch + " CH_EFF " + device.device.ch_eff + " SOC_AT_ARRIVAL " + device.Soc_at_arrival + " PLANNED_DEPARTURE_TIME " + device.planned_departure_time + " ARRIVAL_TIME " + device.actual_arrival_time + " V2G " + device.v2g + " TARGET_SOC " + device.target_soc
-            mex.body = message
-            return mex
-        else:
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = '{"message" : {"subject" : "EV_DEPARTURE" , "capacity" : " ' + str(
-                device.device.capacity) + ' " , "max_ch_pow_ac" : " ' + str(
-                device.device.max_ch_pow_ac) + ' " , "max_ch_pow_cc" : " ' + str(
-                device.device.max_ch_pow_cc) + ' " , "max_all_en" : " ' + str(
-                device.device.max_all_en) + ' " , "min_all_en" : " ' + str(
-                device.device.min_all_en) + ' " , "sb_ch" : " ' + str(
-                device.device.sb_ch) + ' " , "ch_eff" :  " ' + str(
-                device.device.ch_eff) + ' " , "soc_at_arrival": " ' + str(
-                device.Soc_at_arrival) + ' " , "planned_departure_time" : " ' + str(
-                device.planned_departure_time) + ' " , "arrival_time" : " ' + str(
-                device.actual_arrival_time) + ' " , "v2g" : " ' + str(
-                device.v2g) + ' " , "target_soc" : " ' + str(device.target_soc) + ' " }}'
-            mex.body = message
-            mex.metadata = time
-            return mex
-
-    #################################################
-    # This Method manages "create_Battery" message. #
-    #################################################
-    @classmethod
-    def create_Battery(cls, device, time, protocol_version):
-        if protocol_version == "1.0":
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = "CREATE_BATTERY " + "[" + str(device.house) + "]:[" + str(
-                device.device.id) + "] " + device.device.capacity + " " + device.device.max_ch_pow_ac + " " + device.device.max_ch_pow_cc + " " + device.device.max_all_en + " " + device.device.min_all_en + " " + device.device.sb_ch + " " + device.device.ch_eff + " " + device.Soc_at_arrival + " " + device.start_time + " " + device.end_time
-            mex.body = message
-
-            return mex
-
-        else:
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = '{"message" : {"subject" : "CREATE_BATTERY" , "capacity" : " ' + str(
-                device.device.capacity) + ' " , "max_ch_pow_ac" : " ' + str(
-                device.device.max_ch_pow_ac) + ' " , "max_ch_pow_cc" : " ' + str(
-                device.device.max_ch_pow_cc) + ' " , "max_all_en" : " ' + str(
-                device.device.max_all_en) + ' " , "min_all_en" : " ' + str(
-                device.device.min_all_en) + ' " , "sb_ch" : " ' + str(
-                device.device.sb_ch) + ' " , "ch_eff" :  " ' + str(
-                device.device.ch_eff) + ' " , "soc_at_arrival": " ' + str(
-                device.Soc_at_arrival) + ' " , "start_time" : " ' + str(
-                device.start_time) + ' " , "end_time" : " ' + str(device.end_time) + ' " }}'
-            mex.body = message
-            mex.metadata = time
-            return mex
-
-    ##################################################
-    # This Method manages "create_producer" message. #
-    ##################################################
-    @classmethod
-    def create_producer(cls, device, time, protocol_version):
-        if protocol_version == "1.0":
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = "CREATE_PRODUCER [" + str(device.house) + "]:[" + str(device.device.id) + "] " + str(time)
-            mex.body = message
-            return mex
-        else:
-
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = '{"message" : {"subject" : "CREATE_PRODUCER","type" : "PV","id" : "[' + str(
-                device.house) + ']:[' + str(device.device.id) + ']"}}'
-            mex.body = message
-            mex.metadata = time
-            return mex
-            
-    #######################################
-    # This Method manages "Load" message. #
-    #######################################
-    @classmethod
-    def create_load(cls, device, time, protocol_version):
-        mydir = Configuration.parameters['user_dir']
-        web_url = Configuration.parameters['web_url']
-        if protocol_version == "1.0":
-            url = cls.basejid.split('@')[1]
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = "LOAD [" + str(device.house) + "]:[" + str(device.device.id) + "] 1 " + str(
-                device.est) + " " + str(device.lst) + " " + "http://" + str(
-                url) + "/~gcdemo/" + cls.realpath + "/" + str(
-                mydir) + "/" + str(device.profile) + " " + str(time)
-            mex.body = message
-            return mex
-        else:
-
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = ' {"message" :  {"subject" : "LOAD", "id" : "[' + str(device.house) + ']:[' + str(
-                device.device.id) + ']", "sequence" : "1", "est" : " ' + str(
-                device.est) + ' ", "lst" : " ' + str(
-                device.lst) + ' ","profile" : "' + web_url + '/' + cls.realpath + "/" + str(
-                mydir) + '/' + str(device.profile) + ' "}} '
-            mex.body = message
-            mex.metadata = time
-            return mex
-
-    ##################################################
-    # This Method manages "update_producer" message. #
-    ##################################################
-    @classmethod
-    def update_producer(cls, device, time, protocol_version):
-        web_url = Configuration.parameters['web_url']
-        mydir = Configuration.parameters['user_dir']
-        if protocol_version == "1.0":
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = "PREDICTION_UPDATE [" + str(device.house) + "]:[" + str(device.device.id) + "]  " + str(web_url) + "/" + cls.realpath + "/" + str(mydir) + "/" + str(device.profile) + " " + str(time)
-            mex.body = message
-            return mex
-        else:
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-            message = '{"message" : {"subject" : "PREDICTION_UPDATE","type" : "PV","id" : "[' + str(
-                device.house) + ']:[' + str(
-                device.device.id) + ']","profile" : "' + web_url + '/' + cls.realpath + "/" + str(
-                mydir) + '/' + str(device.profile) + ' "}}'
-            mex.body = message
-            mex.metadata = time
-            return mex
-
-    ##############################################
-    # This Method manages "delete_load" message. #
-    ##############################################
-    @classmethod
-    def delete_load(cls, device, time, protocol_version):
-        if protocol_version == "1.0":
-            mex = Message(to=cls.basejid + "/actormanager")
-            message = "DELETE_LOAD [" + str(device.house) + "]:[" + str(device.device.id) + "] " + str(
-                device.consumption) + " " + " " + str(time)
-            mex.body = message
-            return mex
-        else:
-            mex = Message(to=cls.basejid + "/" + cls.jid)
-
-            message = '{ "message":  {"subject": "DELETE_LOAD", "id": "[' + str(device.house) + ']:[' + str(
-                device.device.id) + ']" , "energy": " ' + str(
-                device.consumption) + ' ", "producer" : " ' + str(device.panel) + ' " }} '
-            mex.body = message
-            mex.metadata = time
-            return mex
-
-
-
-
 ##################################################################################################
 # This method calculates consumption in KW of a load consumer. It is used in the delete message. #
 ##################################################################################################
@@ -617,8 +85,9 @@ class dispatcher(Agent):
 
     def __init__(self, address, passw):
         super(dispatcher, self).__init__(address, passw)
-        self.idToProfile = {}
+        self.idToLoad = {}
         self.abilitation = False
+        self.messageToWait = Configuration.messageToWait
 
     ##################################################################################
     # This method check periodically if start/stop messages are sent by setupModule. #
@@ -663,8 +132,7 @@ class dispatcher(Agent):
             completed = 0
             total = es.Entities.sharedQueue.qsize()
             percent = 0
-            deletedList = []
-          
+            deletedList = []      
             path = Configuration.parameters['current_sim_dir']
             with open(path + "/Results/" + Configuration.parameters['user_dir'] + "/output/output.txt", "w+") as file:
                 finish = 0
@@ -743,6 +211,25 @@ class dispatcher(Agent):
                     else:
                         finish = 1
                         es.Entities.enqueue_event(int(next2[0]), next2[1],  int(next2[2]))
+                    ##################################################################################
+                    # Wait for BG and HC SCHEDULED MESSAGE BUT  DO NOTHING                           #
+                    ##################################################################################
+                    messageFromScheduler = None
+                    if(next2[1].type in self.agent.messageToWait):
+                        if protocol_version == "1.0":
+                            while isinstance(messageFromScheduler, type(None)):
+                                logging.debug("sono in attesa di un messaggio")
+                                messageFromScheduler = await self.receive(timeout=20)
+                            file.write("<<< " + messageFromScheduler.body + "\r\n")
+                            file.flush()
+                        else:
+                            messageFromScheduler = await self.receive(timeout=20)
+                            while not isinstance(messageFromScheduler, type(None)):
+                                logging.info(messageFromScheduler.body)
+                                if messageFromScheduler.body == "AckMessage":
+                                    logging.info("Ack Received")
+                                messageFromScheduler = await self.receive(timeout=20)
+
 
                     file.write(next2[1].type + "\n")
                     file.flush()
@@ -752,6 +239,8 @@ class dispatcher(Agent):
                 ##################################################################################
                 while self.agent.abilitation and finish:
                     WasEnable = True
+                    messageFromScheduler = None
+
                     next2 = es.Entities.next_event()
                     nextload = next2[1]
                     actual_time = next2[0]
@@ -793,7 +282,7 @@ class dispatcher(Agent):
                             es.Entities.enqueue_event(int(nextload.creation_time),  nextload, int(next2[2]))
                         file.write(">>> " + message.body + "\n")
                         file.flush()
-                    if nextload.device.type == "battery":
+                    elif nextload.device.type == "battery":
                         message = MessageFactory.create_Battery(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
@@ -803,59 +292,7 @@ class dispatcher(Agent):
                         message = MessageFactory.create_load(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
-                        self.agent.idToProfile["[" + str(nextload.house) + ']:[' + str(nextload.device.id) + ']'] = nextload.profile
-                        messageFromScheduler = None
-                        if protocol_version == "1.0":
-                            while isinstance(messageFromScheduler, type(None)):
-                                logging.debug("sono in attesa di un messaggio")
-                                messageFromScheduler = await self.receive(timeout=20)
-                            while messageFromScheduler.body.split(" ")[0] != "SCHEDULED":
-                                logging.info("messaggio:" + messageFromScheduler.body)
-                                try:
-                                    logging.debug(messageFromScheduler.body)
-                                    delta = calculateTime(nextload.profile)
-                                    newTime = str(int(messageFromScheduler.body.split(" ")[3]) + int(delta))
-                                    mydel = es.eventDelete(nextload.device, nextload.house, newTime,
-                                                           calculate_consum(nextload.profile))
-                                    path = Configuration.parameters['current_sim_dir']
-                                    switchInTime(nextload.profile, int(messageFromScheduler.body.split(" ")[3]))
-                                    es.Entities.enqueue_event(int(newTime),  mydel)
-                                    file.write("<<< " + messageFromScheduler.body + "\r\n")
-                                    file.flush()
-                                except Exception as e:
-                                    logging.warning(e)
-                                    logging.warning("unrecognized Message")
-                                messageFromScheduler = await self.receive()
-                                while (isinstance(messageFromScheduler, type(None))):
-                                    messageFromScheduler = await self.receive(timeout=20)
-                                    
-                                logging.info("messaggio:" + messageFromScheduler.body)
-                            file.write("<<< " + messageFromScheduler.body + "\r\n")
-                            file.flush()
-                        else:
-                            messageFromScheduler = await self.receive(timeout=20)
-                            while not isinstance(messageFromScheduler, type(None)):
-                                logging.info(messageFromScheduler.body)
-                                if messageFromScheduler.body == "AckMessage":
-                                    logging.info("Ack Received")
-                                else:
-                                    try:
-                                        delta = calculateTime(nextload.profile)
-                                        newTime = str(int(messageFromScheduler.body.split(" ")[3]) + int(delta))
-                                        mydel = es.eventDelete(nextload.device, nextload.house, newTime,
-                                                               calculate_consum(nextload.profile),
-                                                               messageFromScheduler.body.split(" ")[5])
-
-                                        path = Configuration.parameters['current_sim_dir']
-                                        switchInTime(nextload.profile, int(messageFromScheduler.body.split(" ")[3]))     
-                                        es.Entities.enqueue_event(int(newTime),  mydel)
-                                        file.write(">>> " + message.body + "\n")
-                                        file.write("<<< " + messageFromScheduler.body + "\r\n")
-                                        file.flush()
-                                    except Exception as e:
-                                        logging.info(e)
-                                messageFromScheduler = await self.receive(timeout=20)
-
+                        self.agent.idToLoad["[" + str(nextload.house) + ']:[' + str(nextload.device.id) + ']'] = nextload
                     elif nextload.type == "delete":
                         if nextload.device.id not in deletedList:
                             deletedList.append(nextload.device.id)
@@ -863,22 +300,18 @@ class dispatcher(Agent):
                             await self.send(message)
                             file.write(">>> " + message.body + "\n")
                             file.flush()
-
-
                     elif nextload.type == "EV" and nextload.device.type == "EV_ARRIVAL":
                         nextload.device.type = "EV_DEPARTURE"
                         message = MessageFactory.booking_request(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
                         file.flush()
-
                     elif nextload.type == "EV" and nextload.device.type == "EV_BOOKING":
                         nextload.device.type = "EV_ARRIVAL"
                         message = MessageFactory.booking_request(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(message.body + "\n")
                         file.flush()
-
                     elif nextload.type == "EV" and nextload.device.type == "EV_DEPARTURE":
                         message = MessageFactory.booking_request(nextload, next2[0], protocol_version)
                         await self.send(message)
@@ -895,39 +328,83 @@ class dispatcher(Agent):
                         message = MessageFactory.background(nextload, next2[0], protocol_version)
                         logging.info(protocol_version)
                         await self.send(message)
-
                         file.write(">>> " + message.body + "\n")
                         file.flush()
 
+                    ##################################################################################
+                    # Wait response messages                                                         #
+                    ##################################################################################
+                    if(nextload.type in self.agent.messageToWait):
+                        if protocol_version == "1.0":
+                            while isinstance(messageFromScheduler, type(None)):
+                                logging.debug("sono in attesa di un messaggio")
+                                messageFromScheduler = await self.receive(timeout=20)
+                            while messageFromScheduler.body.split(" ")[0] != "SCHEDULED":
+                                logging.info("messaggio:" + messageFromScheduler.body)
+                                try:
+                                    receivedLoad = self.agent.idToLoad[messageFromScheduler.body.split(" ")[1]]
+                                    logging.debug(messageFromScheduler.body)
+                                    delta = calculateTime(receivedLoad.profile)
+                                    newTime = str(int(messageFromScheduler.body.split(" ")[3]) + int(delta))
+                                    mydel = es.eventDelete(receivedLoad.device, receivedLoad.house, newTime,calculate_consum(receivedLoad.profile))
+                                    switchInTime(receivedLoad.profile, int(messageFromScheduler.body.split(" ")[3]))
+                                    es.Entities.enqueue_event(int(newTime),  mydel)
+                                    file.write("<<< " + messageFromScheduler.body + "\r\n")
+                                    file.flush()
+                                except Exception as e:
+                                    logging.warning(e)
+                                    logging.warning("unrecognized Message")
+                                messageFromScheduler = await self.receive()
+                                while (isinstance(messageFromScheduler, type(None))):
+                                    messageFromScheduler = await self.receive(timeout=20)
+                                logging.info("messaggio:" + messageFromScheduler.body)
+                            file.write("<<< " + messageFromScheduler.body + "\r\n")
+                            file.flush()
+                        else:
+                            messageFromScheduler = await self.receive(timeout=20)
+                            while not isinstance(messageFromScheduler, type(None)):
+                                logging.info(messageFromScheduler.body)
+                                if messageFromScheduler.body == "AckMessage":
+                                    logging.info("Ack Received")
+                                else:
+                                    try:
+                                        receivedLoad = self.agent.idToLoad[messageFromScheduler.body.split(" ")[1]]
+                                        delta = calculateTime(receivedLoad.profile)
+                                        newTime = str(int(messageFromScheduler.body.split(" ")[3]) + int(delta))
+                                        mydel = es.eventDelete(receivedLoad.device, receivedLoad.house, newTime,calculate_consum(receivedLoad.profile),messageFromScheduler.body.split(" ")[5])
+                                        switchInTime(receivedLoad.profile, int(messageFromScheduler.body.split(" ")[3]))     
+                                        es.Entities.enqueue_event(int(newTime),  mydel)
+                                        file.write(">>> " + message.body + "\n")
+                                        file.write("<<< " + messageFromScheduler.body + "\r\n")
+                                        file.flush()
+                                    except Exception as e:
+                                        logging.info(e)
+                                messageFromScheduler = await self.receive(timeout=20)
+
                     if es.Entities.sharedQueue.empty():
-
                         if protocol_version == "2.0":
-
                             messageFromScheduler = await self.receive(timeout=10)
                             while not isinstance(messageFromScheduler, type(None)):
                                 if messageFromScheduler.body == "AckMessage":
                                     logging.info("Ack Received")
                                 else:
                                     try:
-                                        delta = calculateTime(nextload.profile)
+                                        receivedLoad = self.agent.idToLoad[messageFromScheduler.body.split(" ")[1]]
+                                        delta = calculateTime(receivedLoad.profile)
                                         newTime = str(int(messageFromScheduler.body.split(" ")[3]) + int(delta))
-                                        mydel = es.eventDelete(nextload.device, nextload.house, newTime,
-                                                               calculate_consum(nextload.profile),
-                                                               messageFromScheduler.body.split(" ")[4])
-                                        #replaceHere
+                                        mydel = es.eventDelete(receivedLoad.device, receivedLoad.house, newTime,calculate_consum(receivedLoad.profile),messageFromScheduler.body.split(" ")[4])
+                                        switchInTime(receivedLoad.profile, int(messageFromScheduler.body.split(" ")[3]))     
                                         es.Entities.enqueue_event(int(newTime),mydel)
                                         es.count += 1
                                         file.write(">>> " + message.body + "\n")
                                         file.write("<<< " + messageFromScheduler.body + "\r\n")
                                         file.flush()
-
                                     except:
                                         logging.info("unrecognized Message")
                                 messageFromScheduler = await self.receive(timeout=10)
                     if es.Entities.sharedQueue.empty():
                         message = MessageFactory.end(actual_time)
                         file.write(">>> " + message.body + "\n")
-
                         file.flush()
                         file.close()
                         finish = False

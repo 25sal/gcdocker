@@ -10,18 +10,12 @@ class Configuration:
     listDevice = []  # IN THIS LIST WILL BE STORED ALL THE LOADS
     listPanels = []  # IN THIS LIST WILL BE STORED ALL THE PRODUCERS
     listEvent = []
-    """dir1 = os.path.dirname(os.path.realpath(__file__))
-    dir2 = dir1.split("/")
-    dir1 = ""
-    for i in range(1,len(dir2)-1):
-        dir1 = dir1 +"/"+ dir2[i]
-    """
     pathneighbor = 0
     pathload2 = 0
     config_file = '/home/gc/bin/config.yml'
     parameters = None
     mydir = None
-
+    messageToWait = None
 
     @classmethod
     def set_config_file(cls, config_file='config.yml'):
@@ -36,24 +30,11 @@ class Configuration:
             cls.parameters = cfg['config']
             cls.parameters['current_sim_dir'] = cls.parameters['simulation_dir'] + '/' + cls.parameters['simulation']
             cls.parameters['webdir'] = cfg['config']['webdir']
+            if(cls.parameters['forcedwait'] == False):
+                cls.messageToWait = ['load']
+            else:
+                cls.messageToWait = ['load','heatercooler', 'background', 'LoadUpdate', 'EV']
 
-
-            '''
-            cls.parameters['date'] = cfg['config']['date'] + " 00:00:00"
-            cls.parameters['simulation_dir'] = cfg['config']['simulation_dir']
-            cls.parameters['simulation'] = cfg['config']['simulation']
-            cls.parameters["userjid"] = cfg['config']['userjid']
-            cls.parameters['xmpp_password'] = cfg['config']['xmpp_password']
-            cls.parameters['simulator'] = cfg['config']['simulator']
-            '''
-            '''
-            dir1 = dir1 + "/" + simd
-
-            datetime_object = datetime.strptime(date, '%m/%d/%y %H:%M:%S')
-            workingdir = 0
-            webdir = cfg['config']['webdir']
-            sharedQueue = queue.PriorityQueue()
-            '''
             mydir = 0
             # codice aggiunto perchè non funzionava la directory web nel dispatcher
             date3 = cls.parameters['date'] .split()

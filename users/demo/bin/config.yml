@@ -13,3 +13,4 @@ config:
   workingdir: /home/gc/bin
   xmpp_password: demo
   web_url: http://localhost/demo
+  forcedwait: false
