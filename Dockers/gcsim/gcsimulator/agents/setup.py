@@ -20,6 +20,7 @@ import shutil
 from utils.config import Configuration
 import sqlite3
 import logging
+from os import listdir
 LOGFILE = '/home/gc/simulator/gcdaemon.log'
 
 logging.basicConfig(filename=LOGFILE, filemode= 'w', level=logging.INFO)
@@ -695,20 +696,22 @@ def createEventList():
                     type2 = device.find("type").text
                     if device.find('profile').text.endswith(' '):
                         profile = device.find('profile').text[:-1]
-                        copy2(path + "/Inputs/" + profile, workingdir + "/inputs")
+                        #copy2(path + "/Inputs/" + profile, workingdir + "/inputs")
                     else:
                         profile = device.find('profile').text
-                        copy2(path + "/Inputs/" + profile, workingdir + "/inputs")
+                        #copy2(path + "/Inputs/" + profile, workingdir + "/inputs")
 
                     for c in Entities.listDevice:
                         if deviceId == c.id and houseId == c.house:
                             if c.type == "Consumer":
                                 e = eventGeneral(c, houseId, est, lst, creation_time, profile, "load")
                                 Entities.listEvent.append(e)
+                                #copy2(workingdir + "/Inputs/" + profile, workingdir + "/inputs")
+                                copy2(workingdir + "/inputs/" + profile, workingdir + "/output/SH")
                             elif c.type == "Producer":
                                 energycost = device.find('energy_cost').text
-                                copy2(path + "/Inputs/" + profile, workingdir + "/inputs")
-                                copy2(path + "/Inputs/" + profile, workingdir + "/output/PV")
+                                #copy2(workingdir + "/Inputs/" + profile, workingdir + "/inputs")
+                                copy2(workingdir + "/inputs/" + profile, workingdir + "/output/PV")
 
                                 e = eventProducer(c, houseId, est, lst, creation_time, profile, "load", energycost)
 
@@ -733,12 +736,12 @@ def createEventList():
                     mydir = Configuration.mydir
                     if device.find('profile').text.endswith(' '):
                         profile = device.find('profile').text[:-1]
-                        copy2(path + "/Inputs/" + profile, workingdir + "/inputs")
-                        copy2(path + "/Inputs/" + profile, path + "/Results/" + cls.parameters['user_dir'] + "/output/BG/")
+                        #copy2(path + "/Inputs/" + profile, workingdir + "/inputs")
+                        copy2(workingdir + "/inputs/" + profile, path + "/Results/" + cls.parameters['user_dir'] + "/output/BG/")
                     else:
                         profile = device.find('profile').text
-                        copy2(path + "/Inputs/" + profile, workingdir + "/inputs")
-                        copy2(path + "/Inputs/" + profile, path + "/Results/" + cls.parameters['user_dir'] + "/output/BG/")
+                        #copy2(path + "/Inputs/" + profile, workingdir + "/inputs")
+                        copy2(workingdir + "/inputs/" + profile, path + "/Results/" + cls.parameters['user_dir'] + "/output/BG/")
                     for c in Entities.listDevice:
                         if deviceId == c.id and houseId == c.house:
                             if c.type == "backgroundLoad":
@@ -814,24 +817,34 @@ def adjustTime():
     datetime_object = datetime.strptime(date, '%m/%d/%y %H:%M:%S')
     timestamp = datetime.timestamp(datetime_object)
     entry = []
-    for e in Entities.listEvent:
-        if e.device.type == "Producer" or e.device.type == "Consumer":
-            with open(workingdir + "/inputs/" + e.profile, "r") as f:
-                with open(workingdir + "/inputs/temp" + e.profile, "w") as f2:
+    allFilenames = listdir(workingdir+'/inputs')
+    csvFilenames = [ filename for filename in allFilenames if filename.endswith( ".csv" ) ]
+    print(csvFilenames)
+    for file in csvFilenames:
+            print(file)
+            with open(workingdir + "/inputs/" + file, "r") as f:
+                with open(workingdir + "/inputs/temp" + file, "w") as f2:
                     reader = csv.reader(f)
                     writer = csv.writer(f2, delimiter=' ')
+                    first = 0
                     for data in reader:
                         entry = []
                         oldtimestamp = datetime.fromtimestamp(int(data[0].split(" ")[0]))
+                        if(first==0):
+                            oldDay = oldtimestamp.day
+                            first =1
                         datetime_new = datetime(year=datetime_object.year, month=datetime_object.month,
                                                 day=datetime_object.day, hour=oldtimestamp.hour,
                                                 minute=oldtimestamp.minute, second=oldtimestamp.second)
                         seconds = datetime.timestamp(datetime_new)
+                        newDay = oldtimestamp.day
+                        if(oldDay != newDay):
+                            seconds += 86400
                         entry.append(str(int(seconds)))
                         entry.append(data[0].split(" ")[1])
                         writer.writerow(entry)
-            os.remove(workingdir + "/inputs/" + e.profile)
-            os.rename(workingdir + "/inputs/temp" + e.profile, workingdir + "/inputs/" + e.profile)
+            os.remove(workingdir + "/inputs/" + file)
+            os.rename(workingdir + "/inputs/temp" + file, workingdir + "/inputs/" + file)
 
 
 
@@ -967,18 +980,22 @@ def makeNewSimulation(pathneigh, pathload):
     os.mkdir(workingdir + "/output/BG/", 0o755)
     os.mkdir(workingdir + "/output/EV/", 0o755)
     os.mkdir(workingdir + "/output/PV/", 0o755)
+    os.mkdir(workingdir + "/output/SH/", 0o755)
+
     if os.path.exists(path + "/output/"):
         shutil.rmtree(path + "/output/")
         os.mkdir(path + "/output/", 0o755)
         os.mkdir(path + "/output/BG/", 0o755)
         os.mkdir(path + "/output/HC/", 0o755)
         os.mkdir(path + "/output/EV/", 0o755)
-
+        os.mkdir(path + "/output/SH/", 0o755)
     else:
         os.mkdir(path + "/output/", 0o755)
         os.mkdir(path + "/output/BG/", 0o755)
         os.mkdir(path + "/output/HC/", 0o755)
         os.mkdir(path + "/output/EV/", 0o755)
+        os.mkdir(path + "/output/SH/", 0o755)
+
 
     copy2(pathneigh, workingdir + "/xml")
 
@@ -1044,13 +1061,16 @@ class ExternalSourceAgent(spade.agent.Agent):
         Entities.listDevice = []  # IN THIS LIST WILL BE STORED ALL THE LOADS
         Entities.listPanels = []  # IN THIS LIST WILL BE STORED ALL THE PRODUCERS
         Entities.listEvent = []
+
         makeNewSimulation(self.pathneighbor, self.pathload2)
+        adjustTime()
+
         createDevicesList()
         logging.info("List Created.")
+
         createEventList()
         logging.info("Information Added.")
         uploadInInputRepository()
-        adjustTime()
         copyInscheduler()
 
         date = Configuration.parameters['date'] + " 00:00:00"

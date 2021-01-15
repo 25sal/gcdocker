@@ -32,25 +32,25 @@
         <type>load</type>
         <creation_time>15000</creation_time>
         <energy_cost>0_run_0_1.csv</energy_cost>
-        <profile>10_run_1_1_dw.csv</profile>
+        <profile>10_run_1_1_dw.csv </profile>
       </device>
-      <device>
+      	  <device>
         <id>4</id>
-        <est>20000</est>
-        <lst>20000</lst>
+        <est>22000</est>
+        <lst>22000</lst>
         <type>load</type>
         <creation_time>15000</creation_time>
         <energy_cost>0_run_0_1.csv</energy_cost>
-        <profile>10_run_2_1_wm.csv</profile>
+        <profile>10_run_2_1_wm.csv </profile>
       </device>
       	  <device>
         <id>5</id>
-        <est>42000</est>
-        <lst>42000</lst>
+        <est>50000</est>
+        <lst>50000</lst>
         <type>load</type>
         <creation_time>15000</creation_time>
         <energy_cost>0_run_0_1.csv</energy_cost>
-        <profile>7_freezer.csv</profile>
+        <profile>7_freezer.csv </profile>
       </device>
     </user>
   </house>

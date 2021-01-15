@@ -83,7 +83,7 @@ class scheduler(Agent):
                         id_load = parsed_json['id']
                         ast = parsed_json['ast']
                         producer = parsed_json['producer']
-                        mex = sub + " ID " + id_load + " " + ast + " PV " + producer
+                        mex = sub + " " + id_load + " " + ast + " " + producer
                         self.mexToSend.put_nowait(mex)
 
             elif sub == "HC_PROFILE":
