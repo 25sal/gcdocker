@@ -71,28 +71,32 @@ class EnergyOutput:
 
     def compute_production(self):
         temp_series = None
-        for group_key in self.productions.keys():
-            for ts_key in self.productions[group_key]:
-                temp_series = self.__sum_ts(temp_series, self.productions[group_key][ts_key])
-        self.tot_production = temp_series
-        pass
+        if len(self.productions.keys()) > 0:
+            for group_key in self.productions.keys():
+                for ts_key in self.productions[group_key]:
+                    temp_series = self.__sum_cts(temp_series, self.productions[group_key][ts_key])
+            self.tot_production = temp_series
+        else:
+            self.tot_production = np.zeros(len(self.sample_time))
 
     def compute_consumption(self):
         temp_series = None
-        for group_key in self.consumptions.keys():
-            for ts_key in self.consumptions[group_key]:
-                temp_series = self.__sum_ts(temp_series, self.consumptions[group_key][ts_key])
-        self.tot_consumption = temp_series
+        if len(self.consumptions.keys()) > 0:
+            for group_key in self.consumptions.keys():
+                for ts_key in self.consumptions[group_key]:
+                    temp_series = self.__sum_cts(temp_series, self.consumptions[group_key][ts_key])
+            self.tot_consumption = temp_series
+        else:
+            self.tot_consumption = np.zeros(len(self.sample_time))
 
     def compute_self(self):
-        if self.tot_consumption is not None and self.tot_consumption is not None:
-            self.self_consumption = np.zeros(len(self.sample_time))
-
+        self.self_consumption = np.zeros(len(self.sample_time))
+        if self.tot_production is not None and self.tot_production[-1] > 0:
             for i in range(1, len(self.sample_time)):
                 cons = self.tot_consumption[i] - self.tot_consumption[i-1]
                 prod = self.tot_production[i] - self.tot_production[i-1]
                 self_incr = 0
-                if cons >= 0:
+                if cons >= 0 and prod > 0:
                     self_incr = min(prod, cons)
                 self.self_consumption[i] = self.self_consumption[i - 1] + self_incr
 
@@ -113,7 +117,6 @@ class EnergyOutput:
         return self.__sum_sub_cts(ts_sum, ts_new, -1)
 
     def __sum_sub_cts(self, ts_sum, ts_new, mult=1):
-
         if ts_sum is None:
             ts_sum = np.zeros(len(self.sample_time))
         start_time = ts_new[0, 0]
@@ -123,9 +126,15 @@ class EnergyOutput:
             ts_spline = inter.interp1d(xx, ts_new[:, 1])
         except:
             ts_spline = inter.interp1d(xx, ts_new[:, 1])
+        last_incr = 0
         for i in range(len(self.sample_time)):
             if ts_new[0, 0] <= self.sample_time[i] <= ts_new[-1, 0]:
-                ts_sum[i] += ts_spline(self.sample_time[i]-ts_new[0, 0])
+                incr = ts_spline(self.sample_time[i]-ts_new[0, 0]) * mult
+                if incr > 0:
+                    last_incr = incr
+                    ts_sum[i] += ts_spline(self.sample_time[i]-ts_new[0, 0])
+            elif self.sample_time[i] > ts_new[-1, 0]:
+                ts_sum[i] += last_incr
         return ts_sum
 
     def load_series(self, typ, rel=False):
@@ -155,21 +164,32 @@ def ce2p(xx, yy):
             yy1[i] = yy1[i - 1]
     return yy1
 
+def ce2e(yy):
+    yy1 = np.zeros(len(yy))
+    for i in range(0, len(yy)-1):
+        yy1[i] = yy[i+1] - yy[i]
+    return yy1
+
+def p2ce(xx, yy):
+    yy1 = np.zeros(len(yy))
+    for i in range(1, len(yy)):
+            yy1[i] = yy1[i-1] + yy[i] * (xx[i] - xx[i - 1])/3600
+    return yy1
+
+
 def plot_output(sim_output):
 
     plt.figure()
     plot_power(sim_output.productions, 'b')
     plot_power(sim_output.consumptions)
     plt.legend()
-    plt.ylabel("power (kW)")
+    plt.ylabel("power (W)")
     plt.xlabel("hour")
     xlim = np.arange(sim_output.min_time, 60 * 60 * 24, 60 * 60 * 3)
     plt.xticks(xlim, [str(n).zfill(2) + ':00' for n in np.arange(int(sim_output.min_time / 3600), 24, 3)])
-    print('sono qui')
-    plt.savefig("./output_power.png")
+    plt.savefig("output_power.png")
 
     plt.figure()
-
     if sim_output.tot_production[-1] > 0:
         plt.plot(sim_output.sample_time, ce2p(sim_output.sample_time, sim_output.tot_production), 'b', linestyle='-', marker='.', label="tot_production")
     if sim_output.tot_consumption[-1] > 0:
@@ -177,12 +197,24 @@ def plot_output(sim_output):
     if sim_output.self_consumption[-1] > 0:
         plt.fill(sim_output.sample_time, ce2p(sim_output.sample_time, sim_output.self_consumption), 'g', label="self_consumption")
 
+
+
     plt.legend()
-    plt.ylabel("power (kW)")
+    plt.ylabel("power (W)")
     plt.xlabel("hour")
     xlim = np.arange(sim_output.min_time, 60 * 60 * 24, 60 * 60 * 3)
     plt.xticks(xlim, [str(n).zfill(2) + ':00' for n in np.arange(int(sim_output.min_time / 3600), 24, 3)])
-    plt.savefig("./output_self.png")
+    plt.savefig("output_self.png")
+
+    plt.figure()
+    plt.plot(sim_output.sample_time, sim_output.res_power(), 'r', label="res_power")
+    plt.legend()
+    plt.ylabel("power (W)")
+    plt.xlabel("hour")
+    xlim = np.arange(sim_output.min_time, 60 * 60 * 24, 60 * 60 * 3)
+    plt.xticks(xlim, [str(n).zfill(2) + ':00' for n in np.arange(int(sim_output.min_time / 3600), 24, 3)])
+    plt.savefig("res_pow.png")
+
 
 
 def plot_power(groups, colr=None):
@@ -204,16 +236,30 @@ def plot_power(groups, colr=None):
                 plt.plot(xx, yy1, linestyle='-', marker='.', label=group_key + "_" + ts_key)
 
 class Performance:
+
+
+    @staticmethod
+    def self_consumption(self_consumption, production):
+        if production[-1] > 0:
+            return self_consumption[-1]/production[-1]
+        else:
+            return 0
+
     @staticmethod
     def average(groups):
         energy = 0
-        duration = 0
+        min_time = None
+        max_time = None
         for group_key in groups.keys():
             for ts_key in groups[group_key].keys():
                 serie = groups[group_key][ts_key]
                 energy += serie[-1, 1]
-                duration += serie[-1, 0] - serie[0, 0]
-        average = 3600 * energy/duration
+                if min_time is None or min_time > serie[0, 0]:
+                    min_time = serie[0, 0]
+                if max_time is None or max_time < serie[-1, 0]:
+                    max_time = serie[-1, 0]
+
+        average = 3600 * energy/(max_time-min_time)
         return average
 
     @staticmethod
@@ -236,10 +282,6 @@ def shift_load(shift_time, infile, outfile):
     series[:, 0] = series[:, 0] - start_time + shift_time
     np.savetxt(outfile, series, delimiter=' ', fmt="%d %f")
 
-
-    @staticmethod
-    def peak2average_g(groups, consumption):
-        return Performance.peak2average(consumption, Performance.average(groups))
 
 def compute_area(ffunc, xx, a, b):
     """"
@@ -291,7 +333,7 @@ def ev2maxself(ev_ce, xx, res_energy, filename):
 if __name__ == "__main__":
     folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/trivial/Results/12_12_15_82"
     folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/demo2"
-    # folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/demo3"
+    #folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/trivialEV"
 
     # shift_load(10 * 3600, folder + "/input/EV/4_run_3_1_ecar.csv",  folder + "/output/EV/4_run_3_1_ecar.csv")
     # shift_load(15 * 3600, folder + "/input/SH/10_run_1_1_dw.csv", folder + "/output/SH/10_run_1_1_dw.csv")
@@ -304,9 +346,7 @@ if __name__ == "__main__":
     sim_output.compute_production()
     sim_output.compute_consumption()
     sim_output.compute_self()
-    print(sim_output.min_time)
     tot_consumption = np.vstack((sim_output.sample_time, sim_output.tot_consumption)).T
-
     print('tot_cons PAR:', Performance.peak2average(tot_consumption))
     print('cons PEAK:', np.max(ce2p(sim_output.sample_time, sim_output.tot_consumption)))
     res_energy = np.vstack((sim_output.sample_time, p2ce(sim_output.sample_time, sim_output.res_power()))).T
@@ -397,5 +437,3 @@ if __name__ == "__main__":
     np.savetxt("1.csv", np.vstack((sim_output.sample_time, p2ce(sim_output.sample_time,ev1))).T, delimiter=' ', fmt="%d %f")
     np.savetxt("2.csv", np.vstack((sim_output.sample_time, p2ce(sim_output.sample_time,ev2))).T, delimiter=' ', fmt="%d %f")
     np.savetxt("3.csv", np.vstack((sim_output.sample_time, p2ce(sim_output.sample_time,ev3))).T, delimiter=' ', fmt="%d %f")
-
-
