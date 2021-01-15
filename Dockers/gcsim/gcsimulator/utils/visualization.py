@@ -8,6 +8,9 @@ from scipy.integrate import simps
 
 
 class Intersection:
+    """
+    This class compute the intersection between two curve using different methods.
+    """
     @classmethod
     def solve(cls, f, x):
         s = np.sign(f)
@@ -25,16 +28,24 @@ class Intersection:
         return x[z] - f[z] / m
 
     @classmethod
-    def intersect(cls, x, y1,y2):
+    def intersect1(cls, x, y1,y2):
         f = y1 - y2
         z = cls.solve(f, x)
         ans = cls.interp(f, x, z)
         return ans
 
+    @staticmethod
+    def intersect2(f1, f2, xx):
+        def diff_func(x):
+            return f1(x) - f2(x)
+
+        roots = np.argwhere(np.diff(np.sign(diff_func(xx)))).flatten()
+        return roots
+
 
 class EnergyOutput:
-    cons_series = {'HC', 'SH'}
-    prod_series = {'EV'}
+    cons_series = {'HC', 'SH', 'EV'}
+    prod_series = {'PV'}
     sample_time = None
     self_consumption = None
     tot_consumption = None
@@ -91,8 +102,8 @@ class EnergyOutput:
 
 
     def res_power(self):
-        pow_cons = e2p(sim_output.sample_time, sim_output.tot_consumption)
-        pow_prod = e2p(sim_output.sample_time, sim_output.tot_production)
+        pow_cons = ce2p(sim_output.sample_time, sim_output.tot_consumption)
+        pow_prod = ce2p(sim_output.sample_time, sim_output.tot_production)
         res_pow = pow_cons - pow_prod
         for i in range(len(res_pow)):
             if res_pow[i] < 0:
@@ -144,7 +155,7 @@ class EnergyOutput:
         return ts_groups
 
 
-def e2p(xx, yy):
+def ce2p(xx, yy):
     yy1 = np.zeros(len(yy))
     for i in range(1, len(yy)):
         if yy[i] >= yy[i - 1]:
@@ -180,34 +191,14 @@ def plot_output(sim_output):
 
     plt.figure()
     if sim_output.tot_production[-1] > 0:
-        plt.plot(sim_output.sample_time, e2p(sim_output.sample_time, sim_output.tot_production), 'b', linestyle='-', marker='.', label="tot_production")
+        plt.plot(sim_output.sample_time, ce2p(sim_output.sample_time, sim_output.tot_production), 'b', linestyle='-', marker='.', label="tot_production")
     if sim_output.tot_consumption[-1] > 0:
-        plt.plot(sim_output.sample_time, e2p(sim_output.sample_time, sim_output.tot_consumption), 'r', linestyle='-', marker='.', label="tot_consumption")
+        plt.plot(sim_output.sample_time, ce2p(sim_output.sample_time, sim_output.tot_consumption), 'r', linestyle='-', marker='.', label="tot_consumption")
     if sim_output.self_consumption[-1] > 0:
-        plt.fill(sim_output.sample_time, e2p(sim_output.sample_time, sim_output.self_consumption), 'g', label="self_consumption")
-
-    """
-    Temporary code
-    """
-    threshold = np.zeros(len(sim_output.sample_time))
-    threshold[:] = threshold[:] + 6000
-    plt.plot(sim_output.sample_time, threshold, 'k', label='threshold')
+        plt.fill(sim_output.sample_time, ce2p(sim_output.sample_time, sim_output.self_consumption), 'g', label="self_consumption")
 
 
-    print("intersect", Intersection.intersect(sim_output.sample_time, threshold, sim_output.tot_consumption))
 
-    interplated_cons = inter.interp1d(sim_output.sample_time, e2p(sim_output.sample_time, sim_output.tot_consumption))
-    print(sim_output.tot_consumption[-1])
-    def ffunc(x):
-        return interplated_cons(x) - 6000
-
-    idx = np.argwhere(np.diff(np.sign(ffunc(sim_output.sample_time)))).flatten()
-    print(idx)
-    print(sim_output.sample_time[idx])
-    area1 = simps(ffunc(sim_output.sample_time[idx[0]:idx[-1]]),sim_output.sample_time[idx[0]:idx[-1]])/3600
-
-    # plt.plot(sim_output.sample_time[idx],  threshold[idx], 'x')
-    print(area1)
     plt.legend()
     plt.ylabel("power (W)")
     plt.xlabel("hour")
@@ -274,15 +265,68 @@ class Performance:
     @staticmethod
     def peak2average(consumption):
         avg_pow = 3600 * consumption[-1, 1]/(consumption[-1, 0] - consumption[0, 0])
-        pow_serie = e2p(consumption[:, 0], consumption[:, 1])
+        pow_serie = ce2p(consumption[:, 0], consumption[:, 1])
         return np.max(pow_serie)/avg_pow
 
 
 def shift_load(shift_time, infile, outfile):
+    """
+    This code shift a timeseries
+    :param shift_time:
+    :param infile:
+    :param outfile:
+    :return:
+    """
     series = np.genfromtxt(infile, delimiter=' ')
     start_time = series[0, 0]
     series[:, 0] = series[:, 0] - start_time + shift_time
     np.savetxt(outfile, series, delimiter=' ', fmt="%d %f")
+
+
+def compute_area(ffunc, xx, a, b):
+    """"
+    This code compute the area below the curve ffunc, between a and b
+    """
+    return simps(ffunc(xx[a:b]), xx[a:b])/3600
+
+
+def ev2maxself(ev_ce, xx, res_energy, filename):
+    """
+    This function change the energy profile of an ev to optimize the usage of residual green energy
+    :param ev_ce:
+    :param xx:
+    :param res_energy:
+    :param filename:
+    :return:
+    """
+    ev_energy = ev_ce[-1, 1]
+    ev_max_en = (ev_ce[-1, 1] / (ev_ce[-1, 0] - ev_ce[0, 0])) * 600
+    print("ev_demand", ev_energy)
+    for i in range(len(res_energy)):
+        if res_energy[i] < 0:
+            res_energy[i] = 0
+
+    charged_energy = [0]
+    charged_times = []
+    for i in range(len(xx)):
+        if xx[i] >= 10 * 3600:
+            if res_energy[i] < ev_max_en:
+                usable_energy = res_energy[i]
+            else:
+                usable_energy = ev_max_en
+            ev_energy -= usable_energy
+
+            charged_energy.append(charged_energy[-1] + usable_energy)
+            charged_times.append(xx[i])
+            if ev_energy <= 0:
+                print('charged at:', xx[i] / 3600, ":", xx[i] % 3600)
+                break
+    print("ev_residual", ev_energy)
+
+    charged_ts = np.vstack((charged_times, charged_energy[:-1])).T
+    # print(charged_ts)
+    np.savetxt(filename, charged_ts, delimiter=' ', fmt="%d %f")
+
 
 
 
@@ -304,48 +348,48 @@ if __name__ == "__main__":
     sim_output.compute_self()
     tot_consumption = np.vstack((sim_output.sample_time, sim_output.tot_consumption)).T
     print('tot_cons PAR:', Performance.peak2average(tot_consumption))
-    print('cons PEAK:', np.max(e2p(sim_output.sample_time, sim_output.tot_consumption)))
+    print('cons PEAK:', np.max(ce2p(sim_output.sample_time, sim_output.tot_consumption)))
     res_energy = np.vstack((sim_output.sample_time, p2ce(sim_output.sample_time, sim_output.res_power()))).T
     print('res_energy PAR:', Performance.peak2average(res_energy))
     print('res_energy PEAK:',np.max(sim_output.res_power()))
     print('self consumption:', Performance.self_consumption(sim_output.self_consumption, sim_output.tot_production))
-    #plot_output(sim_output)
+    plot_output(sim_output)
+
     '''
+    Find the when the total consumed power intersect the maximum power (6000W)
+    '''
+    threshold = np.zeros(len(sim_output.sample_time)) + 6000
+    tot_power = ce2p(sim_output.sample_time, sim_output.tot_consumption)
+    print("Intersect", Intersection.intersect1(sim_output.sample_time, threshold, tot_power))
+
+    func1 = inter.interp1d(sim_output.sample_time,tot_power)
+
+    def func2(x):
+        return threshold
+    result = Intersection.intersect2(func1, func2, sim_output.sample_time)
+    print("Intersect", result)
+    print(sim_output.sample_time[result])
     exit(0)
-    ev_ce = np.genfromtxt(folder + "/output/EV/4_run_3_1_ecar.csv", delimiter=' ')
-    ev_energy = ev_ce[-1, 1]
-    ev_max_en = (ev_ce[-1, 1]/(ev_ce[-1, 0]-ev_ce[0, 0]))*600
-    print("ev_demand", ev_energy)
-    res_energy = ce2e(sim_output.tot_production) - ce2e(sim_output.tot_consumption)
-    for i in range(len(res_energy)):
-        if res_energy[i] < 0:
-            res_energy[i] = 0
 
-    charged_energy = [0]
-    charged_times = []
-    for i in range(len(sim_output.sample_time)):
-        if sim_output.sample_time[i] >= 10*3600:
-            if res_energy[i] < ev_max_en:
-                usable_energy = res_energy[i]
-            else:
-                usable_energy = ev_max_en
-            ev_energy -= usable_energy
+    """
+    This code is used to exploit charge flexibility in order to keep the total power below a threshold
+    But it is not general and must be changed. 
+    """
+    folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/demo2"
+    sim_output = EnergyOutput(folder, 150)
+    sim_output.cons_series = {'HC', 'SH'}
+    sim_output.prod_series = {'EV'}
 
-            charged_energy.append(charged_energy[-1]+usable_energy)
-            charged_times.append(sim_output.sample_time[i])
-            if ev_energy <= 0:
-                print('charged at:', sim_output.sample_time[i]/3600, ":", sim_output.sample_time[i]%60)
-                break
-    print("ev_residual", ev_energy)
 
-    charged_ts = np.vstack((charged_times, charged_energy[:-1])).T
-    # print(charged_ts)
-    np.savetxt(folder + "/output/EV/4_run_3_1_ecar.csv", charged_ts, delimiter=' ', fmt="%d %f")
-    '''
-    total_power = e2p(sim_output.sample_time,sim_output.tot_consumption)
+    sim_output.load(True)
+    sim_output.compute_production()
+    sim_output.compute_consumption()
+    sim_output.compute_self()
+
+    total_power = ce2p(sim_output.sample_time, sim_output.tot_consumption)
     total_available = np.zeros((len(total_power))) +6000
     total_available -= total_power
-    total_evpower = e2p(sim_output.sample_time, sim_output.tot_production)
+    total_evpower = ce2p(sim_output.sample_time, sim_output.tot_production)
 
     ev3 = np.zeros((len(total_power)))
     ev1= np.zeros((len(total_power)))
@@ -353,29 +397,47 @@ if __name__ == "__main__":
     ev3_energy=9816
     ev2_energy=8970
     ev1_energy=8231
+
     for i in range(1, len(sim_output.sample_time)):
-        av_pow = total_available[i] - sim_output.tot_production[i]
+        av_pow = total_available[i] - total_power[i]
         if sim_output.sample_time[i] > 25200 and ev3_energy>0 and av_pow>0:
             ev3[i]=min(av_pow, 1621)
             av_pow-=ev3[i]
             ev3_energy-= 0.5*(ev3[i]+ev3[i-1])*(sim_output.sample_time[i]-sim_output.sample_time[i-1])/3600
+            if ev3_energy<0:
+                print('ev3 finish at', sim_output.sample_time[i] )
         if sim_output.sample_time[i] > 34200 and ev2_energy>0 and av_pow>0:
             ev2[i]=min(av_pow, 1546)
             av_pow-=ev2[i]
             ev2_energy-=0.5 * (ev2[i] + ev2[i - 1]) * (sim_output.sample_time[i] - sim_output.sample_time[i - 1]) / 3600
+            if ev2_energy < 0:
+                print('ev2 finish at', sim_output.sample_time[i])
+
         if sim_output.sample_time[i] > 36200 and ev1_energy>0 and av_pow>0:
             ev1[i]=min(av_pow, 3228)
             av_pow-=ev1[i]
             ev1_energy-=0.5 * (ev1[i] + ev1[i - 1]) * (sim_output.sample_time[i] - sim_output.sample_time[i - 1]) / 3600
+            if ev1_energy < 0:
+                print('ev1 finish at', sim_output.sample_time[i])
 
-    print(ev1)
-    print(ev2)
-    print(ev3)
+
     plt.figure()
-    plt.plot(sim_output.sample_time,ev1,'r')
-    plt.plot(sim_output.sample_time, ev2,'c')
-    plt.plot(sim_output.sample_time, ev3,'b')
+    plt.plot(sim_output.sample_time,total_power,'k', label='other loads')
+    plt.plot(sim_output.sample_time,ev1,'r', label='EV_1')
+
+    plt.plot(sim_output.sample_time, ev2,'c', label='EV_2')
+    plt.plot(sim_output.sample_time, ev3,'b', label='EV_3')
+    xlim = np.arange(sim_output.min_time, 60 * 60 * 24, 60 * 60 * 3)
+    plt.ylabel("power (W)")
+    plt.xlabel("hour")
+    plt.xticks(xlim, [str(n).zfill(2) + ':00' for n in np.arange(int(sim_output.min_time / 3600), 24, 3)])
+
+    plt.legend()
     plt.show()
+    np.savetxt("1.csv", np.vstack((sim_output.sample_time, p2ce(sim_output.sample_time,ev1))).T, delimiter=' ', fmt="%d %f")
+    np.savetxt("2.csv", np.vstack((sim_output.sample_time, p2ce(sim_output.sample_time,ev2))).T, delimiter=' ', fmt="%d %f")
+    np.savetxt("3.csv", np.vstack((sim_output.sample_time, p2ce(sim_output.sample_time,ev3))).T, delimiter=' ', fmt="%d %f")
+
 
 
 
