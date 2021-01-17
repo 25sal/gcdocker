@@ -45,7 +45,7 @@ class Intersection:
 
 class EnergyOutput:
     cons_series = {'HC', 'SH', 'EV'}
-    prod_series = {'PV'}
+    prod_series = {}
     sample_time = None
     self_consumption = None
     tot_consumption = None
@@ -333,7 +333,7 @@ def ev2maxself(ev_ce, xx, res_energy, filename):
 if __name__ == "__main__":
     folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/trivial/Results/12_12_15_82"
     folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/demo2"
-    #folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/trivialEV"
+    folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/trivialEV/Results/12_12_15_1"
 
     # shift_load(10 * 3600, folder + "/input/EV/4_run_3_1_ecar.csv",  folder + "/output/EV/4_run_3_1_ecar.csv")
     # shift_load(15 * 3600, folder + "/input/SH/10_run_1_1_dw.csv", folder + "/output/SH/10_run_1_1_dw.csv")
@@ -346,6 +346,7 @@ if __name__ == "__main__":
     sim_output.compute_production()
     sim_output.compute_consumption()
     sim_output.compute_self()
+    plot_output(sim_output)
     tot_consumption = np.vstack((sim_output.sample_time, sim_output.tot_consumption)).T
     print('tot_cons PAR:', Performance.peak2average(tot_consumption))
     print('cons PEAK:', np.max(ce2p(sim_output.sample_time, sim_output.tot_consumption)))
@@ -353,7 +354,7 @@ if __name__ == "__main__":
     print('res_energy PAR:', Performance.peak2average(res_energy))
     print('res_energy PEAK:',np.max(sim_output.res_power()))
     print('self consumption:', Performance.self_consumption(sim_output.self_consumption, sim_output.tot_production))
-    plot_output(sim_output)
+
 
     '''
     Find the when the total consumed power intersect the maximum power (6000W)
