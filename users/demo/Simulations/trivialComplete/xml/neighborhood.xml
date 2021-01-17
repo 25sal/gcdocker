@@ -61,12 +61,12 @@
 	  </battery>
 	  <backgroundload>
 			<type>NS-Consumer</type>
-			<name>BackGroundLoad</type>
+			<name>BackGroundLoad</name>
 			<id>6</id>
 	  </backgroundload>
 	  <heatercooler>
 			<type>NS-Consumer</type>
-			<name>heatercooler1</type>
+			<name>heatercooler1</name>
 			<id>7</id>
 	  </heatercooler>
     </user>
