@@ -284,7 +284,7 @@ class MessageFactory:
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
             message = "EV [" + str(
-                device.device.id) + "] " + device.Soc_at_arrival + " " + device.planned_departure_time + " " + device.actual_arrival_time + " [" + str(
+                device.device.id) + "] " + device.Soc_at_arrival + " " + device.actual_departure_time + " " + device.actual_arrival_time + " [" + str(
                 device.house) + "]:[" + str(device.device.cp) + "] " + device.v2g + " " + device.target_soc + " " + str(
                 time)
             mex.body = message
@@ -296,8 +296,8 @@ class MessageFactory:
 
             message = '{"message" : {"subject" : "EV" , "id" : "[' + str(
                 device.device.id) + ']", "soc_at_arrival": " ' + str(
-                device.Soc_at_arrival) + ' " , "planned_departure_time" : " ' + str(
-                device.planned_departure_time) + ' " , "arrival_time" : " ' + str(
+                device.Soc_at_arrival) + ' " , "actual_departure_time" : " ' + str(
+                device.actual_departure_time) + ' " , "arrival_time" : " ' + str(
                 device.actual_arrival_time) + ' " ,"charging_point" : "[' + str(device.house) + ']:[' + str(
                 device.device.cp) + ']", "v2g" : " ' + str(device.v2g) + ' " , "target_soc" : " ' + str(
                 device.target_soc) + ' " }}'
