@@ -48,7 +48,7 @@ class backGroundLoad(abstract_device):
 
 class heaterCooler(abstract_device):
     def __init__(self, id='0', house='0', name='0'):
-        super(abstract_device,self).__init__(id, house, "heaterCooler",  name)
+        super(heaterCooler,self).__init__(id, house, "heaterCooler",  name)
 
 
 class EV(abstract_device):
@@ -737,11 +737,11 @@ def createEventList():
                     if device.find('profile').text.endswith(' '):
                         profile = device.find('profile').text[:-1]
                         #copy2(path + "/Inputs/" + profile, workingdir + "/inputs")
-                        copy2(workingdir + "/inputs/" + profile, path + "/Results/" + cls.parameters['user_dir'] + "/output/BG/")
+                        copy2(workingdir + "/inputs/" + profile, path + "/Results/" + Configuration.parameters['user_dir'] + "/output/BG/")
                     else:
                         profile = device.find('profile').text
                         #copy2(path + "/Inputs/" + profile, workingdir + "/inputs")
-                        copy2(workingdir + "/inputs/" + profile, path + "/Results/" + cls.parameters['user_dir'] + "/output/BG/")
+                        copy2(workingdir + "/inputs/" + profile, path + "/Results/" + Configuration.parameters['user_dir'] + "/output/BG/")
                     for c in Entities.listDevice:
                         if deviceId == c.id and houseId == c.house:
                             if c.type == "backgroundLoad":

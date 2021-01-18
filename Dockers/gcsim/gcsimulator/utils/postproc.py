@@ -6,7 +6,7 @@ import shutil
 from scipy import interpolate
 import matplotlib.pyplot as plt
 import numpy as np
-import visualization
+
 
 class Node:
     def __init__(self, name):
@@ -22,17 +22,7 @@ class Node:
     def addData(self, dataList):
         for i in range (0,288):
             self.data[i] += dataList[i]
-class EV:
-    aat = 0
-    adt = 0
-    soc = 0
-    targetSoc = 0
-    maxch = 0
-    minch = 0
-    capacity = 0
-    profile = ''
-    maxDisPow = 0
-    departureTimeMinusArrivalTimeMinusEnergyDemand = 0
+
 
 class Checker:
     energyDict = {}
@@ -52,27 +42,35 @@ class Checker:
     selfC = 0
     shareOfBatteryCapacity = 0
     peakLoadList = {}
+    aatList = {}
+    adtList = {}
+    socList = {}
     estlstList = {}
+    departureTimeMinusArrivalTimeMinusEnergyDemand = {}
     batteryCapacity = {}
     listOfPeaks = {}
     root = '.'
+    targetSocList = {}
     reachedLimits = {}
     cpNum = 0
     ast_lst_constraint = {}
     estlstList = {}
+    capacityList = {}
+    maxCHList = {}
+    minCHList = {}
     energy_respected_to_capacity = {}
     energy_charged_respect_to_Connection = {}
     selfConsumedEnergyRespectToPVProduction = ''
+    idTofilenameEV = {}
     chargingPowerLowerThanMaxChPowConstraint = {}
-    offeredFlexibilityIndex = 0
-    actualFlexibilityIndex =0 
-    V2GFlexibilityIndex =0
-    evList = {}
+    maxDisPowList = {}
+    offeredFlexibilityIndex
+    actualFlexibilityIndex
+    V2GFlexibilityIndex 
 
-    def doChecks(self,path, startTime, pathXML, pathVisualizer):
+    def doChecks(self,path, startTime, pathXML):
         try:
             os.remove(path+"/checks/outputParam.csv")
-            os.remove(path+"/checks/kpi.csv")
         except:
             pass
         allfiles = [os.path.join(dp, f) for dp, dn, filenames in os.walk(path) for f in filenames if f.endswith('.csv')]
@@ -89,7 +87,6 @@ class Checker:
             self.totalEnergyProduced += float(energy)
         self.totalEnergyConsumption = self.totalEnergyConsumption - self.totalEnergyProduced
         self.workWithOutputTXT(path)
-
         for key,value in self.powerPeakListFiles.items():
             self.powerPeakListFiles[key] = generatePowerTimeSeries(value,startTime)
         for key,energy in self.energyProducerDict.items():
@@ -98,12 +95,11 @@ class Checker:
             if(key not in self.pvListResampled):
                 self.consumerResampled[key] = generateEnergyTimeSeries(key,startTime)
         self.calculateSelfConsumption()
-        self.readNeighborhoodXML(pathXML, startTime)
         self.readLoadXML(pathXML, startTime)
         sumForPowerPeak(self.root, self.powerPeakListFiles)
         findPeak(self.root, self.listOfPeaks)
         self.checkPowerPeakConstraint()
-
+        self.readNeighborhoodXML(pathXML, startTime)
         self.checkEnergyRespectToCapacityConstraint()
         self.checkEnergyRespectToConnectionTime()
         self.checkselfConsumedEnergyRespectToProduction()
@@ -112,15 +108,14 @@ class Checker:
         self.calculateChargingFlexibility()
         self.UtilisationOfCps()
         self.writeOutput(path)
-        visualization.callExternal(pathVisualizer)
+
 
     def checkChargingPowerLowerThanMaxChPowConstraint(self, startTime):
-        for key, ev in self.evList.items():
-            filename = ev.profile
+        for key, filename in self.idTofilenameEV.items():
             powerProfile = generatePowerTimeSeries(filename,startTime)
             respected = 1
             for element in powerProfile:
-                if(float(element)>float(ev.maxch)):
+                if(float(element)>float(self.maxCHList[key][0])):
                     respected = 0
             if(respected == 0):
                 self.chargingPowerLowerThanMaxChPowConstraint[key] = 'NotRespected'
@@ -137,24 +132,22 @@ class Checker:
 
 
     def checkEnergyRespectToCapacityConstraint(self):
-        for key,ev in self.evList.items():
-            capacity = ev.capacity
-            if(float(self.energyChargedWithIdAsKey[key]) + (float(ev.soc)*float(capacity))/100 < float(capacity)):
+        for key,capacity in self.capacityList.items():
+            if(float(self.energyChargedWithIdAsKey[key]) + (float(self.socList[key][0])*float(capacity[0]))/100 < float(capacity[0])):
                 self.energy_respected_to_capacity[key] = 'Respected'
             else:
                 self.energy_respected_to_capacity[key] = 'Not Respected'
 
     def checkEnergyRespectToConnectionTime(self):
-        for key,ev in self.evList.items():
-            capacity = ev.capacity
-            if((float(ev.adt) - (float(ev.aat)))*float(ev.maxch) > float(self.energyChargedWithIdAsKey[key])):
+        for key,capacity in self.adtList.items():
+            if((float(self.adtList[key][0]) - (float(self.aatList[key][0])))*float(self.maxCHList[key][0]) > float(self.energyChargedWithIdAsKey[key])):
                 self.energy_charged_respect_to_Connection[key] = 'Respected'
             else:
                 self.energy_charged_respect_to_Connection[key] = 'Not Respected'
 
     def checkPowerPeakConstraint(self):
         for key,peak in self.peakLoadList.items():
-            if(float(self.listOfPeaks[key])*1000 > float(peak)):
+            if(float(self.listOfPeaks[key][0])*1000 > float(peak)):
                 self.reachedLimits[key] = 'reached'
             else:
                 self.reachedLimits[key] = 'not reached'
@@ -174,30 +167,29 @@ class Checker:
             buildingID = "["
             root = Node("root")
             if 'peakLoad' in elem.attrib:
-                if(elem.tag == "ChargingPoint"):
+                if(ecar.tag == "ChargingPoint"):
                     self.cpNum +=1
                 buildingID += elem.attrib['id']+"]"
                 buildingID += ":["
                 for subelement in elem:
-                    if(subelement.tag == "ChargingPoint"):
+                    if(ecar.tag == "ChargingPoint"):
                         self.cpNum +=1
                     if 'peakLoad' in subelement.attrib:
                         tempo = buildingID + subelement.attrib['id']+"]"
                     for subsubelement in subelement:
-                        if(subsubelement.tag == "ChargingPoint"):
+                        if(ecar.tag == "ChargingPoint"):
                             self.cpNum +=1
                         if 'peakLoad' in subsubelement.attrib:
                             tempo = buildingID + subsubelement.attrib['id']+"]"
                         for ecar in subsubelement:
                             if(ecar.tag == "ecar"):
                                 tempo = '[' + ecar.find("id").text+']'
-                                self.evList[tempo].capacity = float(ecar.find("capacity").text)
-                                self.evList[tempo].maxch = float(ecar.find("maxchpowac").text)
-                                self.evList[tempo].minch =float(ecar.find("maxchpowac").text) #DA CAMBIARE IN MIN
-                                self.evList[tempo].maxDisPow = float(ecar.find("maxdispowac").text)
-                                self.evList[tempo].departureTimeMinusArrivalTimeMinusEnergyDemand = -float(ecar.find("capacity").text)/float(ecar.find("maxchpowac").text)
-                                
-                              
+                                self.capacityList[tempo] = [float(ecar.find("capacity").text)]
+                                self.maxCHList[tempo] = [float(ecar.find("maxchpowac").text)]
+                                self.minCHList[tempo] = [float(ecar.find("maxchpowac").text)] #DA CAMBIARE IN MIN
+                                self.maxDisPowList[tempo] =  [float(ecar.find("maxdispowac").text)]
+                                self.departureTimeMinusArrivalTimeMinusEnergyDemand[tempo] = [-float(ecar.find("capacity").text)/[float(ecar.find("maxchpowac").text)]
+                                self.batteryCapacity[tempo] = [float(ecar.find("capacity").text]
 
     def readLoadXML(self, pathXML, startTime):
         tree = ET.parse(pathXML +'/loads.xml')
@@ -228,13 +220,13 @@ class Checker:
                         for ecar in subsubelement:
                             if(ecar.tag == "ecar"):
                                 tempo = '[' + ecar.find("id").text+']'
-                                self.evList[tempo].aat = float(ecar.find("aat").text)
-                                self.evList[tempo].adt = float(ecar.find("adt").text)
-                                self.evList[tempo].soc = float(ecar.find("soc").text)
-                                self.evList[tempo].targetSoc = float(ecar.find("targetSoc").text)
-                                self.evList[tempo].departureTimeMinusArrivalTimeMinusEnergyDemand *= float(ecar.find("soc").text)
-                                self.evList[tempo].departureTimeMinusArrivalTimeMinusEnergyDemand += float(ecar.find("adt").text)
-                                self.evList[tempo].departureTimeMinusArrivalTimeMinusEnergyDemand -= float(ecar.find("aat").text)
+                                self.aatList[tempo] = [float(ecar.find("aat").text)]
+                                self.adtList[tempo] = [float(ecar.find("adt").text)]
+                                self.socList[tempo] = [float(ecar.find("soc").text)]
+                                self.targetSocList[tempo] = [float(ecar.find("targetSoc").text)]
+                                self.departureTimeMinusArrivalTimeMinusEnergyDemand[tempo] = self.departureTimeMinusArrivalTimeMinusEnergyDemand[tempo]*[float(ecar.find("soc").text)]
+                                self.departureTimeMinusArrivalTimeMinusEnergyDemand[tempo] = self.departureTimeMinusArrivalTimeMinusEnergyDemand[tempo]+[float(ecar.find("adt").text)]
+                                self.departureTimeMinusArrivalTimeMinusEnergyDemand[tempo] = self.departureTimeMinusArrivalTimeMinusEnergyDemand[tempo]-[float(ecar.find("aat").text)]
 
     def calculateSelfConsumption(self):
         for i in range(288):
@@ -290,48 +282,46 @@ class Checker:
                             first = 0
                         else:
                             id = id + ':' + value
-                    csv_name = path+'/SH/'+splittedMessage[6].split('/')[-1]
+                    csv_name = path+'/'+splittedMessage[6].split('/')[-1]
                     self.powerPeakListFiles[id] = csv_name
                 if(splittedMessage[1] == "EV"):
                     id = splittedMessage[6]
                     csv_name = path+'/EV/'+ splittedMessage[3]+'.csv'
                     self.powerPeakListFiles[id] = csv_name
                     longId =  splittedMessage[2]
-                    self.evList[longId] = EV()
                     self.energyChargedWithIdAsKey[longId] = self.energyEVDict[csv_name]
-                    self.evList[longId].profile = csv_name
+                    self.idTofilenameEV[longId] = csv_name
 
 
     def calculateChargingAvailability(self):
-        numEV = len(self.evList)
+        numEV = len(self.idTofilenameEV)
         
 
     def calculateSHareOfBatteryCapacityForV2G(self):
-        for key, ev in self.evList.items():
-            maxChPow = ev.maxch
-            self.shareOfBatteryCapacity += 0.5*maxChPow*ev.departureTimeMinusArrivalTimeMinusEnergyDemand
+        for key, maxChPow in self.maxCHList.items():
+            self.shareOfBatteryCapacity += 0.5*maxChPow*self.departureTimeMinusArrivalTimeMinusEnergyDemand[key]
 
     def calculateChargingFlexibility(self):
         connectedTime = 0
         offeredFlexibility = []
         actualFlexibility = []
         V2GFlexibility = []
-        for key, ev in self.evList.items():
-            with open(ev.profile) as csv_file:
+        for key, aat in self.aatList.items():
+            with open(self.idTofilenameEV[key]) as csv_file:
                         csv_reader = csv.reader(csv_file, delimiter=' ')
                         for row in csv_reader:
                             plug_out_time = float(row[0])
-            offeredFlexTime = ev.adt - ev.aat
-            actualFlexTime = plug_out_time - ev.aat
-            RequiredEnergy = ev.capacity*(ev.targetSoc - ev.soc)
-            offeredFlexibility.append(1-(RequiredEnergy/ev.maxch)/offeredFlexTime)
-            actualFlexibility.append(1-(RequiredEnergy/ev.maxch)/actualFlexTime)
-            V2GFlexibility.append(1-(RequiredEnergy/ev.maxDisPow)/offeredFlexTime)
+            offeredFlexTime = self.adtList[key] - aat
+            actualFlexTime = plug_out_time - aat
+            RequiredEnergy = self.batteryCapacity[key]*(self.targetSocList[key] - self.socList[key])
+            offeredFlexibility.append(1-(RequiredEnergy/self.maxCHList[key])/offeredFlexTime)
+            actualFlexibility.append(1-(RequiredEnergy/self.maxCHList[key])/actualFlexTime)
+            V2GFlexibility.append(1-(RequiredEnergy/self.maxDisPowList)/offeredFlexTime)
+
         offeredFlexibilityIndex = 0
         actualFlexibilityIndex = 0
         V2GFlexibilityIndex = 0
         for i in range(0,len(offeredFlexibility)):
-            print(offeredFlexibility[i])
             offeredFlexibilityIndex += offeredFlexibility[i]
             actualFlexibilityIndex += actualFlexibility[i]
             V2GFlexibilityIndex += V2GFlexibility[i]
@@ -345,18 +335,18 @@ class Checker:
         connectedTime = 0
         chargingTime = 0
         chargedEnergy = 0
-        for key, ev in self.evList.items():
-            with open(ev.profile) as csv_file:
+        for key, aat in self.aatList.items():
+            with open(self.idTofilenameEV[key]) as csv_file:
                         csv_reader = csv.reader(csv_file, delimiter=' ')
                         first = 0
                         for row in csv_reader:
                             if(first == 0):
                                 plug_in_time = float(row[0])
-                                first =1 
+                                first =1
                             plug_out_time = float(row[0])
-            connectedTime += ev.adt - ev.aat
+            connectedTime += self.adtList[key] - aat
             chargingTime += plug_out_time - plug_in_time
-            chargedEnergy += ev.capacity*(ev.targetSoc - ev.soc)
+            chargedEnergy += self.batteryCapacity[key]*(self.targetSocList[key] - self.socList[key])
         self.KPI531 = connectedTime/timespan
         self.KPI532 = chargingTime/connectedTime
         self.KPI533 = chargedEnergy/connectedTime
@@ -421,15 +411,15 @@ class Checker:
 
         with open(path+"/checks/kpi.csv", "w") as csv_file:
                 param_writer = csv.writer(csv_file, delimiter=' ', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                param_writer.writerow(["NumberOfEV_GC5.1", str(len(self.evList))])
+                param_writer.writerow(["NumberOfEV_GC5.1", str(len(self.idTofilenameEV))])
                 param_writer.writerow(["NumberOfCPGC5.2", str(self.cpNum)])
                 param_writer.writerow(["Self_Consumption_GC5.14", str(self.selfC)])
                 param_writer.writerow(["UtilisationOfCPsGC5.3.1", str(self.KPI531)])
                 param_writer.writerow(["UtilisationOfCPsGC5.3.2", str(self.KPI532)])
                 param_writer.writerow(["UtilisationOfCPsGC5.3.3", str(self.KPI533)])
                 param_writer.writerow(["ChargingFlexibility5.13.1", str(self.offeredFlexibilityIndex)])
-                param_writer.writerow(["ChargingFlexibility5.13.2", str(self.actualFlexibilityIndex)])
-                param_writer.writerow(["ChargingFlexibility5.13.3", str(self.V2GFlexibilityIndex)])
+                param_writer.writerow(["UtilisationOfCPsGC5.13.2", str(self.actualFlexibilityIndex)])
+                param_writer.writerow(["UtilisationOfCPsGC5.13.3", str(self.V2GFlexibilityIndex)])
                 param_writer.writerow(["shareOfBatteryCapacity5.4", str(self.shareOfBatteryCapacity)])
 
 
@@ -456,13 +446,11 @@ def printChilds(node):
 
 def sumForPowerPeak(node, dictConsumer):
     for nodechild in node.children:
-        print(node.name)
         powerList = sumForPowerPeak(nodechild, dictConsumer)
         for i in range(0,287):
             node.data[i] += powerList[i]
     for key,consumer in dictConsumer.items():
         if(key == node.name):
-            print(key)
             for i in range(0,287):
                 node.data[i] += consumer[i]
     return node.data
@@ -535,6 +523,6 @@ def generatePowerTimeSeries(file, startTime):
 if __name__ == "__main__":
 
     checker = Checker()
-    checker.doChecks("/home/gc/Simulations/trivialComplete/output", 1449878400,"/home/gc/Simulations/trivialComplete/xml", "/home/gc/Simulations/trivialComplete/")
+    checker.doChecks("./trivialComplete/output", 1449878400,"./trivialComplete/12_12_15_82/xml")
     
   

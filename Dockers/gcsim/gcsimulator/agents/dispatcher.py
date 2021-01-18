@@ -13,7 +13,7 @@ import logging
 from utils.MessageFactory import MessageFactory
 
 path.append("..")
-LOGFILE = '/home/gc/simulator/gcdaemon.log'
+LOGFILE = './gcdaemon.log'
 
 logging.basicConfig(filename=LOGFILE, filemode= 'w', level=logging.INFO)
 
