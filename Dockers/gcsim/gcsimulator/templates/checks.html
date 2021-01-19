@@ -5,12 +5,15 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 	<link rel="stylesheet" type="text/css" href="../../../dhtmlx/codebase/fonts/font_roboto/roboto.css"/>
 	<link rel="stylesheet" type="text/css" href="../../../dhtmlx/codebase/dhtmlx.css"/>
-		<link rel="stylesheet" type="text/css" href="../../../dhtmlx/skins/skyblue/dhtmlx.css"/>
 	<link rel="stylesheet" type="text/css" href="../../../dhtmlx/skins/web/dhtmlx.css"/>
+	<!--
 	<link rel="stylesheet" type="text/css" href="../../../dhtmlx/skins/terrace/dhtmlx.css"/>
+	<link rel="stylesheet" type="text/css" href="../../../dhtmlx/skins/skyblue/dhtmlx.css"/>
+	-->
 	<script src="../../../dhtmlx/codebase/dhtmlx.js"></script>
 	<script src="./output/checks/parameters.js"></script>
 	<script src="./output/checks/checks.js"></script>
+	<script src="./output/checks/kpis.js"></script>
 	
 	
  	
@@ -61,11 +64,27 @@ function doOnLoad(){
 	checks_grid.setColSorting('str,str,str');
 	checks_grid.setInitWidths('*,*,*');
 	checks_grid.init();
-	checks_grid.parse(coerence_checks,"json");
+	checks_grid.parse(coherence_checks,"json");
 
 	sidebar.addItem({id: 'inputs', text: 'inputs', icon: 'sidebar_item_icon.png'});
 
+
 	sidebar.addItem({id: 'outputs', text: 'outputs', icon: 'sidebar_item_icon.png'})
+	var output_item = sidebar.cells('outputs');
+	output_item.attachURL('output/index.html');
+
+	sidebar.addItem({id: 'kpis', text: 'kpis', icon: 'sidebar_item_icon.png'})
+	var kpis_item = sidebar.cells('kpis');
+	var kpis_grid = kpis_item.attachGrid();
+	kpis_grid.setIconsPath('../../../codebase/imgs/');
+
+	kpis_grid.setHeader(["ID", "Name","Value"]);
+	kpis_grid.setColTypes("ro,ro,ro");
+
+	kpis_grid.setColSorting('str,str,str');
+	kpis_grid.setInitWidths('*,*,*');
+	kpis_grid.init();
+	kpis_grid.parse(kpis_values,"json");
 
 
 }

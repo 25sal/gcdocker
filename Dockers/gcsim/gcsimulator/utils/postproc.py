@@ -114,7 +114,7 @@ class Checker:
         self.calculateChargingFlexibility()
         self.UtilisationOfCps()
         self.writeOutput(path)
-        visualization.callExternal(pathVisualizer)
+
 
     def checkChargingPowerLowerThanMaxChPowConstraint(self, startTime):
         for key, ev in self.evList.items():
@@ -365,6 +365,8 @@ class Checker:
 
 
     def writeOutput(self, path):
+
+
         try:
             os.mkdir(path+"/checks")
         except :
@@ -381,13 +383,38 @@ class Checker:
         '''
 
         with open(path+"/checks/parameters.js", "w") as json_file:
+
+            test_values = self.get_test_value()
+            parameters = {"Total_Energy_Consumption": [str(self.totalEnergyConsumption), ""],
+                          "Total_Energy_Production": [str(self.totalEnergyProduced), ""],
+                          "Assigned Start Time List": [str(self.astDict), ""],
+                          "Energy_charged": [str(self.totalEnergyCharged), ""],
+                          "Number_of_Timeseries": [str(self.num_of_timeseries), ""],
+                          "Self_Consumption": [str(self.selfC), ""],
+                          "ast_lst_List": [str(self.estlstList), ""],
+                          "AstLstContraintRespected": [str(self.ast_lst_constraint), ""],
+                          "PowerPeaksReached": [str(self.listOfPeaks), ""],
+                          "PowerPeaksLimits": [str(self.peakLoadList), ""],
+                          "PowerPeaksLimitsReached": [str(self.reachedLimits), ""],
+                          "Energy_Charged_respect_to_capacity": [str(self.energy_respected_to_capacity), ""],
+                          "Energy_Charged_respect_to_Connection": [str(self.energy_charged_respect_to_Connection), ""],
+                          "Energy_AutoConsumed_Respect_To_Energy_Produced":
+                                                     [str(self.selfConsumedEnergyRespectToPVProduction), ""],
+                          "Charging_Power_Lower_than_Maximum": [str(self.chargingPowerLowerThanMaxChPowConstraint), ""],
+
+                          }
+            if test_values is not None:
+                for test_value in test_values:
+                    test_key = test_value[0].decode("utf8")
+                    if test_key in parameters.keys():
+                        parameters[test_key][1] = test_value[1].decode("utf8")
+
+
             json_file.write("data={rows:[")
-            json_file.write('{id:1,data:[ "Total_Energy_Consumption","'+ str(self.totalEnergyConsumption)+'","","",""]},')
-            json_file.write('{id:2,data:[ "Total_Energy_Production","'+ str(self.totalEnergyProduced)+'","","",""]},')
-            json_file.write('{id:3,data:[ "Assigned Start Time List","'+ str(self.astDict)+'","","",""]},')
-            json_file.write('{id:4,data:[ "Energy_charged","'+ str(self.totalEnergyCharged)+'","","",""]},')
-            json_file.write('{id:5,data:[ "Number_of_Timeseries","'+ str(self.num_of_timeseries)+'","","",""]},')
-            json_file.write('{id:6,data:[ "Self_Consumption","'+ str(self.selfC)+'","","",""]}')
+            i = 1
+            for key, value in parameters.items():
+                json_file.write('{id:' + str(i) + ',data:[ "'+key +'","'+ value[0] +'","'+ value[1]+'","",""]},')
+                i += 1
             json_file.write(']};')
         
         # temporary
@@ -403,7 +430,7 @@ class Checker:
             json_file.write(']};')
 
         with open(path+"/checks/outputParam.csv", "w") as csv_file:
-                param_writer = csv.writer(csv_file, delimiter=' ', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                param_writer = csv.writer(csv_file, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                 param_writer.writerow(["Total_Energy_Consumption", str(self.totalEnergyConsumption)])
                 param_writer.writerow(["Total_Energy_Production", str(self.totalEnergyProduced)])
                 param_writer.writerow(["Number_of_Timeseries", str(self.num_of_timeseries)])
@@ -432,6 +459,33 @@ class Checker:
                 param_writer.writerow(["ChargingFlexibility5.13.2", str(self.actualFlexibilityIndex)])
                 param_writer.writerow(["ChargingFlexibility5.13.3", str(self.V2GFlexibilityIndex)])
                 param_writer.writerow(["shareOfBatteryCapacity5.4", str(self.shareOfBatteryCapacity)])
+
+        with open(path+"/checks/kpis.js", "w") as json_file:
+            json_file.write("kpis_values={rows:[")
+            json_file.write('{id:1,data:[ "GC5.1","Number Of EVs",' + str(len(self.evList)) + ']},')
+            json_file.write('{id:2,data:[ "GC5.2","Number Of CP",' + str(self.cpNum) + ']},')
+            json_file.write('{id:3,data:[ "GC5.14","Self Consumption",' + str(self.selfC) + ']},')
+            json_file.write('{id:4,data:[ "GC5.3.1","Utilisation Of CPs",' + str(self.KPI531) + ']},')
+            json_file.write('{id:5,data:[ "GC5.3.2","Utilisation Of CPs",' + str(self.KPI532) + ']},')
+            json_file.write('{id:6,data:[ "GC5.3.3","Utilisation Of CPs",' + str(self.KPI533) + ']},')
+            json_file.write('{id:7,data:[ "GC5.13.1","Charging Flexibility",' + str(self.offeredFlexibilityIndex) + ']},')
+            json_file.write('{id:8,data:[ "GC5.13.2","Charging Flexibility",' + str(self.actualFlexibilityIndex) + ']},')
+            json_file.write('{id:9,data:[ "GC5.13.3","Charging Flexibility",' + str(self.V2GFlexibilityIndex) + ']},')
+            json_file.write('{id:10,data:[ "GC5.4","Share Of Battery Capacity",' + str(self.shareOfBatteryCapacity) + ']},')
+            json_file.write(']};')
+
+    def get_test_value(self):
+        cwd = os.getcwd()
+        cwd_parts = cwd.split("/")
+        sim_date = cwd_parts[-1]
+        parts = sim_date.split("_")
+        sim_date = parts[0] + "_" +parts[1] + "_" + parts[2]
+        test_file = "../../tests/" + sim_date + "/outputParam.csv"
+        test_values = None
+        if os.path.isfile(test_file):
+            test_values = np.genfromtxt(test_file, delimiter=";", dtype="|S")
+        return test_values
+
 
 
 
@@ -533,8 +587,21 @@ def generatePowerTimeSeries(file, startTime):
     return ynew
 
 
+def html_images(folder):
+    html_file = open(folder + "/index.html", "w")
+    html_file.write('<html><body>')
+    images = glob.glob(folder + "/*.png")
+    for image in images:
+        html_file.write('<img src="'+os.path.basename(image)+'"/>')
+    html_file.write('</body></html>')
+    html_file.close()
+
+
 if __name__ == "__main__":
 
     checker = Checker()
     checker.doChecks("./output", 1449878400, "./xml", ".")
+    shutil.copy('../../../../../../Dockers/gcsim/gcsimulator/templates/checks.html', 'checks.html')
+    visualization.callExternal(".", "./output")
+    html_images("./output")
 

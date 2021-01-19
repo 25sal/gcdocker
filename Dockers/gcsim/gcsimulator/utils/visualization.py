@@ -184,7 +184,7 @@ def p2ce(xx, yy):
     return yy1
 
 
-def plot_output(sim_output):
+def plot_output(sim_output, path="."):
 
     plt.figure()
     plot_power(sim_output.productions, 'b')
@@ -194,7 +194,7 @@ def plot_output(sim_output):
     plt.xlabel("hour")
     xlim = np.arange(sim_output.min_time, 60 * 60 * 24, 60 * 60 * 3)
     plt.xticks(xlim, [str(n).zfill(2) + ':00' for n in np.arange(int(sim_output.min_time / 3600), 24, 3)])
-    plt.savefig("output_power.png")
+    plt.savefig(path+"/output_power.png")
 
     plt.figure()
     if sim_output.tot_production[-1] > 0:
@@ -213,16 +213,16 @@ def plot_output(sim_output):
     plt.xlabel("hour")
     xlim = np.arange(sim_output.sample_time[0], 60 * 60 * 24, 60 * 60 * 3)
     plt.xticks(xlim, [str(n).zfill(2) + ':00' for n in np.arange(int(sim_output.sample_time[0] / 3600), 24, 3)])
-    plt.savefig("output_self.png")
+    plt.savefig(path+"/output_self.png")
 
     plt.figure()
-    plt.plot(sim_output.sample_time, sim_output.res_power(), 'r', label="res_power")
+    plt.plot(sim_output.sample_time, sim_output.res_power(), 'r', label="grid_in")
     plt.legend()
     plt.ylabel("power (W)")
     plt.xlabel("hour")
     xlim = np.arange(sim_output.sample_time[0], 60 * 60 * 24, 60 * 60 * 3)
     plt.xticks(xlim, [str(n).zfill(2) + ':00' for n in np.arange(int(sim_output.sample_time[0] / 3600), 24, 3)])
-    plt.savefig("res_pow.png")
+    plt.savefig(path+"/grid_in.png")
 
 
 
@@ -339,7 +339,7 @@ def ev2maxself(ev_ce, xx, res_energy, filename):
 
 
 
-def callExternal(folder):
+def callExternal(folder, out_path='.'):
     sim_output = EnergyOutput(folder,150)
 
     sim_output.load(True)
@@ -353,90 +353,8 @@ def callExternal(folder):
     print('res_energy PAR:', Performance.peak2average(res_energy))
     print('res_energy PEAK:',np.max(sim_output.res_power()))
     print('self consumption:', Performance.self_consumption(sim_output.self_consumption, sim_output.tot_production))
-    plot_output(sim_output)
+    plot_output(sim_output, out_path)
 
-    '''
-    Find the when the total consumed power intersect the maximum power (6000W)
-    '''
-    threshold = np.zeros(len(sim_output.sample_time)) + 6000
-    tot_power = ce2p(sim_output.sample_time, sim_output.tot_consumption)
-    print("Intersect", Intersection.intersect1(sim_output.sample_time, threshold, tot_power))
-
-    func1 = inter.interp1d(sim_output.sample_time,tot_power)
-
-    def func2(x):
-        return threshold
-    result = Intersection.intersect2(func1, func2, sim_output.sample_time)
-    print("Intersect", result)
-    print(sim_output.sample_time[result])
-    exit(0)
-
-    """
-    This code is used to exploit charge flexibility in order to keep the total power below a threshold
-    But it is not general and must be changed. 
-    """
-    folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/demo2"
-    sim_output = EnergyOutput(folder, 150)
-    sim_output.cons_series = {'HC', 'SH'}
-    sim_output.prod_series = {'EV'}
-
-
-    sim_output.load(True)
-    sim_output.compute_production()
-    sim_output.compute_consumption()
-    sim_output.compute_self()
-
-    total_power = ce2p(sim_output.sample_time, sim_output.tot_consumption)
-    total_available = np.zeros((len(total_power))) +6000
-    total_available -= total_power
-    total_evpower = ce2p(sim_output.sample_time, sim_output.tot_production)
-
-    ev3 = np.zeros((len(total_power)))
-    ev1= np.zeros((len(total_power)))
-    ev2 = np.zeros((len(total_power)))
-    ev3_energy=9816
-    ev2_energy=8970
-    ev1_energy=8231
-
-    for i in range(1, len(sim_output.sample_time)):
-        av_pow = total_available[i] - total_power[i]
-        if sim_output.sample_time[i] > 25200 and ev3_energy>0 and av_pow>0:
-            ev3[i]=min(av_pow, 1621)
-            av_pow-=ev3[i]
-            ev3_energy-= 0.5*(ev3[i]+ev3[i-1])*(sim_output.sample_time[i]-sim_output.sample_time[i-1])/3600
-            if ev3_energy<0:
-                print('ev3 finish at', sim_output.sample_time[i] )
-        if sim_output.sample_time[i] > 34200 and ev2_energy>0 and av_pow>0:
-            ev2[i]=min(av_pow, 1546)
-            av_pow-=ev2[i]
-            ev2_energy-=0.5 * (ev2[i] + ev2[i - 1]) * (sim_output.sample_time[i] - sim_output.sample_time[i - 1]) / 3600
-            if ev2_energy < 0:
-                print('ev2 finish at', sim_output.sample_time[i])
-
-        if sim_output.sample_time[i] > 36200 and ev1_energy>0 and av_pow>0:
-            ev1[i]=min(av_pow, 3228)
-            av_pow-=ev1[i]
-            ev1_energy-=0.5 * (ev1[i] + ev1[i - 1]) * (sim_output.sample_time[i] - sim_output.sample_time[i - 1]) / 3600
-            if ev1_energy < 0:
-                print('ev1 finish at', sim_output.sample_time[i])
-
-
-    plt.figure()
-    plt.plot(sim_output.sample_time,total_power,'k', label='other loads')
-    plt.plot(sim_output.sample_time,ev1,'r', label='EV_1')
-
-    plt.plot(sim_output.sample_time, ev2,'c', label='EV_2')
-    plt.plot(sim_output.sample_time, ev3,'b', label='EV_3')
-    xlim = np.arange(sim_output.min_time, 60 * 60 * 24, 60 * 60 * 3)
-    plt.ylabel("power (W)")
-    plt.xlabel("hour")
-    plt.xticks(xlim, [str(n).zfill(2) + ':00' for n in np.arange(int(sim_output.min_time / 3600), 24, 3)])
-
-    plt.legend()
-    plt.show()
-    np.savetxt("1.csv", np.vstack((sim_output.sample_time, p2ce(sim_output.sample_time,ev1))).T, delimiter=' ', fmt="%d %f")
-    np.savetxt("2.csv", np.vstack((sim_output.sample_time, p2ce(sim_output.sample_time,ev2))).T, delimiter=' ', fmt="%d %f")
-    np.savetxt("3.csv", np.vstack((sim_output.sample_time, p2ce(sim_output.sample_time,ev3))).T, delimiter=' ', fmt="%d %f")
 
 
 

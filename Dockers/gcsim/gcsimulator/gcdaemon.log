@@ -1,6 +1,6 @@
 ERROR:root:start failed
 ERROR:root:start failed
-INFO:daemons.daemonize.simple:Succesfully daemonized process 508.
+INFO:daemons.daemonize.simple:Succesfully daemonized process 240.
 INFO:daemons.startstop.simple:Beginning run loop for process.
 INFO:root:configuration loaded
 INFO:root:runtime folders created
@@ -31,8 +31,6 @@ INFO:root:messaggio:ASSIGNED_START_TIME [1]:[3] 1 1449913400
 INFO:root:messaggio:SCHEDULED
 INFO:root:messaggio:ASSIGNED_START_TIME [1]:[4] 1 1449900400
 INFO:root:messaggio:SCHEDULED
-INFO:root:messaggio:ASSIGNED_START_TIME [1]:[5] 1 1449928400
-INFO:root:messaggio:SCHEDULED
 INFO:root:DisRecvBehav running
 INFO:root:Simulazione terminata.
 INFO:root:Ho rilevato un segnale di stop
@@ -42,7 +40,7 @@ INFO:demo:client shutting down (on request)
 INFO:demo:stopping stream
 INFO:spade.Agent:Client disconnected.
 INFO:spade.behaviour:Killing behavior PeriodicBehaviour/consumeEvent with exit code: None
-INFO:spade.behaviour:Killing behavior PeriodicBehaviour/disRecvBehav with exit code: None
 INFO:root:riceveid
 INFO:root:AAAAAA RICEVUTOOO
-INFO:aiohttp.access:172.20.0.3 [08/Jan/2021:12:32:56 +0000] "POST /postanswer HTTP/1.1" 200 182 "-" "-"
+INFO:aiohttp.access:172.20.0.3 [19/Jan/2021:09:51:40 +0000] "POST /postanswer HTTP/1.1" 200 182 "-" "-"
+INFO:spade.behaviour:Killing behavior PeriodicBehaviour/disRecvBehav with exit code: None
