@@ -18,10 +18,10 @@
         <ecar>
 			 <model>BMW X5Eco2</model>
 			  <capacity>30000</capacity>
-			  <maxchpowac>100</maxchpowac>
-			  <maxchpowcc>100</maxchpowcc>
-			  <maxdispowac>100</maxdispowac>
-			  <maxdispowcc>100</maxdispowcc>
+			  <maxchpowac>3000</maxchpowac>
+			  <maxchpowcc>3000</maxchpowcc>
+			  <maxdispowac>3000</maxdispowac>
+			  <maxdispowcc>3000</maxdispowcc>
 			  <maxallen>200</maxallen>
 			  <minallen>150</minallen>
 			  <sbch>0.3</sbch>
@@ -54,19 +54,19 @@
 			<sbch>0.1</sbch>
 			<sbdis>0.1</sbdis>
 			<cheff>0.3</cheff>
-			<diseff>0.2</diseff>
+			<dis_eff>0.2</dis_eff>
 			<type>Prosumer</type>
 			<name>batt</name>
 			<id>5</id>
 	  </battery>
 	  <backgroundload>
 			<type>NS-Consumer</type>
-			<name>BackGroundLoad</type>
+			<name>BackGroundLoad</name>
 			<id>6</id>
 	  </backgroundload>
 	  <heatercooler>
 			<type>NS-Consumer</type>
-			<name>heatercooler1</type>
+			<name>heatercooler1</name>
 			<id>7</id>
 	  </heatercooler>
     </user>
