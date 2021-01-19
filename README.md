@@ -25,11 +25,17 @@ Currently the simulator container waits for a bash connection
 ## Run the scheduler
 ```
 docker exec -it docker_gcscheduler_1 bash
-node sched
+./scheduler start
 ```
 
 ## Run the simulator
 ```
 docker exec -it docker_gcsimulator_1 bash
-./starter.sh
+./starter.sh start
+```
+## Generate Charts
+```
+docker exec -it docker_gcsimulator_1 bash
+cd ../Simulations/[simulation_dir]/[simulation_date]_[simulation_id]
+python3 postprocess
 ```
