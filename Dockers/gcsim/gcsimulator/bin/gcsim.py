@@ -163,7 +163,7 @@ if __name__ == "__main__":
     daemon = GCDaemon(pidfile=PIDFILE)
     parser = argparse.ArgumentParser(description='gc simulator daemon')
     parser.add_argument('cmd', metavar='CMD', choices=['start', 'stop', 'restart', 'status'],
-                        help='the basename of csv timeseries to be analyzed')
+                        help='the daemon command ')
     parser.add_argument('--debug', dest='debug', action='store_true',
                         default=False, help='wait for remote debugger')
     parser.add_argument('--nodaemon', dest='nodaemon', action='store_true',

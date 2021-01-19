@@ -6,7 +6,7 @@ import shutil
 from scipy import interpolate
 import matplotlib.pyplot as plt
 import numpy as np
-import visualization
+from utils import visualization
 
 class Node:
     def __init__(self, name):
@@ -22,6 +22,8 @@ class Node:
     def addData(self, dataList):
         for i in range (0,288):
             self.data[i] += dataList[i]
+
+
 class EV:
     aat = 0
     adt = 0
@@ -362,11 +364,10 @@ class Checker:
         self.KPI533 = chargedEnergy/connectedTime
 
 
-            
     def writeOutput(self, path):
         try:
             os.mkdir(path+"/checks")
-        except:
+        except :
             pass
         '''
         with open(path+"/checks/outputParam.csv", "w") as csv_file:
@@ -523,7 +524,7 @@ def generatePowerTimeSeries(file, startTime):
             lastSample = float(row[0])  #aggiorno il tempo precedente
             lastValue = float(row[1])   #aggiorno l'energia precedente
             count += 1  #aggiorno il count quando ho finito la riga
-    if(endTime > lastSample):   #stesso discorso di prima, se l'ultimo tempo della timeseries é piú piccolo del massimo tempo di interesse metto uno zero per non aver problemi dopo
+    if endTime > lastSample :   #stesso discorso di prima, se l'ultimo tempo della timeseries é piú piccolo del massimo tempo di interesse metto uno zero per non aver problemi dopo
         y.append(0)    
         x.append(endTime)
     f = interpolate.interp1d(x, y)   #faccio l'interpolazione lineare
@@ -535,6 +536,5 @@ def generatePowerTimeSeries(file, startTime):
 if __name__ == "__main__":
 
     checker = Checker()
-    checker.doChecks("./trivialComplete/output", 1449878400,"./trivialComplete/xml", "./trivialComplete/")
-    
-  
+    checker.doChecks("./output", 1449878400, "./xml", ".")
+

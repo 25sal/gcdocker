@@ -44,8 +44,8 @@ class Intersection:
 
 
 class EnergyOutput:
-    cons_series = {'HC', 'SH', 'EV'}
-    prod_series = {}
+    cons_series = {'EV', 'SH', 'HC'}
+    prod_series = {'PV'}
     sample_time = None
     self_consumption = None
     tot_consumption = None
@@ -67,7 +67,7 @@ class EnergyOutput:
     def load(self, rel=False):
         self.productions = self.load_series(self.prod_series, rel)
         self.consumptions = self.load_series(self.cons_series, rel)
-        self.sample_time = np.arange(0, (self.max_time-self.min_time), self.interval)
+        self.sample_time = np.arange(300, 23.5*3600, self.interval)
 
     def compute_production(self):
         temp_series = None
@@ -120,12 +120,14 @@ class EnergyOutput:
         if ts_sum is None:
             ts_sum = np.zeros(len(self.sample_time))
         start_time = ts_new[0, 0]
+        start_charge =ts_new[0, 1]
         xx = ts_new[:, 0] - start_time
+        yy = ts_new[:, 1] - start_charge
         try:
             # ts_spline = inter.InterpolatedUnivariateSpline(xx, ts_new[:, 1])
-            ts_spline = inter.interp1d(xx, ts_new[:, 1])
+            ts_spline = inter.interp1d(xx, yy)
         except:
-            ts_spline = inter.interp1d(xx, ts_new[:, 1])
+            ts_spline = inter.interp1d(xx, yy)
         last_incr = 0
         for i in range(len(self.sample_time)):
             if ts_new[0, 0] <= self.sample_time[i] <= ts_new[-1, 0]:
@@ -135,6 +137,7 @@ class EnergyOutput:
                     ts_sum[i] += ts_spline(self.sample_time[i]-ts_new[0, 0])
             elif self.sample_time[i] > ts_new[-1, 0]:
                 ts_sum[i] += last_incr
+
         return ts_sum
 
     def load_series(self, typ, rel=False):
@@ -144,6 +147,8 @@ class EnergyOutput:
             ts_groups[ser_typ] = {}
             for ts_file in series:
                 ts = np.genfromtxt(ts_file, delimiter=' ')
+                ts = np.vstack((ts, ts[-1]))
+                ts[-1,0] += 60
                 if rel:
                     start_time = ts[0, 0] - np.mod(ts[0, 0], 86400)
                     ts[:, 0] = ts[:, 0] - start_time
@@ -159,9 +164,11 @@ def ce2p(xx, yy):
     yy1 = np.zeros(len(yy))
     for i in range(1, len(yy)):
         if yy[i] >= yy[i - 1]:
-            yy1[i] = 3600 * (yy[i] - yy[i - 1]) / (xx[i] - xx[i - 1])
+            yy1[i-1] = 3600 * (yy[i] - yy[i - 1]) / (xx[i] - xx[i - 1])
+
         else:
             yy1[i] = yy1[i - 1]
+
     return yy1
 
 def ce2e(yy):
@@ -192,18 +199,20 @@ def plot_output(sim_output):
     plt.figure()
     if sim_output.tot_production[-1] > 0:
         plt.plot(sim_output.sample_time, ce2p(sim_output.sample_time, sim_output.tot_production), 'b', linestyle='-', marker='.', label="tot_production")
+
     if sim_output.tot_consumption[-1] > 0:
-        plt.plot(sim_output.sample_time, ce2p(sim_output.sample_time, sim_output.tot_consumption), 'r', linestyle='-', marker='.', label="tot_consumption")
+        plt.step(sim_output.sample_time, ce2p(sim_output.sample_time, sim_output.tot_consumption), 'r', where='post', linestyle='-', marker='.', label="tot_consumption")
+
+    self_power_temp = ce2p(sim_output.sample_time, sim_output.self_consumption)
+    self_power_temp[-1] = 0
+
     if sim_output.self_consumption[-1] > 0:
-        plt.fill(sim_output.sample_time, ce2p(sim_output.sample_time, sim_output.self_consumption), 'g', label="self_consumption")
-
-
-
+        plt.fill(sim_output.sample_time, self_power_temp, 'g', label="self_consumption")
     plt.legend()
     plt.ylabel("power (W)")
     plt.xlabel("hour")
-    xlim = np.arange(sim_output.min_time, 60 * 60 * 24, 60 * 60 * 3)
-    plt.xticks(xlim, [str(n).zfill(2) + ':00' for n in np.arange(int(sim_output.min_time / 3600), 24, 3)])
+    xlim = np.arange(sim_output.sample_time[0], 60 * 60 * 24, 60 * 60 * 3)
+    plt.xticks(xlim, [str(n).zfill(2) + ':00' for n in np.arange(int(sim_output.sample_time[0] / 3600), 24, 3)])
     plt.savefig("output_self.png")
 
     plt.figure()
@@ -211,8 +220,8 @@ def plot_output(sim_output):
     plt.legend()
     plt.ylabel("power (W)")
     plt.xlabel("hour")
-    xlim = np.arange(sim_output.min_time, 60 * 60 * 24, 60 * 60 * 3)
-    plt.xticks(xlim, [str(n).zfill(2) + ':00' for n in np.arange(int(sim_output.min_time / 3600), 24, 3)])
+    xlim = np.arange(sim_output.sample_time[0], 60 * 60 * 24, 60 * 60 * 3)
+    plt.xticks(xlim, [str(n).zfill(2) + ':00' for n in np.arange(int(sim_output.sample_time[0] / 3600), 24, 3)])
     plt.savefig("res_pow.png")
 
 
@@ -224,16 +233,17 @@ def plot_power(groups, colr=None):
             xx = ts[:, 0]
             yy = ts[:, 1]
             yy1 = np.zeros(len(yy))
-            for i in range(1, len(yy)):
-                if yy[i] >= yy[i - 1]:
-                    yy1[i] = 3600 * (yy[i] - yy[i - 1]) / (xx[i] - xx[i - 1])
-                else:
-                    yy1[i] = yy1[i-1]
+
+
+            yy1 = ce2p(xx, yy)
+            if yy1[0] != 0:
+                xx = np.insert(xx, 0, xx[0] - 60)
+                yy1 = np.insert(yy1,0 , 0)
             print(group_key + "_" + ts_key, np.max(yy1))
             if colr is not None:
-                plt.plot(xx, yy1, colr, linestyle='-', marker='.', label=group_key + "_" + ts_key)
+                plt.step(xx, yy1, colr, linestyle='-', marker='.', where='post',  label=group_key + "_" + ts_key)
             else:
-                plt.plot(xx, yy1, linestyle='-', marker='.', label=group_key + "_" + ts_key)
+                plt.step(xx, yy1, linestyle='-', marker='.', where='post', label=group_key + "_" + ts_key)
 
 class Performance:
 
@@ -435,12 +445,14 @@ def callExternal(folder):
 if __name__ == "__main__":
     folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/trivial/Results/12_12_15_82"
     folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/demo2"
-    folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/trivialEV/Results/12_12_15_1"
 
+    folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/trivialEV/Results/12_12_15_1"
+    folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/trivialComplete/Results/12_12_15_17"
     # shift_load(10 * 3600, folder + "/input/EV/4_run_3_1_ecar.csv",  folder + "/output/EV/4_run_3_1_ecar.csv")
     # shift_load(15 * 3600, folder + "/input/SH/10_run_1_1_dw.csv", folder + "/output/SH/10_run_1_1_dw.csv")
     # shift_load(10 * 3600, folder + "/input/SH/10_run_2_1_wm.csv", folder + "/output/SH/10_run_2_1_wm.csv")
     # shift_load(9.5 * 3600, folder + "/input/EV/10_54_.csv", folder + "/output/EV/10_54_.csv")
+
 
     sim_output = EnergyOutput(folder,150)
 
