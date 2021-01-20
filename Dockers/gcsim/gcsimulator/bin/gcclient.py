@@ -87,7 +87,7 @@ if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
     parser = argparse.ArgumentParser(description='simulator client')
     parser.add_argument('cmd', metavar='CMD',  choices=['start', 'stop', 'status'],
-                        help='the basename of csv timeseries to be analyzed')
+                        help='the daemon command')
     parser.add_argument('--optimizer', dest='optimizer', choices=['eurecat', 'oslo', 'dummy'], help='start the scheduler')
     parser.add_argument('--policy', dest='policy', choices=['green', 'cheapest', 'earliest'], default='green',
                         help='set the optimization policy')
