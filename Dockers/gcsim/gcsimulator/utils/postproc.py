@@ -1,3 +1,23 @@
+#
+# Copyright (c) 2019-2020 by University of Campania "Luigi Vanvitelli".
+# Developers and maintainers: Salvatore Venticinque, Dario Branco.
+# This file is part of GreenCharge
+# (see https://www.greencharge2020.eu/).
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
 import os
 import csv
 import glob
@@ -18,7 +38,7 @@ class Node:
         node = Node(name)
         self.children.append(node)
         return node
-    
+
     def addData(self, dataList):
         for i in range (0,288):
             self.data[i] += dataList[i]
@@ -67,7 +87,7 @@ class Checker:
     selfConsumedEnergyRespectToPVProduction = ''
     chargingPowerLowerThanMaxChPowConstraint = {}
     offeredFlexibilityIndex = 0
-    actualFlexibilityIndex =0 
+    actualFlexibilityIndex =0
     V2GFlexibilityIndex =0
     evList = {}
 
@@ -80,7 +100,7 @@ class Checker:
         allfiles = [os.path.join(dp, f) for dp, dn, filenames in os.walk(path) for f in filenames if f.endswith('.csv')]
         self.readConsumptionProduction(allfiles, self.energyDict)
         prod_files = [os.path.join(dp, f) for dp, dn, filenames in os.walk(path+"/PV") for f in filenames if f.endswith('.csv')]
-        self.readConsumptionProduction(prod_files, self.energyProducerDict)   
+        self.readConsumptionProduction(prod_files, self.energyProducerDict)
         ev_files = [os.path.join(dp, f) for dp, dn, filenames in os.walk(path+"/EV") for f in filenames if f.endswith('.csv')]
         self.readConsumptionProduction(ev_files, self.energyEVDict)
         for key,energy in self.energyDict.items():
@@ -166,7 +186,7 @@ class Checker:
             if(float(ast)<float(self.estlstList[key][1]) and float(ast)>float(self.estlstList[key][0])):
                 self.ast_lst_constraint[key] = 'Respected'
             else:
-                self.ast_lst_constraint[key] = 'not Respected'    
+                self.ast_lst_constraint[key] = 'not Respected'
 
     def readNeighborhoodXML(self, pathXML, startTime):
         tree = ET.parse(pathXML +'/neighborhood.xml')
@@ -198,8 +218,8 @@ class Checker:
                                 self.evList[tempo].minch =float(ecar.find("maxchpowac").text) #DA CAMBIARE IN MIN
                                 self.evList[tempo].maxDisPow = float(ecar.find("maxdispowac").text)
                                 self.evList[tempo].departureTimeMinusArrivalTimeMinusEnergyDemand = -float(ecar.find("capacity").text)/float(ecar.find("maxchpowac").text)
-                                
-                              
+
+
 
     def readLoadXML(self, pathXML, startTime):
         tree = ET.parse(pathXML +'/loads.xml')
@@ -274,7 +294,7 @@ class Checker:
                 pass
 
     def workWithOutputTXT(self, path):
-        file1 = open(path+'/output.txt', 'r') 
+        file1 = open(path+'/output.txt', 'r')
         Lines = file1.readlines()
         for line in Lines:
             splittedMessage = line.split(" ")
@@ -306,7 +326,7 @@ class Checker:
 
     def calculateChargingAvailability(self):
         numEV = len(self.evList)
-        
+
 
     def calculateSHareOfBatteryCapacityForV2G(self):
         for key, ev in self.evList.items():
@@ -354,7 +374,7 @@ class Checker:
                         for row in csv_reader:
                             if(first == 0):
                                 plug_in_time = float(row[0])
-                                first =1 
+                                first =1
                             plug_out_time = float(row[0])
             connectedTime += ev.adt - ev.aat
             chargingTime += plug_out_time - plug_in_time
@@ -416,7 +436,7 @@ class Checker:
                 json_file.write('{id:' + str(i) + ',data:[ "'+key +'","'+ value[0] +'","'+ value[1]+'","",""]},')
                 i += 1
             json_file.write(']};')
-        
+
         # temporary
 
         with open(path+"/checks/checks.js", "w") as json_file:
@@ -479,7 +499,8 @@ class Checker:
         cwd_parts = cwd.split("/")
         sim_date = cwd_parts[-1]
         parts = sim_date.split("_")
-        sim_date = parts[0] + "_" +parts[1] + "_" + parts[2]
+        print(parts)
+        sim_date = ' 12_12_15'
         test_file = "../../tests/" + sim_date + "/outputParam.csv"
         test_values = None
         if os.path.isfile(test_file):
@@ -526,8 +547,8 @@ def sumForPowerPeak(node, dictConsumer):
 def generateEnergyTimeSeries(file, startTime):
     endTime = startTime + 86400
     with open(file, newline='') as csvfile:
-        csv_reader = csv.reader(csvfile, delimiter= " ") 
-        count = 0  
+        csv_reader = csv.reader(csvfile, delimiter= " ")
+        count = 0
         x = []     #lista dei tempi della timeseries
         y = []     #lista dei valori della timeseries
         lastSample = 0
@@ -535,23 +556,23 @@ def generateEnergyTimeSeries(file, startTime):
         for row in csv_reader:              #per tutte le righe
             if(count != 0):  #salto la prima riga della ts
                 if(float(row[1]) != 0):
-                    x.append(float(row[0]))     #aggiunto il tempo alla lista dei tempi 
+                    x.append(float(row[0]))     #aggiunto il tempo alla lista dei tempi
                     y.append((float(row[1])-lastValue))
                 else:
-                    x.append(float(row[0]))     #aggiunto il tempo alla lista dei tempi 
+                    x.append(float(row[0]))     #aggiunto il tempo alla lista dei tempi
                     y.append((float(row[1])))
             else:
-                if(startTime < float(row[0])):     #faccio in modo che se il primo tempo della timeseries é piú grande del minimo del periodo di interesse ci piazzo uno zero, cosi dopo non ho problemi quando vado a ricampionare 
-                    x.append(startTime) 
-                    y.append(0)   
+                if(startTime < float(row[0])):     #faccio in modo che se il primo tempo della timeseries é piú grande del minimo del periodo di interesse ci piazzo uno zero, cosi dopo non ho problemi quando vado a ricampionare
+                    x.append(startTime)
+                    y.append(0)
                 else:
-                    x.append(float(row[0]))     #aggiunto il tempo alla lista dei tempi 
-                    y.append(float(row[1]))     #aggiungo alla lista dei valori la potenza 
-            lastSample = float(row[0]) 
+                    x.append(float(row[0]))     #aggiunto il tempo alla lista dei tempi
+                    y.append(float(row[1]))     #aggiungo alla lista dei valori la potenza
+            lastSample = float(row[0])
             lastValue = float(row[1])   #aggiorno l'energia precedente
             count += 1  #aggiorno il count quando ho finito la riga
     if(endTime > lastSample):   #stesso discorso di prima, se l'ultimo tempo della timeseries é piú piccolo del massimo tempo di interesse metto uno zero per non aver problemi dopo
-        y.append(0)    
+        y.append(0)
         x.append(endTime)
     f = interpolate.interp1d(x,y)   #faccio l'interpolazione lineare
     xnew = np.arange(startTime,endTime, 300)   #mi creo il vettore dei tempi con un sample ogni 5 minuti (300 secondi)
@@ -561,25 +582,25 @@ def generateEnergyTimeSeries(file, startTime):
 def generatePowerTimeSeries(file, startTime):
     endTime = startTime + 86400
     with open(file, newline='') as csvfile:
-        csv_reader = csv.reader(csvfile, delimiter= " ") 
-        count = 0  
+        csv_reader = csv.reader(csvfile, delimiter= " ")
+        count = 0
         x = []     #lista dei tempi della timeseries
         y = []     #lista dei valori della timeseries
         lastSample = 0      #Questo mi serve per tenermi in memoria il tempo precedente alla riga che sto leggendo, cosi posso farmi il delta per la trasformazione in potenza
         lastValue = 0     #Questo mi serve per tenermi in memoria il valore di energia precedente alla riga che sto leggendo, cosi posso farmi il delta per la trasformazione in potenza
         for row in csv_reader:              #per tutte le righe
-            if(count != 0):  #salto la prima riga della ts perché devo convertire in potenza 
-                x.append(float(row[0]))     #aggiunto il tempo alla lista dei tempi 
+            if(count != 0):  #salto la prima riga della ts perché devo convertire in potenza
+                x.append(float(row[0]))     #aggiunto il tempo alla lista dei tempi
                 y.append((float(row[1])-lastValue)/(float(row[0])-lastSample))
             else:
-                if(startTime < float(row[0])):     #faccio in modo che se il primo tempo della timeseries é piú grande del minimo del periodo di interesse ci piazzo uno zero, cosi dopo non ho problemi quando vado a ricampionare 
-                    x.append(startTime) 
-                    y.append(0)    #aggiungo alla lista dei valori la potenza 
+                if(startTime < float(row[0])):     #faccio in modo che se il primo tempo della timeseries é piú grande del minimo del periodo di interesse ci piazzo uno zero, cosi dopo non ho problemi quando vado a ricampionare
+                    x.append(startTime)
+                    y.append(0)    #aggiungo alla lista dei valori la potenza
             lastSample = float(row[0])  #aggiorno il tempo precedente
             lastValue = float(row[1])   #aggiorno l'energia precedente
             count += 1  #aggiorno il count quando ho finito la riga
     if endTime > lastSample :   #stesso discorso di prima, se l'ultimo tempo della timeseries é piú piccolo del massimo tempo di interesse metto uno zero per non aver problemi dopo
-        y.append(0)    
+        y.append(0)
         x.append(endTime)
     f = interpolate.interp1d(x, y)   #faccio l'interpolazione lineare
     xnew = np.arange(startTime, endTime, 300)   #mi creo il vettore dei tempi con un sample ogni 5 minuti (300 secondi)
@@ -599,9 +620,10 @@ def html_images(folder):
 
 if __name__ == "__main__":
 
-    checker = Checker()
-    checker.doChecks("./output", 1449878400, "./xml", ".")
-    shutil.copy('../../../../../../Dockers/gcsim/gcsimulator/templates/checks.html', 'checks.html')
-    visualization.callExternal(".", "./output")
-    html_images("./output")
 
+    checker = Checker()
+    visualization.callExternal(".", ".../../Simulations/trivial/Results/12_12_15_3/output")
+
+    checker.doChecks("../../Simulations/trivial/Results/12_12_15_3/output", 1449878400, "../../Simulations/trivial/Results/12_12_15_3/xml", "../../Simulations/trivial/Results/12_12_15_3")
+    #shutil.copy('../../../../../../Dockers/gcsim/gcsimulator/templates/checks.html', 'checks.html')
+    html_images("./output")
