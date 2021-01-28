@@ -1,10 +1,22 @@
-#################################################################################
-#                           __author__ = "Dario Branco"                         #
-#                           __version__ = "1.0"                                 #
-#                           __maintainer__ = "Dario Branco"                     #
-#                           __email__ = "dariobranco94@gmail.com"               #
-#                           __status__ = "Production"                           #
-#################################################################################
+#
+# Copyright (c) 2019-2020 by University of Campania "Luigi Vanvitelli".
+# Developers and maintainers: Salvatore Venticinque, Dario Branco.
+# This file is part of GreenCharge
+# (see https://www.greencharge2020.eu/).
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
 
 
 ###########################****************** IMPORT LIBRARIES SECTION ************************#########################
@@ -251,18 +263,18 @@ class EnqueuedEvent:
             self.unique_id = EnqueuedEvent.unique_id
         else:
             self.unique_id = unique_id
-    
+
     def __lt__(self, other):
         if self.timestamp == other.timestamp:
             return self.unique_id < other.unique_id
         else:
             return self.timestamp < other.timestamp
-    
+
     def __gt__(self, other):
         if self.timestamp == other.timestamp:
             return self.unique_id > other.unique_id
         return self.timestamp > other.timestamp
-    
+
     def __eq__(self, other):
         return self.timestamp == other.timestamp and self.unique_id == other.id
 
@@ -285,7 +297,7 @@ class Entities:
 
     @classmethod
     def next_event(cls):
-        item = cls.sharedQueue.get()  
+        item = cls.sharedQueue.get()
         return   (item.timestamp, item.event, item.unique_id)
 
 ###########################****************** END UTIL VARIABLES SECTION ************************###################################################
@@ -495,7 +507,7 @@ def createDevicesList():
     datetime_object = datetime.strptime(date, '%m/%d/%y %H:%M:%S')
     timestamp = datetime.timestamp(datetime_object)
 
-  
+
     logging.debug("runtime folder: " + workingdir)
     f = open(workingdir + "/xml/neighborhood.xml", "r")
     fileIntero = f.read()
@@ -508,13 +520,13 @@ def createDevicesList():
     for energyMix in root.findall('energyMix'):
         energyMix = Energy_Mix('energyMix', energyMix.find('profile').text)
         Entities.enqueue_event(timestamp, energyMix)
-       
+
     # Inserisci qui il codice per la creazione del neighborhood
     for house in root.findall('house'):  # READ XML FILE
         # inserisci qui il codice per la creazione di una house
         houseId = house.get('id')
         housedev = House('house', houseId, house.get('peakLoad'), 0)
-       
+
         for user in house.findall('user'):
             for deviceElement in user.findall('device'):
                 deviceId = deviceElement.find('id').text
@@ -557,7 +569,7 @@ def createDevicesList():
                 cpId = cp.get('id')
                 cpdev = ChargingPoint('house', houseId, cpId, cp.get('ConnectorsType'), cp.get('peakLoad'))
                 # sharedQueue.put((0,int(count),cpdev))
-               
+
                 housedev.numcp += 1
                 # inserisci qui il codice per la creazione del Cp
                 for OtherElement in cp.findall('ecar'):
@@ -583,7 +595,7 @@ def createDevicesList():
         # inserisci qui il codice per la creazione di una cs
         houseId = house.get('id')
         housedev = ChargingStation('house', houseId, house.get('peakLoad'), 0)
-        
+
         for user in house.findall('user'):
             userId = user.get('id')
             for deviceElement in user.findall('device'):
@@ -627,7 +639,7 @@ def createDevicesList():
                 cpId = cp.get('id')
                 # cpdev = ChargingPoint('house',houseId,cpId, cp.get('ConnectorsType'), cp.get('peakLoad'))
                 # sharedQueue.put((0,int(count),cpdev))
-                
+
                 # inserisci qui il codice per la creazione del Cp
                 for OtherElement in cp.findall('ecar'):
                     deviceId = OtherElement.find('id').text
@@ -852,7 +864,7 @@ def adjustTime():
 #  UPLOADINPUTREPOSITORY() enqueue objects in the shared queue #
 ################################################################
 def uploadInInputRepository():
-    
+
     date = Configuration.parameters['date'] + " 00:00:00"
     datetime_object = datetime.strptime(date, '%m/%d/%y %H:%M:%S')
 
@@ -935,7 +947,7 @@ def uploadInInputRepository():
             c.end_time = str(int(timestamp + midsecondsLST))
             c.creation_time = str(int(timestamp + midsecondsCT))
             Entities.enqueue_event(int(c.creation_time),  c)
-        
+
 
 ###################################################
 #  This Method create all simulation directories  #
@@ -969,7 +981,7 @@ def makeNewSimulation(pathneigh, pathload):
     os.mkdir(dir1 + "/Results/" + newdir + "_" + str(dirCount), 0o755)
     workingdir = Configuration.parameters['runtime_dir']
 
-    
+
     os.mkdir(workingdir + "/xml", 0o755)
     os.mkdir(workingdir + "/output", 0o755)
 

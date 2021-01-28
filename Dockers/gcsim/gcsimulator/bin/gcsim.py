@@ -1,4 +1,24 @@
 #!/usr/bin/env python3.7
+#
+# Copyright (c) 2019-2020 by University of Campania "Luigi Vanvitelli".
+# Developers and maintainers: Salvatore Venticinque, Dario Branco.
+# This file is part of GreenCharge
+# (see https://www.greencharge2020.eu/).
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
 import time
 from agents import xmppscheduler as sche, restscheduler as sche1, setup as es, manager as sm, \
     dispatcher as di
@@ -8,7 +28,7 @@ import logging
 import ptvsd
 from daemons.prefab import run
 import sys
-import os 
+import os
 import signal
 import argparse
 
@@ -118,7 +138,7 @@ def start_disp():
 #  This Method is used to start externalSource Agent #
 ######################################################
 def setup_simulation():
-    
+
     basejid = Configuration.parameters['userjid']
     simulation_dir = Configuration.parameters['current_sim_dir']
     password = Configuration.parameters['xmpp_password']
@@ -212,5 +232,3 @@ if __name__ == "__main__":
             print('GCDaemon is running as pid %s' % pid)
         else:
             print('GCDaemon is not running.')
-
-

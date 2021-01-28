@@ -1,3 +1,25 @@
+#
+# Copyright (c) 2019-2020 by University of Campania "Luigi Vanvitelli".
+# Developers and maintainers: Salvatore Venticinque, Dario Branco.
+# This file is part of GreenCharge
+# (see https://www.greencharge2020.eu/).
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+
 
 from spade.agent import Agent
 from spade.behaviour import PeriodicBehaviour
@@ -46,13 +68,13 @@ def switchInTime(file, ast):
             reader = csv.reader(f, delimiter=' ')
             first = 0
             firstTime = 0
-            
+
             for data in reader:
                 entry = []
                 if(first == 0):
                     firstTime = data[0]
                     first = 1
-                
+
                 entry.append(ast + int(data[0]) - int(firstTime))
                 entry.append(data[1])
                 writer.writerow(entry)
@@ -132,7 +154,7 @@ class dispatcher(Agent):
             completed = 0
             total = es.Entities.sharedQueue.qsize()
             percent = 0
-            deletedList = []      
+            deletedList = []
             path = Configuration.parameters['current_sim_dir']
             with open(path + "/Results/" + Configuration.parameters['user_dir'] + "/output/output.txt", "w+") as file:
                 finish = 0
@@ -372,7 +394,7 @@ class dispatcher(Agent):
                                         delta = calculateTime(receivedLoad.profile)
                                         newTime = str(int(messageFromScheduler.body.split(" ")[3]) + int(delta))
                                         mydel = es.eventDelete(receivedLoad.device, receivedLoad.house, newTime,calculate_consum(receivedLoad.profile),messageFromScheduler.body.split(" ")[5])
-                                        switchInTime(receivedLoad.profile, int(messageFromScheduler.body.split(" ")[3]))     
+                                        switchInTime(receivedLoad.profile, int(messageFromScheduler.body.split(" ")[3]))
                                         es.Entities.enqueue_event(int(newTime),  mydel)
                                         file.write(">>> " + message.body + "\n")
                                         file.write("<<< " + messageFromScheduler.body + "\r\n")
@@ -393,7 +415,7 @@ class dispatcher(Agent):
                                         delta = calculateTime(receivedLoad.profile)
                                         newTime = str(int(messageFromScheduler.body.split(" ")[3]) + int(delta))
                                         mydel = es.eventDelete(receivedLoad.device, receivedLoad.house, newTime,calculate_consum(receivedLoad.profile),messageFromScheduler.body.split(" ")[4])
-                                        switchInTime(receivedLoad.profile, int(messageFromScheduler.body.split(" ")[3]))     
+                                        switchInTime(receivedLoad.profile, int(messageFromScheduler.body.split(" ")[3]))
                                         es.Entities.enqueue_event(int(newTime),mydel)
                                         es.count += 1
                                         file.write(">>> " + message.body + "\n")
@@ -439,7 +461,3 @@ class dispatcher(Agent):
         start_at = datetime.now() + timedelta(seconds=3)
         Behaviour2 = self.consumeEvent(1, start_at=start_at)
         self.add_behaviour(Behaviour2, template2)
-
-
-
-
