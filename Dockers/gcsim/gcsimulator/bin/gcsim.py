@@ -179,7 +179,7 @@ if __name__ == "__main__":
 
     PIDFILE = '/home/gc/simulator/gcdaemon.pid'
     LOGFILE = '/home/gc/simulator/gcdaemon.log'
-    logging.basicConfig(filename=LOGFILE, filemode='w', level=logging.INFO)
+    # logging.basicConfig(filename=LOGFILE, filemode='w', level=logging.INFO)
     daemon = GCDaemon(pidfile=PIDFILE)
     parser = argparse.ArgumentParser(description='gc simulator daemon')
     parser.add_argument('cmd', metavar='CMD', choices=['start', 'stop', 'restart', 'status'],

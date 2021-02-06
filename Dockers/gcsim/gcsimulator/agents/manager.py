@@ -29,7 +29,7 @@ import logging
 abilit = 0
 LOGFILE = '/home/gc/simulator/gcdaemon.log'
 
-logging.basicConfig(filename=LOGFILE, filemode= 'w', level=logging.INFO)
+# logging.basicConfig(filename=LOGFILE, filemode= 'w', level=logging.INFO)
 
 class SimLifeCycle:
     # status 0: reset, 1: runtime built, 2: running,

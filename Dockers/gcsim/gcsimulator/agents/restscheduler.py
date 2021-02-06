@@ -32,7 +32,7 @@ import logging
 
 LOGFILE = '/home/gc/simulator/gcdaemon.log'
 
-logging.basicConfig(filename=LOGFILE, filemode= 'w', level=logging.INFO)
+#logging.basicConfig(filename=LOGFILE, filemode= 'w', level=logging.INFO)
 
 ##########################################
 #  Adaptor used for the XMPP protocol    #

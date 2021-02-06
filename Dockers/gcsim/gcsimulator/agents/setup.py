@@ -35,7 +35,7 @@ import logging
 from os import listdir
 LOGFILE = '/home/gc/simulator/gcdaemon.log'
 
-logging.basicConfig(filename=LOGFILE, filemode= 'w', level=logging.INFO)
+# logging.basicConfig(filename=LOGFILE, filemode= 'w', level=logging.INFO)
 
 
 # dir1 = os.path.dirname(os.path.realpath(__file__))

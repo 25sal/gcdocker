@@ -14,8 +14,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../GCSimulator/Simulator/greenchargeSoloDim/bin'))
-sys.path.insert(0, os.path.abspath('../'))
+sys.path.insert(0, os.path.abspath('../gcsimulator'))
+sys.path.insert(0, os.path.abspath('../gcsimulator/bin'))
 
 # -- Project information -----------------------------------------------------
 
