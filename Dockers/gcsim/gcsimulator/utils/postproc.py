@@ -390,17 +390,7 @@ class Checker:
                           "Assigned Start Time List": [str(self.astDict), ""],
                           "Energy_charged": [str(self.totalEnergyCharged), ""],
                           "Number_of_Timeseries": [str(self.num_of_timeseries), ""],
-                          "Self_Consumption": [str(self.selfC), ""],
-                          "ast_lst_List": [str(self.estlstList), ""],
-                          "AstLstContraintRespected": [str(self.ast_lst_constraint), ""],
-                          "PowerPeaksReached": [str(self.listOfPeaks), ""],
-                          "PowerPeaksLimits": [str(self.peakLoadList), ""],
-                          "PowerPeaksLimitsReached": [str(self.reachedLimits), ""],
-                          "Energy_Charged_respect_to_capacity": [str(self.energy_respected_to_capacity), ""],
-                          "Energy_Charged_respect_to_Connection": [str(self.energy_charged_respect_to_Connection), ""],
-                          "Energy_AutoConsumed_Respect_To_Energy_Produced":
-                                                     [str(self.selfConsumedEnergyRespectToPVProduction), ""],
-                          "Charging_Power_Lower_than_Maximum": [str(self.chargingPowerLowerThanMaxChPowConstraint), ""],
+                          "Self_Consumption": [str(self.selfC), ""]
 
                           }
             if test_values is not None:
@@ -421,12 +411,14 @@ class Checker:
 
         with open(path+"/checks/checks.js", "w") as json_file:
             json_file.write("coherence_checks={rows:[")
-            json_file.write('{id:1,data:[ "Total_Energy_Consumption","'+ str(self.totalEnergyConsumption)+'","","",""]},')
-            json_file.write('{id:2,data:[ "Total_Energy_Production","'+ str(self.totalEnergyProduced)+'","","",""]},')
-            json_file.write('{id:3,data:[ "Assigned Start Time List","'+ str(self.astDict)+'","","",""]},')
-            json_file.write('{id:4,data:[ "Energy_charged","'+ str(self.totalEnergyCharged)+'","","",""]},')
-            json_file.write('{id:5,data:[ "Number_of_Timeseries","'+ str(self.num_of_timeseries)+'","","",""]},')
-            json_file.write('{id:6,data:[ "Self_Consumption","'+ str(self.selfC)+'","","",""]}')
+            json_file.write('{id:1,data:[ "AstLstContraintRespected","' + str(self.ast_lst_constraint)+'","","",""]},')
+            json_file.write('{id:2,data:[ "PowerPeaksReached","'+ str(self.listOfPeaks) +'","","",""]},')
+            json_file.write('{id:3,data:[ "PowerPeaksLimits","'+ str(self.peakLoadList)+'","","",""]},')
+            json_file.write('{id:4,data:[ "PowerPeaksLimitsReached","'+ str(self.reachedLimits)+'","","",""]},')
+            json_file.write('{id:5,data:[ "Energy_Charged_respect_to_capacity","'+ str(self.energy_respected_to_capacity)+'","","",""]},')
+            json_file.write('{id:6,data:[ "Energy_Charged_respect_to_Connection","'+ str(self.energy_charged_respect_to_Connection)+'","","",""]},')
+            json_file.write('{id:7,data:[ "Energy_AutoConsumed_Respect_To_Energy_Produced","' + str(self.selfConsumedEnergyRespectToPVProduction) + '","","",""]},')
+            json_file.write('{id:8,data:[ "Charging_Power_Lower_than_Maximum","' + str(self.chargingPowerLowerThanMaxChPowConstraint) + '","","",""]}')
             json_file.write(']};')
 
         with open(path+"/checks/outputParam.csv", "w") as csv_file:

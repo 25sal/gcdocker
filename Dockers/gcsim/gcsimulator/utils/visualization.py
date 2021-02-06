@@ -116,7 +116,8 @@ class EnergyOutput:
     def __sub_cts(self, ts_sum, ts_new):
         return self.__sum_sub_cts(ts_sum, ts_new, -1)
 
-    def __sum_sub_cts(self, ts_sum, ts_new, mult=1):
+    # mult should be -1 to subtract, neg should be True if cumulative timeseries can decrease
+    def __sum_sub_cts(self, ts_sum, ts_new, mult=1, neg=True):
         if ts_sum is None:
             ts_sum = np.zeros(len(self.sample_time))
         start_time = ts_new[0, 0]
@@ -132,7 +133,7 @@ class EnergyOutput:
         for i in range(len(self.sample_time)):
             if ts_new[0, 0] <= self.sample_time[i] <= ts_new[-1, 0]:
                 incr = ts_spline(self.sample_time[i]-ts_new[0, 0]) * mult
-                if incr > 0:
+                if incr > 0 or neg:
                     last_incr = incr
                     ts_sum[i] += ts_spline(self.sample_time[i]-ts_new[0, 0])
             elif self.sample_time[i] > ts_new[-1, 0]:
@@ -147,6 +148,7 @@ class EnergyOutput:
             ts_groups[ser_typ] = {}
             for ts_file in series:
                 ts = np.genfromtxt(ts_file, delimiter=' ')
+                ts[:, 0] += 3650
                 ts = np.vstack((ts, ts[-1]))
                 ts[-1,0] += 60
                 if rel:
@@ -160,10 +162,10 @@ class EnergyOutput:
         return ts_groups
 
 
-def ce2p(xx, yy):
+def ce2p(xx, yy, positive=True):
     yy1 = np.zeros(len(yy))
     for i in range(1, len(yy)):
-        if yy[i] >= yy[i - 1]:
+        if yy[i] >= yy[i - 1] or not positive:
             yy1[i-1] = 3600 * (yy[i] - yy[i - 1]) / (xx[i] - xx[i - 1])
 
         else:
@@ -189,7 +191,7 @@ def plot_output(sim_output, path="."):
     plt.figure()
     plot_power(sim_output.productions, 'b')
     plot_power(sim_output.consumptions)
-    plt.legend()
+    # plt.legend()
     plt.ylabel("power (W)")
     plt.xlabel("hour")
     xlim = np.arange(sim_output.min_time, 60 * 60 * 24, 60 * 60 * 3)
@@ -198,10 +200,10 @@ def plot_output(sim_output, path="."):
 
     plt.figure()
     if sim_output.tot_production[-1] > 0:
-        plt.plot(sim_output.sample_time, ce2p(sim_output.sample_time, sim_output.tot_production), 'b', linestyle='-', marker='.', label="tot_production")
+        plt.plot(sim_output.sample_time, ce2p(sim_output.sample_time, sim_output.tot_production), 'b', linestyle='-', label="tot_production")
 
     if sim_output.tot_consumption[-1] > 0:
-        plt.step(sim_output.sample_time, ce2p(sim_output.sample_time, sim_output.tot_consumption), 'r', where='post', linestyle='-', marker='.', label="tot_consumption")
+        plt.plot(sim_output.sample_time, ce2p(sim_output.sample_time, sim_output.tot_consumption), 'r', linestyle='-', label="tot_consumption")
 
     self_power_temp = ce2p(sim_output.sample_time, sim_output.self_consumption)
     self_power_temp[-1] = 0
@@ -241,9 +243,9 @@ def plot_power(groups, colr=None):
                 yy1 = np.insert(yy1,0 , 0)
             print(group_key + "_" + ts_key, np.max(yy1))
             if colr is not None:
-                plt.step(xx, yy1, colr, linestyle='-', marker='.', where='post',  label=group_key + "_" + ts_key)
+                plt.plot(xx, yy1, colr, linestyle='-',   label=group_key + "_" + ts_key)
             else:
-                plt.step(xx, yy1, linestyle='-', marker='.', where='post', label=group_key + "_" + ts_key)
+                plt.plot(xx, yy1, linestyle='-', label=group_key + "_" + ts_key)
 
 class Performance:
 
@@ -364,8 +366,8 @@ if __name__ == "__main__":
     folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/trivial/Results/12_12_15_82"
     folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/demo2"
 
-    folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/trivialEV/Results/12_12_15_1"
-    folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/trivialComplete/Results/12_12_15_17"
+    # folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/trivialEV/Results/12_12_15_1"
+    # folder = "/home/salvatore/projects/gcsimulator/docker/users/demo/Simulations/trivial/Results/12_12_15_1"
     # shift_load(10 * 3600, folder + "/input/EV/4_run_3_1_ecar.csv",  folder + "/output/EV/4_run_3_1_ecar.csv")
     # shift_load(15 * 3600, folder + "/input/SH/10_run_1_1_dw.csv", folder + "/output/SH/10_run_1_1_dw.csv")
     # shift_load(10 * 3600, folder + "/input/SH/10_run_2_1_wm.csv", folder + "/output/SH/10_run_2_1_wm.csv")
@@ -380,12 +382,19 @@ if __name__ == "__main__":
     sim_output.compute_self()
     plot_output(sim_output)
     tot_consumption = np.vstack((sim_output.sample_time, sim_output.tot_consumption)).T
+    tot_production = np.vstack((sim_output.sample_time, sim_output.tot_production)).T
+    self_cons = np.vstack((sim_output.sample_time, sim_output.self_consumption)).T
+
     print('tot_cons PAR:', Performance.peak2average(tot_consumption))
     print('cons PEAK:', np.max(ce2p(sim_output.sample_time, sim_output.tot_consumption)))
     res_energy = np.vstack((sim_output.sample_time, p2ce(sim_output.sample_time, sim_output.res_power()))).T
     print('res_energy PAR:', Performance.peak2average(res_energy))
     print('res_energy PEAK:',np.max(sim_output.res_power()))
     print('self consumption:', Performance.self_consumption(sim_output.self_consumption, sim_output.tot_production))
+    np.savetxt("consumption.csv", tot_consumption, delimiter=" ", fmt="%i %f")
+    np.savetxt("production.csv", tot_production, delimiter=" ", fmt="%i %f")
+    np.savetxt("self_consumption.csv", self_cons, delimiter=" ", fmt="%i %f")
+    np.savetxt("grid_in.csv", res_energy, delimiter=" ", fmt="%i %f")
 
 
     '''

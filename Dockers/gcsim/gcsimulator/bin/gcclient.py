@@ -50,7 +50,7 @@ def stop_simulator():
     It will stop the simulator component
     :return:
     """
-    # docker exec docker_greencharge.simulator_1 /home/gc/bin/starter.sh &
+    # docker exec docker_greencharge.simulator_1 /home/gc/bin/starter.sh start
     pass
 
 
