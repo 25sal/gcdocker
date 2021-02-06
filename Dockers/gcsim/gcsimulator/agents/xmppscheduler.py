@@ -1,3 +1,23 @@
+#
+# Copyright (c) 2019-2020 by University of Campania "Luigi Vanvitelli".
+# Developers and maintainers: Salvatore Venticinque, Dario Branco.
+# This file is part of GreenCharge
+# (see https://www.greencharge2020.eu/).
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+
 from spade.agent import Agent
 from spade.behaviour import PeriodicBehaviour
 from spade.message import Message
@@ -43,7 +63,7 @@ class scheduler(Agent):
 
                 return aioweb.json_response(res)
         nextmsg = self.dispatched.get_nowait()
-		
+
         logging.info(nextmsg["message"])
         dictB = json.loads(nextmsg["message"])
         if(nextmsg["time"] != "0"):
@@ -96,7 +116,7 @@ class scheduler(Agent):
                             for line in input_file:
                                   f.write(line.decode("utf-8"))
                     copy2(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/HC/"+id_load+".csv","/var/www/Simulations/demo/"+Configuration.parameters['user_dir']+"/output")
-                    
+
             elif sub == "EV_PROFILE":
                     id_load = parsed_json['id']
                     input_file = data['csvfile'].file
@@ -169,10 +189,10 @@ class scheduler(Agent):
                                 await self.send(msg)
                                 self.agent.nextInterval = self.agent.interval
                         else:
-                            
+
                             self.agent.dispatched.put_nowait({"time": msg.metadata, "message": msg.body})
                             if self.agent.last_object_type == "LOAD" and self.agent.mexToSend.qsize() != 0:
-                                
+
                                 for i in range(self.agent.mexToSend.qsize()):
                                      mex = Message(to=basejid+"/"+simjid)
                                      message = self.agent.mexToSend.get_nowait()
@@ -181,16 +201,16 @@ class scheduler(Agent):
                                 self.agent.interval += 1
                                 self.agent.nextInterval = self.agent.interval
                             elif self.agent.last_object_type == "LOAD" and self.agent.mexToSend.qsize() == 0:
-                                
+
                                 mex = Message(to=basejid+"/"+simjid)
                                 message = "AckMessage"
                                 mex.body = message
-                               
+
                                 await self.send(mex)
                                 self.agent.nextInterval = self.agent.interval
                             else:
                                 self.agent.interval += 1
                             self.agent.oldStart = msg.metadata
                     except Exception as e:
-                        
+
                         logging.warning(e)
