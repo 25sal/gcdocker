@@ -37,7 +37,7 @@ from utils.MessageFactory import MessageFactory
 path.append("..")
 LOGFILE = './gcdaemon.log'
 
-logging.basicConfig(filename=LOGFILE, filemode= 'w', level=logging.INFO)
+# logging.basicConfig(filename=LOGFILE, filemode= 'w', level=logging.INFO)
 
 #################################################################https://calendar.google.com/calendar/u/0/r#####################################################################
 # This function calculates the execution time of a scheduled load. It is used to put DeleteMessage in sharedQueue at the right time. #

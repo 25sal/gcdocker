@@ -41,20 +41,32 @@
 <li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
 <li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
 </ul>
-<span class="target" id="module-simulator"></span><div class="section" id="simulator">
+<span class="target" id="module-gcsim"></span><dl class="class">
+<dt id="gcsim.GCDaemon">
+<em class="property">class </em><code class="descclassname">gcsim.</code><code class="descname">GCDaemon</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gcsim.GCDaemon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">daemons.prefab.run.RunDaemon</span></code></p>
+<dl class="staticmethod">
+<dt id="gcsim.GCDaemon.run">
+<em class="property">static </em><code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gcsim.GCDaemon.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform the daemon logic.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-gcclient"></span><div class="section" id="simulator">
 <h2>simulator<a class="headerlink" href="#simulator" title="Permalink to this headline">¶</a></h2>
 <p>This  module allows for starting, stopping and checking the status of the simulator and eventually of the optimizer</p>
 <dl class="function">
-<dt id="simulator.start">
-<code class="descclassname">simulator.</code><code class="descname">start</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#simulator.start" title="Permalink to this definition">¶</a></dt>
+<dt id="gcclient.start">
+<code class="descclassname">gcclient.</code><code class="descname">start</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#gcclient.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>It starts  the first simulator and eventually the optimizer
 :param args: command line arguments
 :return:</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="simulator.start_optimizer">
-<code class="descclassname">simulator.</code><code class="descname">start_optimizer</code><span class="sig-paren">(</span><em>optimizer</em>, <em>policy</em><span class="sig-paren">)</span><a class="headerlink" href="#simulator.start_optimizer" title="Permalink to this definition">¶</a></dt>
+<dt id="gcclient.start_optimizer">
+<code class="descclassname">gcclient.</code><code class="descname">start_optimizer</code><span class="sig-paren">(</span><em>optimizer</em>, <em>policy</em><span class="sig-paren">)</span><a class="headerlink" href="#gcclient.start_optimizer" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -73,29 +85,48 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="simulator.start_simulator">
-<code class="descclassname">simulator.</code><code class="descname">start_simulator</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#simulator.start_simulator" title="Permalink to this definition">¶</a></dt>
+<dt id="gcclient.start_simulator">
+<code class="descclassname">gcclient.</code><code class="descname">start_simulator</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#gcclient.start_simulator" title="Permalink to this definition">¶</a></dt>
 <dd><p>It will start the agents based simulator
 :return:</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="simulator.stop">
-<code class="descclassname">simulator.</code><code class="descname">stop</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#simulator.stop" title="Permalink to this definition">¶</a></dt>
+<dt id="gcclient.stop">
+<code class="descclassname">gcclient.</code><code class="descname">stop</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#gcclient.stop" title="Permalink to this definition">¶</a></dt>
 <dd><p>It stops both the simulator and the optimizer
 :param args:
 :return:</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="simulator.stop_simulator">
-<code class="descclassname">simulator.</code><code class="descname">stop_simulator</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simulator.stop_simulator" title="Permalink to this definition">¶</a></dt>
+<dt id="gcclient.stop_simulator">
+<code class="descclassname">gcclient.</code><code class="descname">stop_simulator</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gcclient.stop_simulator" title="Permalink to this definition">¶</a></dt>
 <dd><p>It will stop the simulator component
 :return:</p>
 </dd></dl>
 
 </div>
-<span class="target" id="module-starter"></span><span class="target" id="module-setupmodule"></span></div>
+<span class="target" id="module-agents.setup"></span><dl class="class">
+<dt id="agents.setup.EnqueuedEvent">
+<em class="property">class </em><code class="descclassname">agents.setup.</code><code class="descname">EnqueuedEvent</code><span class="sig-paren">(</span><em>timestamp</em>, <em>event</em>, <em>unique_id=None</em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.EnqueuedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="agents.setup.now">
+<code class="descclassname">agents.setup.</code><code class="descname">now</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.now" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns new datetime object representing current time local to tz.</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>tz</dt>
+<dd>Timezone object.</dd>
+</dl>
+</div></blockquote>
+<p>If no tz is specified, uses local timezone.</p>
+</dd></dl>
+
+<span class="target" id="module-agents.manager"></span><span class="target" id="module-agents.dispatcher"></span></div>
 
 
           </div>

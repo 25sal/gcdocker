@@ -19,15 +19,23 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+.. automodule:: gcsim
+   :members:
+   :show-inheritance:
+   
+.. automodule:: gcclient
+   :members:
+   :show-inheritance:
 
-.. automodule:: simulator
+
+.. automodule:: agents.setup
    :members:
    :show-inheritance:
    
-.. automodule:: starter
+.. automodule:: agents.manager
    :members:
    :show-inheritance:
    
-.. automodule:: setupmodule
+.. automodule:: agents.dispatcher
    :members:
    :show-inheritance:
