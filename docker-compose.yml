@@ -30,7 +30,6 @@ services:
         - isolation-network
       environment:
         - PYTHONPATH=/home/gc/simulator
-        - PATH=/home/gc/simulator/bin:$PATH
       volumes:
         - ./users/demo:/home/gc
         - ./dockers/gcsim/gcsimulator:/home/gc/simulator
