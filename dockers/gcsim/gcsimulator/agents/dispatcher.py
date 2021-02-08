@@ -243,8 +243,8 @@ class Dispatcher(Agent):
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
                         file.flush()
-                    elif next2[1].type == "EV" and next2[1].Device.type == "CREATE_EV":
-                        next2[1].Device.type = "EV_BOOKING"
+                    elif next2[1].type == "EV" and next2[1].device.type == "CREATE_EV":
+                        next2[1].device.type = "EV_BOOKING"
                         message = MessageFactory.create_ev(next2[1], next2[0], protocol_version)
                         await self.send(message)
                         file.write(message.body + "\n")
@@ -257,7 +257,7 @@ class Dispatcher(Agent):
                     elif next2[1].type == "background":
                         message = MessageFactory.background(next2[1], next2[0], protocol_version)
                         await self.send(message)
-                    elif next2[1].type == "load" and next2[1].Device.type == "Producer":
+                    elif next2[1].type == "load" and next2[1].device.type == "Producer":
                         message = MessageFactory.create_producer(next2[1], next2[0], protocol_version)
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
@@ -321,7 +321,7 @@ class Dispatcher(Agent):
                         f2.write(str(next2[0]))
                         f2.close()
                     completed += 1
-                    if nextload.Device.type == "Producer" and nextload.type == "load":
+                    if nextload.device.type == "Producer" and nextload.type == "load":
                         message = MessageFactory.create_producer(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
@@ -339,7 +339,7 @@ class Dispatcher(Agent):
                         nextload.count = 1
                         es.Entities.enqueue_event(int(nextload.creation_time),  nextload)
                         file.flush()
-                    elif nextload.Device.type == "Producer" and nextload.type == "LoadUpdate":
+                    elif nextload.device.type == "Producer" and nextload.type == "LoadUpdate":
                         message = MessageFactory.update_producer(nextload, next2[0], protocol_version)
                         await self.send(message)
                         msg2 = await self.receive(timeout=3)
@@ -349,37 +349,37 @@ class Dispatcher(Agent):
                             es.Entities.enqueue_event(int(nextload.creation_time),  nextload, int(next2[2]))
                         file.write(">>> " + message.body + "\n")
                         file.flush()
-                    elif nextload.Device.type == "battery":
+                    elif nextload.device.type == "battery":
                         message = MessageFactory.create_Battery(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
                         file.flush()
-                    elif nextload.type == "load" and nextload.Device.type == "Consumer":
+                    elif nextload.type == "load" and nextload.device.type == "Consumer":
                         total += 1
                         message = MessageFactory.create_load(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
-                        self.agent.idToLoad["[" + str(nextload.house) + ']:[' + str(nextload.Device.id) + ']'] = nextload
+                        self.agent.idToLoad["[" + str(nextload.house) + ']:[' + str(nextload.device.id) + ']'] = nextload
                     elif nextload.type == "delete":
-                        if nextload.Device.id not in deletedList:
-                            deletedList.append(nextload.Device.id)
+                        if nextload.device.id not in deletedList:
+                            deletedList.append(nextload.device.id)
                             message = MessageFactory.delete_load(nextload, next2[0], protocol_version)
                             await self.send(message)
                             file.write(">>> " + message.body + "\n")
                             file.flush()
-                    elif nextload.type == "EV" and nextload.Device.type == "EV_ARRIVAL":
-                        nextload.Device.type = "EV_DEPARTURE"
+                    elif nextload.type == "EV" and nextload.device.type == "EV_ARRIVAL":
+                        nextload.device.type = "EV_DEPARTURE"
                         message = MessageFactory.booking_request(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
                         file.flush()
-                    elif nextload.type == "EV" and nextload.Device.type == "EV_BOOKING":
-                        nextload.Device.type = "EV_ARRIVAL"
+                    elif nextload.type == "EV" and nextload.device.type == "EV_BOOKING":
+                        nextload.device.type = "EV_ARRIVAL"
                         message = MessageFactory.booking_request(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(message.body + "\n")
                         file.flush()
-                    elif nextload.type == "EV" and nextload.Device.type == "EV_DEPARTURE":
+                    elif nextload.type == "EV" and nextload.device.type == "EV_DEPARTURE":
                         message = MessageFactory.booking_request(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
@@ -413,7 +413,7 @@ class Dispatcher(Agent):
                                     logging.debug(messageFromScheduler.body)
                                     delta = calculateTime(receivedLoad.profile)
                                     newTime = str(int(messageFromScheduler.body.split(" ")[3]) + int(delta))
-                                    mydel = es.EventDelete(receivedLoad.Device, receivedLoad.house, newTime, calculateConsumption(receivedLoad.profile))
+                                    mydel = es.EventDelete(receivedLoad.device, receivedLoad.house, newTime, calculateConsumption(receivedLoad.profile))
                                     switchInTime(receivedLoad.profile, int(messageFromScheduler.body.split(" ")[3]))
                                     es.Entities.enqueue_event(int(newTime),  mydel)
                                     file.write("<<< " + messageFromScheduler.body + "\r\n")
@@ -438,7 +438,7 @@ class Dispatcher(Agent):
                                         receivedLoad = self.agent.idToLoad[messageFromScheduler.body.split(" ")[1]]
                                         delta = calculateTime(receivedLoad.profile)
                                         newTime = str(int(messageFromScheduler.body.split(" ")[3]) + int(delta))
-                                        mydel = es.EventDelete(receivedLoad.Device, receivedLoad.house, newTime, calculateConsumption(receivedLoad.profile), messageFromScheduler.body.split(" ")[5])
+                                        mydel = es.EventDelete(receivedLoad.device, receivedLoad.house, newTime, calculateConsumption(receivedLoad.profile), messageFromScheduler.body.split(" ")[5])
                                         switchInTime(receivedLoad.profile, int(messageFromScheduler.body.split(" ")[3]))
                                         es.Entities.enqueue_event(int(newTime),  mydel)
                                         file.write(">>> " + message.body + "\n")
@@ -459,7 +459,7 @@ class Dispatcher(Agent):
                                         receivedLoad = self.agent.idToLoad[messageFromScheduler.body.split(" ")[1]]
                                         delta = calculateTime(receivedLoad.profile)
                                         newTime = str(int(messageFromScheduler.body.split(" ")[3]) + int(delta))
-                                        mydel = es.EventDelete(receivedLoad.Device, receivedLoad.house, newTime, calculateConsumption(receivedLoad.profile), messageFromScheduler.body.split(" ")[4])
+                                        mydel = es.EventDelete(receivedLoad.device, receivedLoad.house, newTime, calculateConsumption(receivedLoad.profile), messageFromScheduler.body.split(" ")[4])
                                         switchInTime(receivedLoad.profile, int(messageFromScheduler.body.split(" ")[3]))
                                         es.Entities.enqueue_event(int(newTime),mydel)
                                         es.count += 1

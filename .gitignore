@@ -14,7 +14,6 @@ dockers/gcsim/py-modindex.html
 dockers/gcsim/search.html
 dockers/gcsim/searchindex.js
 docker-compose.debug (2).yml
-dockers/gcsim/
 .idea/*
 dockers/gcsim/gcsimulator/simulator/greenchargeSoloDim/bin/__pycache__
 etc/prosody/conf.d/localhost.cfg.lua

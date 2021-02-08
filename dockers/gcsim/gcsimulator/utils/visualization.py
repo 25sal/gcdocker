@@ -18,6 +18,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+"""
+Visualization
+=======================================
+This Class deals with the creation of outputs data and charts.
+"""
+
+
 import matplotlib.pyplot as plt
 import numpy as np
 import glob

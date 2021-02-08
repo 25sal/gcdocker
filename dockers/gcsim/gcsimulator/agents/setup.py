@@ -905,7 +905,7 @@ def uploadInInputRepository():
 
     timestamp = datetime.timestamp(datetime_object)
     for c in Entities.listEvent:
-        if c.Device.type == "Consumer" or c.Device.type == "Producer":
+        if c.device.type == "Consumer" or c.device.type == "Producer":
             est_data = datetime.fromtimestamp(int(c.est))
             lst_data = datetime.fromtimestamp(int(c.lst))
             ct_data = datetime.fromtimestamp(int(c.creation_time))
@@ -922,13 +922,13 @@ def uploadInInputRepository():
                 c.est = str(int(timestamp + midsecondsEST))
             else:
                 c.est = str(int(timestamp))
-            if c.Device.type == "Consumer":
+            if c.device.type == "Consumer":
                 Entities.enqueue_event(int(c.creation_time) + 100, c)
-            if c.Device.type == "Producer":
+            if c.device.type == "Producer":
                 Entities.enqueue_event(int(c.creation_time),  c)
 
         # logging.info("inserito")
-        elif c.Device.type == "EV":
+        elif c.device.type == "EV":
             logging.debug("new EV")
             book_time = datetime.fromtimestamp(int(c.creation_time))
             planned_arrival_time = datetime.fromtimestamp(int(c.planned_arrival_time))
@@ -949,7 +949,7 @@ def uploadInInputRepository():
             c.planned_departure_time = str(int(timestamp + midseconds_planned_departure_time))
             c.actual_arrival_time = str(int(timestamp + midseconds_actual_arrival_time))
             c.actual_departure_time = str(int(timestamp + midseconds_actual_departure_time))
-            c.Device.type = "CREATE_EV"
+            c.device.type = "CREATE_EV"
             '''
             logging.info(c.device.id)
             logging.info("timestamp = " + str(timestamp))
@@ -965,13 +965,13 @@ def uploadInInputRepository():
 
             Entities.enqueue_event(int(c.actual_departure_time),  c)
 
-        elif c.Device.type == "heaterCooler":
+        elif c.device.type == "heaterCooler":
             c.creation_time = str(int(timestamp))
             Entities.enqueue_event(int(c.creation_time),  c)
-        elif c.Device.type == "backgroundLoad":
+        elif c.device.type == "backgroundLoad":
             c.creation_time = str(int(timestamp))
             Entities.enqueue_event(int(c.creation_time),  c)
-        elif c.Device.type == "battery":
+        elif c.device.type == "battery":
             est_data = datetime.fromtimestamp(int(c.start_time))
             lst_data = datetime.fromtimestamp(int(c.end_time))
             ct_data = datetime.fromtimestamp(int(c.creation_time))
