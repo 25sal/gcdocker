@@ -30,16 +30,28 @@ from utils import visualization
 
 class Node:
     def __init__(self, name):
+        """
+        Args:
+            name:
+        """
         self.name = name
         self.children = []
         self.data = [[0] for i in range(0,288)]
 
     def addChild(self, name):
+        """
+        Args:
+            name:
+        """
         node = Node(name)
         self.children.append(node)
         return node
 
     def addData(self, dataList):
+        """
+        Args:
+            dataList:
+        """
         for i in range (0,288):
             self.data[i] += dataList[i]
 
@@ -92,6 +104,13 @@ class Checker:
     evList = {}
 
     def doChecks(self,path, startTime, pathXML, pathVisualizer):
+        """
+        Args:
+            path:
+            startTime:
+            pathXML:
+            pathVisualizer:
+        """
         try:
             os.remove(path+"/checks/outputParam.csv")
             os.remove(path+"/checks/kpi.csv")
@@ -137,6 +156,10 @@ class Checker:
 
 
     def checkChargingPowerLowerThanMaxChPowConstraint(self, startTime):
+        """
+        Args:
+            startTime:
+        """
         for key, ev in self.evList.items():
             filename = ev.profile
             powerProfile = generatePowerTimeSeries(filename,startTime)
@@ -189,6 +212,11 @@ class Checker:
                 self.ast_lst_constraint[key] = 'not Respected'
 
     def readNeighborhoodXML(self, pathXML, startTime):
+        """
+        Args:
+            pathXML:
+            startTime:
+        """
         tree = ET.parse(pathXML +'/neighborhood.xml')
         neighborhood = tree.getroot()
         buildingID = "["
@@ -222,6 +250,11 @@ class Checker:
 
 
     def readLoadXML(self, pathXML, startTime):
+        """
+        Args:
+            pathXML:
+            startTime:
+        """
         tree = ET.parse(pathXML +'/loads.xml')
         neighborhood = tree.getroot()
         buildingID = "["
@@ -278,6 +311,11 @@ class Checker:
 
 
     def readConsumptionProduction(self, allfiles, dictionary):
+            """
+            Args:
+                allfiles:
+                dictionary:
+            """
             for file in allfiles:
                 self.num_of_timeseries = self.num_of_timeseries + 1
                 try:
@@ -294,6 +332,10 @@ class Checker:
                 pass
 
     def workWithOutputTXT(self, path):
+        """
+        Args:
+            path:
+        """
         file1 = open(path+'/output.txt', 'r')
         Lines = file1.readlines()
         for line in Lines:
@@ -387,6 +429,10 @@ class Checker:
     def writeOutput(self, path):
 
 
+        """
+        Args:
+            path:
+        """
         try:
             os.mkdir(path+"/checks")
         except :
@@ -503,6 +549,11 @@ class Checker:
 
 
 def findPeak(node, listOfPeaks):
+    """
+    Args:
+        node:
+        listOfPeaks:
+    """
     max = 0
     for i in range(0,287):
         if(node.data[i]>max):
@@ -515,6 +566,10 @@ def findPeak(node, listOfPeaks):
 
 
 def printChilds(node):
+    """
+    Args:
+        node:
+    """
     print(node.name)
     for i in range(0,287):
         print(node.data[i])
@@ -523,6 +578,11 @@ def printChilds(node):
 
 
 def sumForPowerPeak(node, dictConsumer):
+    """
+    Args:
+        node:
+        dictConsumer:
+    """
     for nodechild in node.children:
         print(node.name)
         powerList = sumForPowerPeak(nodechild, dictConsumer)
@@ -537,6 +597,11 @@ def sumForPowerPeak(node, dictConsumer):
 
 
 def generateEnergyTimeSeries(file, startTime):
+    """
+    Args:
+        file:
+        startTime:
+    """
     endTime = startTime + 86400
     with open(file, newline='') as csvfile:
         csv_reader = csv.reader(csvfile, delimiter= " ")
@@ -554,7 +619,7 @@ def generateEnergyTimeSeries(file, startTime):
                     x.append(float(row[0]))     #aggiunto il tempo alla lista dei tempi
                     y.append((float(row[1])))
             else:
-                if(startTime < float(row[0])):     #faccio in modo che se il primo tempo della timeseries é piú grande del minimo del periodo di interesse ci piazzo uno zero, cosi dopo non ho problemi quando vado a ricampionare
+                if(startTime < float(row[0])):     #faccio in modo che se il primo tempo della timeseries Ã© piÃº grande del minimo del periodo di interesse ci piazzo uno zero, cosi dopo non ho problemi quando vado a ricampionare
                     x.append(startTime)
                     y.append(0)
                 else:
@@ -563,7 +628,7 @@ def generateEnergyTimeSeries(file, startTime):
             lastSample = float(row[0])
             lastValue = float(row[1])   #aggiorno l'energia precedente
             count += 1  #aggiorno il count quando ho finito la riga
-    if(endTime > lastSample):   #stesso discorso di prima, se l'ultimo tempo della timeseries é piú piccolo del massimo tempo di interesse metto uno zero per non aver problemi dopo
+    if(endTime > lastSample):   #stesso discorso di prima, se l'ultimo tempo della timeseries Ã© piÃº piccolo del massimo tempo di interesse metto uno zero per non aver problemi dopo
         y.append(0)
         x.append(endTime)
     f = interpolate.interp1d(x,y)   #faccio l'interpolazione lineare
@@ -572,6 +637,11 @@ def generateEnergyTimeSeries(file, startTime):
     return ynew
 
 def generatePowerTimeSeries(file, startTime):
+    """
+    Args:
+        file:
+        startTime:
+    """
     endTime = startTime + 86400
     with open(file, newline='') as csvfile:
         csv_reader = csv.reader(csvfile, delimiter= " ")
@@ -581,17 +651,17 @@ def generatePowerTimeSeries(file, startTime):
         lastSample = 0      #Questo mi serve per tenermi in memoria il tempo precedente alla riga che sto leggendo, cosi posso farmi il delta per la trasformazione in potenza
         lastValue = 0     #Questo mi serve per tenermi in memoria il valore di energia precedente alla riga che sto leggendo, cosi posso farmi il delta per la trasformazione in potenza
         for row in csv_reader:              #per tutte le righe
-            if(count != 0):  #salto la prima riga della ts perché devo convertire in potenza
+            if(count != 0):  #salto la prima riga della ts perchÃ© devo convertire in potenza
                 x.append(float(row[0]))     #aggiunto il tempo alla lista dei tempi
                 y.append((float(row[1])-lastValue)/(float(row[0])-lastSample))
             else:
-                if(startTime < float(row[0])):     #faccio in modo che se il primo tempo della timeseries é piú grande del minimo del periodo di interesse ci piazzo uno zero, cosi dopo non ho problemi quando vado a ricampionare
+                if(startTime < float(row[0])):     #faccio in modo che se il primo tempo della timeseries Ã© piÃº grande del minimo del periodo di interesse ci piazzo uno zero, cosi dopo non ho problemi quando vado a ricampionare
                     x.append(startTime)
                     y.append(0)    #aggiungo alla lista dei valori la potenza
             lastSample = float(row[0])  #aggiorno il tempo precedente
             lastValue = float(row[1])   #aggiorno l'energia precedente
             count += 1  #aggiorno il count quando ho finito la riga
-    if endTime > lastSample :   #stesso discorso di prima, se l'ultimo tempo della timeseries é piú piccolo del massimo tempo di interesse metto uno zero per non aver problemi dopo
+    if endTime > lastSample :   #stesso discorso di prima, se l'ultimo tempo della timeseries Ã© piÃº piccolo del massimo tempo di interesse metto uno zero per non aver problemi dopo
         y.append(0)
         x.append(endTime)
     f = interpolate.interp1d(x, y)   #faccio l'interpolazione lineare
@@ -601,6 +671,10 @@ def generatePowerTimeSeries(file, startTime):
 
 
 def html_images(folder):
+    """
+    Args:
+        folder:
+    """
     html_file = open(folder + "/index.html", "w")
     html_file.write('<html><body>')
     images = glob.glob(folder + "/*.png")

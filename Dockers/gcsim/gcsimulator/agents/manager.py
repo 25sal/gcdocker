@@ -17,7 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-
+"""
+Manager
+=======================================
+This agent starts and stops the simulation.
+"""
 from spade.agent import Agent
 from spade.behaviour import OneShotBehaviour
 from spade.message import Message
@@ -40,10 +44,20 @@ class SimLifeCycle:
 #  SetupModule Agent is used for start/stop dispatching messages    #
 #####################################################################
 class setupModule(Agent):
+    '''
+    SetupModule Agent is used for start/stop dispatching messages.
+    Args:
+        Agent: The spade Agent.
+    '''
     #########################################################
     #  startService Behaviour is used for start dispatcher  #
     #########################################################
     class startService(OneShotBehaviour):
+        '''
+        The startService Behaviour is used for start dispatcher.
+        Args:
+            OneShotBehaviour: The behaviour's type.
+        '''
         async def run(self):
             basejid = Configuration.parameters['userjid']
             simjid = Configuration.parameters['simulator']
@@ -62,6 +76,11 @@ class setupModule(Agent):
     #  stopService Behaviour is used for stop/pause dispatcher  #
     #############################################################
     class stopService(OneShotBehaviour):
+        '''
+        The stopService Behaviour is used for stop dispatcher.
+        Args:
+            OneShotBehaviour: The behaviour's type.
+        '''
         async def run(self):
             basejid = Configuration.parameters['userjid']
             simjid = Configuration.parameters['simulator']
@@ -72,6 +91,9 @@ class setupModule(Agent):
             await self.send(msg)
 
     async def setup(self):
+        '''
+        The setup method is used for add behaviours to the agent.
+        '''
         logging.info("SenderAgent started")
         b = self.startService()
         self.add_behaviour(b)

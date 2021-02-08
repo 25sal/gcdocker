@@ -17,6 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
+"""
+Message Factory
+=======================================
+This Class deals with the message creation from data.
+"""
 
 from utils.config import Configuration
 from spade.message import Message
@@ -37,6 +42,9 @@ import logging
 # This Class manages all messages between scheduler and dispatcher. It prepares the messages based on subjects.  #
 ##################################################################################################################
 class MessageFactory:
+    """
+    This Class deals with the message creation from data.
+    """
     realpath = None
     jid = None
     basejid = None
@@ -44,6 +52,9 @@ class MessageFactory:
 
     @classmethod
     def init_parameters(cls):
+        """
+        This Method initializes the parameters useful to the class.
+        """
         cls.jid = Configuration.parameters['adaptor']
         cls.basejid = Configuration.parameters['userjid']
         cls.dir1 = Configuration.parameters['current_sim_dir']
@@ -55,6 +66,11 @@ class MessageFactory:
     #######################################
     @classmethod
     def end(cls, actual_time):
+        """
+        This method creates the end message.
+        Args:
+            actual_time: Simulation Time.
+        """
         protocol_version = Configuration.parameters["protocol"]
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
@@ -73,6 +89,13 @@ class MessageFactory:
     ##############################################
     @classmethod
     def energyCost(cls, device, time, protocol_version):
+        """
+        This method creates the EnergyCost message.
+        Args:
+            device: Device the message refers to.
+            time: Simulation Time.
+            protocol_version: Distinguish between schedulers.
+        """
         web_url = Configuration.parameters['web_url']
         mydir = Configuration.parameters['user_dir']
         if protocol_version == "1.0":
@@ -95,6 +118,13 @@ class MessageFactory:
     ############################################################
     @classmethod
     def energyCostProducer(cls, device, time, protocol_version):
+        """
+        This method creates the EnergyCost for producers message.
+        Args:
+            device: Device the message refers to.
+            time: Simulation Time.
+            protocol_version: Distinguish between schedulers.
+        """
         web_url = Configuration.parameters['web_url']
         mydir = Configuration.parameters['user_dir']
         if protocol_version == "1.0":
@@ -120,6 +150,13 @@ class MessageFactory:
     #############################################
     @classmethod
     def energyMix(cls, device, time, protocol_version):
+        """
+        This method creates the EnergyMix message.
+        Args:
+            device: Device the message refers to.
+            time: Simulation Time.
+            protocol_version: Distinguish between schedulers.
+        """
         web_url = Configuration.parameters['web_url']
         mydir = Configuration.parameters['user_dir']
         if protocol_version == "1.0":
@@ -139,6 +176,13 @@ class MessageFactory:
     #################################################################
     @classmethod
     def neighborhood(cls, device, time, protocol_version):
+        """
+        This method creates the EnergyHub for neighborhood message.
+        Args:
+            device: Device the message refers to.
+            time: Simulation Time.
+            protocol_version: Distinguish between schedulers.
+        """
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
             message = "CREATE_ENERGY_GROUP [99] " + str(device.peakload) + " " + time
@@ -157,6 +201,13 @@ class MessageFactory:
     ###########################################################
     @classmethod
     def house(cls, device, time, protocol_version):
+        """
+        This method creates the EnergyHub for houses message.
+        Args:
+            device: Device the message refers to.
+            time: Simulation Time.
+            protocol_version: Distinguish between schedulers.
+        """
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
             message = "CREATE_ENERGY_GROUP [" + str(device.id) + "] " + str(device.peakload) + " " + str(time)
@@ -175,6 +226,13 @@ class MessageFactory:
     #####################################################################
     @classmethod
     def chargingstation(cls, device, time, protocol_version):
+        """
+        This method creates the EnergyHub for Charging Station message.
+        Args:
+            device: Device the message refers to.
+            time: Simulation Time.
+            protocol_version: Distinguish between schedulers.
+        """
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
             message = "CREATE_ENERGY_GROUP  [" + str(device.id) + "] " + str(device.peakload) + " " + str(time)
@@ -194,6 +252,13 @@ class MessageFactory:
     ###################################################################
     @classmethod
     def chargingpoint(cls, device, time, protocol_version):
+        """
+        This method creates the EnergyHub for Charging Point message.
+        Args:
+            device: Device the message refers to.
+            time: Simulation Time.
+            protocol_version: Distinguish between schedulers.
+        """
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
             message = "CREATE_ENERGY_GROUP [" + str(device.houseid) + "]:[" + str(
@@ -215,6 +280,13 @@ class MessageFactory:
     #################################################
     @classmethod
     def heatercooler(cls, device, time, protocol_version):
+        """
+        This method creates the HeaterCooler message.
+        Args:
+            device: Device the message refers to.
+            time: Simulation Time.
+            protocol_version: Distinguish between schedulers.
+        """
         web_url = Configuration.parameters['web_url']
         mydir = Configuration.parameters['user_dir']
         if protocol_version == "1.0":
@@ -237,6 +309,13 @@ class MessageFactory:
     #################################################
     @classmethod
     def background(cls, device, time, protocol_version):
+        """
+        This method creates the Background message.
+        Args:
+            device: Device the message refers to.
+            time: Simulation Time.
+            protocol_version: Distinguish between schedulers.
+        """
         mydir = Configuration.parameters['user_dir']
         web_url = Configuration.parameters['web_url']
         if protocol_version == "1.0":
@@ -260,8 +339,9 @@ class MessageFactory:
     ##############################################################
     # METHOD NOT USED. MAYBE USEFULL IN  FUTURE IMPLEMENTATION   #
     ##############################################################
-    @classmethod
+    """@classmethod
     def charge_on_demand(cls, device, time, protocol_version):
+
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
             message = '"message: {"subject": "EV", "capacity":' + str(
@@ -294,13 +374,19 @@ class MessageFactory:
             mex.body = message
             mex.metadata = time
             return (mex)
-
+    """
     ##########################################
     # Method used for Ev arrival, departure  #
     ##########################################
     @classmethod
     def booking_request(cls, device, time, protocol_version):
-
+        """
+        This method creates the booking_request message.
+        Args:
+            device: Device the message refers to.
+            time: Simulation Time.
+            protocol_version: Distinguish between schedulers.
+        """
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
             message = "EV [" + str(
@@ -330,6 +416,13 @@ class MessageFactory:
     ##############################################
     @classmethod
     def create_ev(cls, device, time, protocol_version):
+        """
+        This method creates the Create Ev message.
+        Args:
+            device: Device the message refers to.
+            time: Simulation Time.
+            protocol_version: Distinguish between schedulers.
+        """
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
             message = "CREATE_EV [" + str(
@@ -361,9 +454,15 @@ class MessageFactory:
     ##############################################################
     # METHOD NOT USED. MAYBE USEFULL IN  FUTURE IMPLEMENTATION   #
     ##############################################################
-    @classmethod
+    """@classmethod
     def ev_arrival(cls, device, time, protocol_version):
 
+      
+        Args:
+            device:
+            time:
+            protocol_version:
+   
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
             message = "EV_ARRIVAL CAPACITY " + device.device.capacity + " MAX_CH_POW_AC " + \
@@ -400,6 +499,12 @@ class MessageFactory:
     ##############################################################
     @classmethod
     def ev_departure(cls, device, time, protocol_version):
+     
+        Args:
+            device:
+            time:
+            protocol_version:
+        
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
             message = "EV_DEPARTURE CAPACITY " + device.device.capacity + " MAX_CH_POW_AC " + device.device.max_ch_pow_ac + " MAX_CH_POW_CC " + device.device.max_ch_pow_cc + " MAX_ALL_EN " + device.device.max_all_en + " MIN_ALL_EN " + device.device.min_all_en + " SB_CH " + device.device.sb_ch + " CH_EFF " + device.device.ch_eff + " SOC_AT_ARRIVAL " + device.Soc_at_arrival + " PLANNED_DEPARTURE_TIME " + device.planned_departure_time + " ARRIVAL_TIME " + device.actual_arrival_time + " V2G " + device.v2g + " TARGET_SOC " + device.target_soc
@@ -422,12 +527,19 @@ class MessageFactory:
             mex.body = message
             mex.metadata = time
             return mex
-
+    """
     #################################################
     # This Method manages "create_Battery" message. #
     #################################################
     @classmethod
     def create_Battery(cls, device, time, protocol_version):
+        """
+        This method creates the Create Battery message.
+        Args:
+            device: Device the message refers to.
+            time: Simulation Time.
+            protocol_version: Distinguish between schedulers.
+        """
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
             message = "CREATE_BATTERY " + "[" + str(device.house) + "]:[" + str(
@@ -457,6 +569,13 @@ class MessageFactory:
     ##################################################
     @classmethod
     def create_producer(cls, device, time, protocol_version):
+        """
+        This method creates the Create Producer message.
+        Args:
+            device: Device the message refers to.
+            time: Simulation Time.
+            protocol_version: Distinguish between schedulers.
+        """
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
             message = "CREATE_PRODUCER [" + str(device.house) + "]:[" + str(device.device.id) + "] " + str(time)
@@ -476,6 +595,13 @@ class MessageFactory:
     #######################################
     @classmethod
     def create_load(cls, device, time, protocol_version):
+        """
+        This method creates the Create Load message.
+        Args:
+            device: Device the message refers to.
+            time: Simulation Time.
+            protocol_version: Distinguish between schedulers.
+        """
         mydir = Configuration.parameters['user_dir']
         web_url = Configuration.parameters['web_url']
         if protocol_version == "1.0":
@@ -504,6 +630,13 @@ class MessageFactory:
     ##################################################
     @classmethod
     def update_producer(cls, device, time, protocol_version):
+        """
+        This method creates the Update Producer message.
+        Args:
+            device: Device the message refers to.
+            time: Simulation Time.
+            protocol_version: Distinguish between schedulers.
+        """
         web_url = Configuration.parameters['web_url']
         mydir = Configuration.parameters['user_dir']
         if protocol_version == "1.0":
@@ -526,6 +659,13 @@ class MessageFactory:
     ##############################################
     @classmethod
     def delete_load(cls, device, time, protocol_version):
+        """
+        This method creates the Delete load message.
+        Args:
+            device: Device the message refers to.
+            time: Simulation Time.
+            protocol_version: Distinguish between schedulers.
+        """
         if protocol_version == "1.0":
             mex = Message(to=cls.basejid + "/actormanager")
             message = "DELETE_LOAD [" + str(device.house) + "]:[" + str(device.device.id) + "] " + str(

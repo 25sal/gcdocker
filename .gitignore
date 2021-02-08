@@ -1,4 +1,9 @@
 users/demo/Simulations/*/Results/*
+users/demo/Simulations/*/output/*
+Dockers/gcsim/_static/*
+Dockers/gcsim/.doctrees/*
+Dockers/gcsim/.buildinfo
+.idea/*
 Dockers/gcsim/GCSimulator/Simulator/greenchargeSoloDim/bin/__pycache__
 etc/prosody/conf.d/localhost.cfg.lua
 Dockers/gcsim/build/*

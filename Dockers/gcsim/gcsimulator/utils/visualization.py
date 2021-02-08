@@ -28,11 +28,16 @@ from scipy.integrate import simps
 
 
 class Intersection:
-    """
-    This class compute the intersection between two curve using different methods.
+    """This class compute the intersection between two curve using different
+    methods.
     """
     @classmethod
     def solve(cls, f, x):
+        """
+        Args:
+            f:
+            x:
+        """
         s = np.sign(f)
         z = np.where(s == 0)[0]
         if len(z) > 0:
@@ -44,11 +49,23 @@ class Intersection:
 
     @classmethod
     def interp(cls, f, x, z):
+        """
+        Args:
+            f:
+            x:
+            z:
+        """
         m = (f[z + 1] - f[z]) / (x[z + 1] - x[z])
         return x[z] - f[z] / m
 
     @classmethod
     def intersect1(cls, x, y1,y2):
+        """
+        Args:
+            x:
+            y1:
+            y2:
+        """
         f = y1 - y2
         z = cls.solve(f, x)
         ans = cls.interp(f, x, z)
@@ -56,6 +73,12 @@ class Intersection:
 
     @staticmethod
     def intersect2(f1, f2, xx):
+        """
+        Args:
+            f1:
+            f2:
+            xx:
+        """
         def diff_func(x):
             return f1(x) - f2(x)
 
@@ -78,6 +101,11 @@ class EnergyOutput:
 
 
     def __init__(self, folder, interval=600):
+        """
+        Args:
+            folder:
+            interval:
+        """
         self.interval = interval
         self.folder = folder + "/output"
         self.min_time = 0
@@ -85,6 +113,10 @@ class EnergyOutput:
         pass
 
     def load(self, rel=False):
+        """
+        Args:
+            rel:
+        """
         self.productions = self.load_series(self.prod_series, rel)
         self.consumptions = self.load_series(self.cons_series, rel)
         self.sample_time = np.arange(300, 23.5*3600, self.interval)
@@ -131,13 +163,30 @@ class EnergyOutput:
         return res_pow
 
     def __sum_cts(self, ts_sum, ts_new):
+        """
+        Args:
+            ts_sum:
+            ts_new:
+        """
         return self.__sum_sub_cts(ts_sum, ts_new)
 
     def __sub_cts(self, ts_sum, ts_new):
+        """
+        Args:
+            ts_sum:
+            ts_new:
+        """
         return self.__sum_sub_cts(ts_sum, ts_new, -1)
 
     # mult should be -1 to subtract, neg should be True if cumulative timeseries can decrease
     def __sum_sub_cts(self, ts_sum, ts_new, mult=1, neg=True):
+        """
+        Args:
+            ts_sum:
+            ts_new:
+            mult:
+            neg:
+        """
         if ts_sum is None:
             ts_sum = np.zeros(len(self.sample_time))
         start_time = ts_new[0, 0]
@@ -162,6 +211,11 @@ class EnergyOutput:
         return ts_sum
 
     def load_series(self, typ, rel=False):
+        """
+        Args:
+            typ:
+            rel:
+        """
         ts_groups = {}
         for ser_typ in typ:
             series = glob.glob(self.folder + "/" + ser_typ + "/*.csv")
@@ -183,6 +237,12 @@ class EnergyOutput:
 
 
 def ce2p(xx, yy, positive=True):
+    """
+    Args:
+        xx:
+        yy:
+        positive:
+    """
     yy1 = np.zeros(len(yy))
     for i in range(1, len(yy)):
         if yy[i] >= yy[i - 1] or not positive:
@@ -194,12 +254,21 @@ def ce2p(xx, yy, positive=True):
     return yy1
 
 def ce2e(yy):
+    """
+    Args:
+        yy:
+    """
     yy1 = np.zeros(len(yy))
     for i in range(0, len(yy)-1):
         yy1[i] = yy[i+1] - yy[i]
     return yy1
 
 def p2ce(xx, yy):
+    """
+    Args:
+        xx:
+        yy:
+    """
     yy1 = np.zeros(len(yy))
     for i in range(1, len(yy)):
             yy1[i] = yy1[i-1] + yy[i] * (xx[i] - xx[i - 1])/3600
@@ -208,6 +277,11 @@ def p2ce(xx, yy):
 
 def plot_output(sim_output, path="."):
 
+    """
+    Args:
+        sim_output:
+        path:
+    """
     plt.figure()
     plot_power(sim_output.productions, 'b')
     plot_power(sim_output.consumptions)
@@ -249,6 +323,11 @@ def plot_output(sim_output, path="."):
 
 
 def plot_power(groups, colr=None):
+    """
+    Args:
+        groups:
+        colr:
+    """
     for group_key in groups.keys():
         for ts_key in groups[group_key].keys():
             ts = groups[group_key][ts_key]
@@ -272,6 +351,11 @@ class Performance:
 
     @staticmethod
     def self_consumption(self_consumption, production):
+        """
+        Args:
+            self_consumption:
+            production:
+        """
         if production[-1] > 0:
             return self_consumption[-1]/production[-1]
         else:
@@ -279,6 +363,10 @@ class Performance:
 
     @staticmethod
     def average(groups):
+        """
+        Args:
+            groups:
+        """
         energy = 0
         min_time = None
         max_time = None
@@ -296,18 +384,23 @@ class Performance:
 
     @staticmethod
     def peak2average(consumption):
+        """
+        Args:
+            consumption:
+        """
         avg_pow = 3600 * consumption[-1, 1]/(consumption[-1, 0] - consumption[0, 0])
         pow_serie = ce2p(consumption[:, 0], consumption[:, 1])
         return np.max(pow_serie)/avg_pow
 
 
 def shift_load(shift_time, infile, outfile):
-    """
-    This code shift a timeseries
-    :param shift_time:
-    :param infile:
-    :param outfile:
-    :return:
+    """This code shift a timeseries :param shift_time: :param infile: :param
+    outfile: :return:
+
+    Args:
+        shift_time:
+        infile:
+        outfile:
     """
     series = np.genfromtxt(infile, delimiter=' ')
     start_time = series[0, 0]
@@ -316,20 +409,27 @@ def shift_load(shift_time, infile, outfile):
 
 
 def compute_area(ffunc, xx, a, b):
-    """"
-    This code compute the area below the curve ffunc, between a and b
+    """This code compute the area below the curve ffunc, between a and b
+
+    Args:
+        ffunc:
+        xx:
+        a:
+        b:
     """
     return simps(ffunc(xx[a:b]), xx[a:b])/3600
 
 
 def ev2maxself(ev_ce, xx, res_energy, filename):
-    """
-    This function change the energy profile of an ev to optimize the usage of residual green energy
-    :param ev_ce:
-    :param xx:
-    :param res_energy:
-    :param filename:
-    :return:
+    """This function change the energy profile of an ev to optimize the usage of
+    residual green energy :param ev_ce: :param xx: :param res_energy: :param
+    filename: :return:
+
+    Args:
+        ev_ce:
+        xx:
+        res_energy:
+        filename:
     """
     ev_energy = ev_ce[-1, 1]
     ev_max_en = (ev_ce[-1, 1] / (ev_ce[-1, 0] - ev_ce[0, 0])) * 600
@@ -362,6 +462,11 @@ def ev2maxself(ev_ce, xx, res_energy, filename):
 
 
 def callExternal(folder, out_path='.'):
+    """
+    Args:
+        folder:
+        out_path:
+    """
     sim_output = EnergyOutput(folder,150)
 
     sim_output.load(True)
@@ -427,6 +532,10 @@ if __name__ == "__main__":
     func1 = inter.interp1d(sim_output.sample_time,tot_power)
 
     def func2(x):
+        """
+        Args:
+            x:
+        """
         return threshold
     result = Intersection.intersect2(func1, func2, sim_output.sample_time)
     print("Intersect", result)

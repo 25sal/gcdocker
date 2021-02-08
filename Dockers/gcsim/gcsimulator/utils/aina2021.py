@@ -29,6 +29,11 @@ import scipy.interpolate as inter
 
 
 def discriminate(values, sign=1):
+    """
+    Args:
+        values:
+        sign:
+    """
     discriminated = np.zeros(len(values))
     for i  in range(len(values)):
         if values[i] * sign > 0:

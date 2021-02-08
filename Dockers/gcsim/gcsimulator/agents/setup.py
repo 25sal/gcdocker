@@ -17,7 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-
+"""
+Setup
+=======================================
+This agent deals with the creation of the message queue.
+"""
 
 ###########################****************** IMPORT LIBRARIES SECTION ************************#########################
 import spade
@@ -46,7 +50,15 @@ LOGFILE = '/home/gc/simulator/gcdaemon.log'
 # ANY DEVICE IS DEFINED BY A A COMPLEX OBJECT
 
 class abstract_device:
+    """This class defines an abstract device, will be implemented by other classes."""
     def __init__(self, id='0', house='0', type='0', name='0'):
+        """
+        Args:
+            id: The device's id.
+            house: The house where the device is located.
+            type: The device's type .
+            name: The device's name.
+        """
         self.type = type
         self.id = id
         self.house = house
@@ -54,19 +66,52 @@ class abstract_device:
 
 
 class backGroundLoad(abstract_device):
+    """This class defines an background load."""
     def __init__(self, id='0', house='0', name='0'):
+        """
+        Args:
+            id: The device's id.
+            house: The house where the device is located.
+            name: The device's name.
+        """
         super(backGroundLoad,self).__init__(id, house, "backgroundLoad", name)
 
 
 class heaterCooler(abstract_device):
+    """This class defines an heater/cooler device."""
     def __init__(self, id='0', house='0', name='0'):
+        """
+        Args:
+            id: The device's id.
+            house: The house where the device is located.
+            name: The device's name.
+        """
         super(heaterCooler,self).__init__(id, house, "heaterCooler",  name)
 
 
 class EV(abstract_device):
+    """This class defines an EV device."""
     def __init__(self, id=0, house=0, chargingPoint=0, name='0', capacity='0', max_ch_pow_ac='0', max_ch_pow_cc='0',
                  max_dis_pow_ac='0', max_dis_pow_cc='0', max_all_en='0', min_all_en='0', sb_ch='0', sb_dis='0',
                  ch_eff='0', dis_eff='0'):
+        """
+        Args:
+            id: The device's id.
+            house: The house where the device is located.
+            chargingPoint: The chargingPoint where the device is located.
+            name: The device's name.
+            capacity:  It is the maximum amount of energy can be stored.
+            max_ch_pow_ac: Max charging power when alternate current is used.
+            max_ch_pow_cc: Max charging power when direct current is used.
+            max_dis_pow_ac: Max discharging power in alternate current.
+            max_dis_pow_cc: Max discharging power in direct current.
+            max_all_en: Maximum allowed energy can be stored as a percentage of the capacity.
+            min_all_en: Minimum allowed energy must be stored as a percentage of the capacity.
+            sb_ch: Energy threshold above which the charging efficiency decrease.
+            sb_dis: Energy threshold below the discharging efficiency decrease.
+            ch_eff: This parameter must be multiplied to the nominal maximum charging power to obtain the actual maximum charging power above sb_ch.
+            dis_eff: This parameter must be multiplied to the nominal maximum discharging power to obtain the actual maximum discharging power below sb_dis.
+        """
         super(EV,self).__init__(id, house, "EV", name)
         self.cp = chargingPoint
         self.capacity = capacity
@@ -83,10 +128,27 @@ class EV(abstract_device):
 
 
 class Battery(abstract_device):
+    """This class defines an Battery device."""
 
     def __init__(self, id=0, house=0, name='0', capacity='0', max_ch_pow_ac='0', max_ch_pow_cc='0',
                  max_dis_pow='0', max_all_en='0', min_all_en='0', sb_ch='0', sb_dis='0', ch_eff='0',
                  dis_eff='0'):
+        """
+        Args:
+            id: The device's id.
+            house: The house where the device is located.
+            name: The device's name.
+            capacity:  It is the maximum amount of energy can be stored.
+            max_ch_pow_ac: Max charging power when alternate current is used.
+            max_ch_pow_cc: Max charging power when direct current is used.
+            max_dis_pow_ac: Max discharging power.
+            max_all_en: Maximum allowed energy can be stored as a percentage of the capacity.
+            min_all_en: Minimum allowed energy must be stored as a percentage of the capacity.
+            sb_ch: Energy threshold above which the charging efficiency decrease.
+            sb_dis: Energy threshold below the discharging efficiency decrease.
+            ch_eff: This parameter must be multiplied to the nominal maximum charging power to obtain the actual maximum charging power above sb_ch.
+            dis_eff: This parameter must be multiplied to the nominal maximum discharging power to obtain the actual maximum discharging power below sb_dis.
+        """
         self.id = id
         self.house = house
         self.name = name
@@ -104,13 +166,29 @@ class Battery(abstract_device):
 
 
 class device(abstract_device):
+    """This class defines a schedulable device or a producer device."""
 
     def __init__(self, id='0', type='0', name='0', house='0'):
+        """
+        Args:
+            id: The device's id.
+            type: The device's type .
+            name: The device's name.
+            house: The house where the device is located.
+        """
         super().__init__(id, house, type, name)
 
 
 class abstract_event:
+    """This class defines an abstract event."""
     def __init__(self, device='0', house='0', creation_time='0', type2=0):
+        """
+        Args:
+            device: The device to which the event refers
+            house: The house where the device is located.
+            creation_time: The time in which the event has to be triggered
+            type2: Type of the event
+        """
         self.device = device
         self.type = type2
         self.creation_time = creation_time
@@ -118,7 +196,18 @@ class abstract_event:
 
 
 class eventGeneral(abstract_event):
+    """This class defines a schedulable event."""
     def __init__(self, device='0', house='0', est='0', lst='0', creation_time='0', profile='0', type2=0):
+        """
+        Args:
+            device: The device to which the event refers.
+            house: The house where the device is located.
+            est: The earliest start time.
+            lst: The latest start time.
+            creation_time: The time in which the event has to be triggered.
+            profile: The consumption profile the device has to perform.
+            type2: The event type.
+        """
         super(eventGeneral, self).__init__(device, house, creation_time, type2)
         self.est = est
         self.lst = lst
@@ -126,8 +215,16 @@ class eventGeneral(abstract_event):
 
 
 class eventDelete(abstract_event):
+    """This class defines a delete event."""
 
     def __init__(self, device='0', house='0', creation_time='0', consumption=0):
+        """
+        Args:
+            device: The device to which the event refers.
+            house: The house where the device is located.
+            creation_time: The time in which the event has to be triggered.
+            consumption: Total consumption energy value.
+        """
         self.device = device
         self.type = "delete"
         self.creation_time = creation_time
@@ -136,9 +233,25 @@ class eventDelete(abstract_event):
 
 
 class eventEcar(abstract_event):
+    """This class defines an EV event."""
+
     def __init__(self, device='0', house='0', Soc_at_arrival='0', booking_time='0', planned_arrival_time='0'
                  , planned_departure_time='0', actual_arrival_time='0', actual_departure_time='0',
                  target_soc='0', v2g='0', priority='0'):
+        """
+        Args:
+            device: The device to which the event refers.
+            house: The house where the device is located.
+            Soc_at_arrival: The status of charge at plug-in time.
+            booking_time: The booking time of charging session.
+            planned_arrival_time: The planned arrival time to the charging point.
+            planned_departure_time: The planned departure time from the charging point.
+            actual_arrival_time: The actual arrival time to the charging point.
+            actual_departure_time: The actual departure time from the charging point.
+            target_soc: The desidered status of charge at plug-out time.
+            v2g: Flag to set in order to use vehicle to grid.
+            priority: Set the priority charging for the charging session.
+        """
         self.device = device
         self.type = "EV"
         self.creation_time = booking_time
@@ -154,8 +267,19 @@ class eventEcar(abstract_event):
 
 
 class eventBattery(abstract_event):
+    """This class defines a battery event."""
     def __init__(self, device='0', house='0', Soc_at_arrival='0', booking_time='0', start_time='0', end_time='0',
                  target_soc='0'):
+        """
+        Args:
+            device: The device to which the event refers.
+            house: The house where the device is located.
+            Soc_at_arrival: The status of charge at start time.
+            booking_time: The time in which the battery entered into the system.
+            start_time: The time in which the battery starts to work.
+            end_time: The time in which the battery stops to work.
+            target_soc: The desidered status of charge at the end time.
+        """
         self.device = device
         self.type = "BATTERY"
         self.creation_time = booking_time
@@ -167,8 +291,18 @@ class eventBattery(abstract_event):
 
 
 class eventProducer(abstract_event):
+    """This class defines a producer event."""
     def __init__(self, device='0', house='0', est='0', lst='0', creation_time='0', profile='0', type2=0,
                  energycost='0'):
+        """
+        Args:
+            device: The device to which the event refers.
+            house: The house where the device is located.
+            creation_time: The time in which the producer entered into the system.
+            profile: The production profile.
+            type2: The event type.
+            energycost: The energy cost.
+        """
         self.device = device
         self.type = "load"
         self.creation_time = creation_time
@@ -181,7 +315,16 @@ class eventProducer(abstract_event):
 
 
 class eventBackground(abstract_event):
+    """This class defines a background load event."""
+
     def __init__(self, device='0', house='0', creation_time='0', profile='0'):
+        """
+        Args:
+            device: The device to which the event refers.
+            house: The house where the device is located.
+            creation_time: The time in which the background load entered into the system.
+            profile: The consumption profile.
+        """
         self.device = device
         self.creation_time = creation_time
         self.profile = profile
@@ -190,7 +333,15 @@ class eventBackground(abstract_event):
 
 
 class eventHeaterCooler(abstract_event):
+    """This class defines a heater/cooler load event."""
     def __init__(self, device='0', house='0', creation_time='0', profile='0'):
+        """
+        Args:
+            device: The device to which the event refers.
+            house: The house where the device is located.
+            creation_time: The time in which the heater/cooler load entered into the system.
+            profile: The consumption profile.
+        """
         self.device = device
         self.creation_time = creation_time
         self.profile = profile
@@ -199,25 +350,51 @@ class eventHeaterCooler(abstract_event):
 
 
 class Energy_Cost():
+    """This class defines an energy cost  event."""
     def __init__(self, type='0', profile='0'):
+        """
+        Args:
+            type: Type of event.
+            profile: The energy cost profile.
+        """
         self.type = "energy_cost"
         self.profile = profile
 
 
 class Energy_Mix():
+    """This class defines an energy mix event."""
     def __init__(self, type='0', profile='0'):
+        """
+        Args:
+            type: Type of event.
+            profile: The energy cost profile.
+        """
         self.type = "energy_mix"
         self.profile = profile
 
 
 class Neighborhood():
+    """This class defines a neighborhood."""
     def __init__(self, type='0', peakload='0'):
+        """
+        Args:
+            type: Type of energy Hub.
+            peakload: The power peak.
+        """
         self.type = "neighborhood"
         self.peakload = peakload
 
 
 class House():
+    """This class defines an house."""
     def __init__(self, type='0', id='0', peakload='0', numcp=0):
+        """
+        Args:
+            type: Type of energy Hub.
+            id: The id of energy hub.
+            peakload: The power peak.
+            numcp: The number of charging point the house has.
+        """
         self.type = "house"
         self.id = id
         self.peakload = peakload
@@ -225,7 +402,15 @@ class House():
 
 
 class ChargingStation():
+    """This class defines a charging Station."""
     def __init__(self, type='0', id='0', peakload='0', numcp=0):
+        """
+        Args:
+            type: Type of energy Hub.
+            id: The id of energy hub.
+            peakload: The power peak.
+            numcp: The number of charging point the house has.
+        """
         self.type = "chargingStation"
         self.id = id
         self.peakload = peakload
@@ -233,7 +418,17 @@ class ChargingStation():
 
 
 class ChargingPoint():
+    """This class defines a charging Point."""
+
     def __init__(self, type='0', id='0', houseid='0', conntype='0', peakload='0'):
+        """
+        Args:
+            type: Type of energy Hub.
+            id: The id of energy hub.
+            houseid: The id of energy hub parent.
+            conntype: Type of connectors the charging point has (AC/DC)
+            peakload: The power peak.
+        """
         self.type = "chargingPoint"
         self.houseid = houseid
         self.id = id
@@ -253,9 +448,17 @@ from dataclasses import dataclass
 ##########################################################
 @dataclass(order=False)
 class EnqueuedEvent:
+    """This class overrides the comparison methods for the shared queue."""
+
     unique_id = 0
 
     def __init__(self, timestamp, event, unique_id=None):
+        """
+        Args:
+            timestamp: Event time.
+            event: The event.
+            unique_id: An unique id in case of same timestamp for two events.
+        """
         self.timestamp = timestamp
         self.event = event
         if unique_id is None:
@@ -286,6 +489,8 @@ class EnqueuedEvent:
 # Class entities, used to enqueue/get an object in/from the queue  #
 ####################################################################
 class Entities:
+    """This class is used to enqueue/get an object in/from the queue."""
+
     listDevice = []  # IN THIS LIST WILL BE STORED ALL THE LOADS
     listPanels = []  # IN THIS LIST WILL BE STORED ALL THE PRODUCERS
     listEvent = []
@@ -293,10 +498,20 @@ class Entities:
 
     @classmethod
     def enqueue_event(cls, timestamp, event, unique_id=None):
+        """
+        This method is used to enqueue an event in the event queue.
+        Args:
+            timestamp: Event time.
+            event: The event.
+            unique_id: An unique id in case of same timestamp for two events.
+        """
         cls.sharedQueue.put(EnqueuedEvent(timestamp, event, unique_id))
 
     @classmethod
     def next_event(cls):
+        """
+        This method is used to dequeue an event from the event queue.
+        """
         item = cls.sharedQueue.get()
         return   (item.timestamp, item.event, item.unique_id)
 
@@ -502,6 +717,7 @@ def createTable():
 # createDevicesList() READS FROM A FILE ALL THE DEVICES, SORTS THEM BY TYPE AND APPEND THEM TO DEVICE LIST  #
 #############################################################################################################
 def createDevicesList():
+    """ This method read from neighborhood.xml all the devices, sort them by type and append them to device list."""
     workingdir = Configuration.parameters['runtime_dir']
     date = Configuration.parameters['date'] + " 00:00:00"
     datetime_object = datetime.strptime(date, '%m/%d/%y %H:%M:%S')
@@ -689,6 +905,8 @@ def createDevicesList():
 #  createEventList() READS FROM A FILE THE EVENTS INFORMATIONS AND APPEND THEM TO LOADSLIST  #
 ##############################################################################################
 def createEventList():
+    """ This method read from loads.xml the events info and append them to loadslist."""
+
     workingdir = Configuration.parameters['runtime_dir']
     path = Configuration.parameters['current_sim_dir']
     f = open(workingdir + "/xml/loads.xml", "r")
@@ -824,6 +1042,8 @@ def createEventList():
 #  Convert Timestamps of a timeseries of an X day in timestamps of simulation day  #
 ####################################################################################
 def adjustTime():
+    """ This method Convert Timestamps of a timeseries of an X day in timestamps of simulation day."""
+
     workingdir = Configuration.parameters['runtime_dir']
     date = Configuration.parameters['date'] + " 00:00:00"
     datetime_object = datetime.strptime(date, '%m/%d/%y %H:%M:%S')
@@ -864,6 +1084,7 @@ def adjustTime():
 #  UPLOADINPUTREPOSITORY() enqueue objects in the shared queue #
 ################################################################
 def uploadInInputRepository():
+    """ This method enqueue objects in the shared queue."""
 
     date = Configuration.parameters['date'] + " 00:00:00"
     datetime_object = datetime.strptime(date, '%m/%d/%y %H:%M:%S')
@@ -953,6 +1174,12 @@ def uploadInInputRepository():
 #  This Method create all simulation directories  #
 ###################################################
 def makeNewSimulation(pathneigh, pathload):
+    """
+    This Method create all simulation directories.
+    Args:
+        pathneigh: The neighborhood.xml path.
+        pathload: The loads.xml path.
+    """
     date = Configuration.parameters['date'] + " 00:00:00"
     datetime_object = datetime.strptime(date, '%m/%d/%y %H:%M:%S')
     date2 = date.split()
@@ -1035,6 +1262,7 @@ def makeNewSimulation(pathneigh, pathload):
 #  This method copy the scenario to the web directory to allow the scheduler to download the files.  #
 ######################################################################################################
 def copyInscheduler():
+    """ This method copy the scenario to the web directory to allow the scheduler to download the files. """
     workingdir = Configuration.parameters['runtime_dir']
     mydir = Configuration.parameters['user_dir']
     webdir = Configuration.parameters['webdir']
@@ -1061,8 +1289,16 @@ def copyInscheduler():
 
 
 class ExternalSourceAgent(spade.agent.Agent):
+    """This Agent deals to the creation of simulation data from xml files."""
     def __init__(self, address, passw,
                  pathneigh, pathload):
+        """
+        Args:
+            address: Agent Address.
+            passw: Agent Password.
+            pathneigh: The neighborhood.xml path.
+            pathload: The loads.xml path.
+        """
         super(ExternalSourceAgent, self).__init__(address, passw)
         self.pathneighbor = pathneigh
         self.pathload2 = pathload

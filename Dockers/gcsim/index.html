@@ -1,0 +1,1036 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to GcSim’s documentation! &#8212; GcSim 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-gcsim-s-documentation">
+<h1>Welcome to GcSim’s documentation!<a class="headerlink" href="#welcome-to-gcsim-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+<span class="target" id="module-gcsim"></span><dl class="py class">
+<dt id="gcsim.GCDaemon">
+<em class="property">class </em><code class="sig-prename descclassname">gcsim.</code><code class="sig-name descname">GCDaemon</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gcsim.GCDaemon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">daemons.prefab.run.RunDaemon</span></code></p>
+<dl class="py method">
+<dt id="gcsim.GCDaemon.run">
+<em class="property">static </em><code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gcsim.GCDaemon.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform the daemon logic.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-gcclient"></span><div class="section" id="simulator">
+<h2>Simulator<a class="headerlink" href="#simulator" title="Permalink to this headline">¶</a></h2>
+<p>This  module allows for starting, stopping and checking the status of the simulator and eventually of the optimizer</p>
+<dl class="py function">
+<dt id="gcclient.start">
+<code class="sig-prename descclassname">gcclient.</code><code class="sig-name descname">start</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gcclient.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>It starts the first simulator and eventually the optimizer :param args:
+command line arguments :return:</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>args:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gcclient.start_optimizer">
+<code class="sig-prename descclassname">gcclient.</code><code class="sig-name descname">start_optimizer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">optimizer</span></em>, <em class="sig-param"><span class="n">policy</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gcclient.start_optimizer" title="Permalink to this definition">¶</a></dt>
+<dd><dl>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>optimizer: the optimizer to start (should be supported dummy, eurecat,</dt><dd><p>oslo)</p>
+</dd>
+</dl>
+<p>policy: the optimization policy (Es: cheapest, greenest, earliest)</p>
+</dd>
+<dt>Returns:</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gcclient.start_simulator">
+<code class="sig-prename descclassname">gcclient.</code><code class="sig-name descname">start_simulator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gcclient.start_simulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>It will start the agents based simulator :return:</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>args:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gcclient.stop">
+<code class="sig-prename descclassname">gcclient.</code><code class="sig-name descname">stop</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">args</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gcclient.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>It stops both the simulator and the optimizer :param args: :return:</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>args:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gcclient.stop_optimizer">
+<code class="sig-prename descclassname">gcclient.</code><code class="sig-name descname">stop_optimizer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">optimizer</span></em><span class="sig-paren">)</span><a class="headerlink" href="#gcclient.stop_optimizer" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>optimizer:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="gcclient.stop_simulator">
+<code class="sig-prename descclassname">gcclient.</code><code class="sig-name descname">stop_simulator</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gcclient.stop_simulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>It will stop the simulator component :return:</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-agents.setup"></span><div class="section" id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<p>This agent deals with the creation of the message queue.</p>
+<dl class="py class">
+<dt id="agents.setup.Battery">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">Battery</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">house</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">capacity</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">max_ch_pow_ac</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">max_ch_pow_cc</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">max_dis_pow</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">max_all_en</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">min_all_en</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">sb_ch</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">sb_dis</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">ch_eff</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">dis_eff</span><span class="o">=</span><span class="default_value">'0'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.Battery" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agents.setup.abstract_device" title="agents.setup.abstract_device"><code class="xref py py-class docutils literal notranslate"><span class="pre">agents.setup.abstract_device</span></code></a></p>
+<p>This class defines an Battery device.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.ChargingPoint">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">ChargingPoint</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">id</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">houseid</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">conntype</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">peakload</span><span class="o">=</span><span class="default_value">'0'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.ChargingPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class defines a charging Point.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.ChargingStation">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">ChargingStation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">id</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">peakload</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">numcp</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.ChargingStation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class defines a charging Station.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.EV">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">EV</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">house</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">chargingPoint</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">capacity</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">max_ch_pow_ac</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">max_ch_pow_cc</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">max_dis_pow_ac</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">max_dis_pow_cc</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">max_all_en</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">min_all_en</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">sb_ch</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">sb_dis</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">ch_eff</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">dis_eff</span><span class="o">=</span><span class="default_value">'0'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.EV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agents.setup.abstract_device" title="agents.setup.abstract_device"><code class="xref py py-class docutils literal notranslate"><span class="pre">agents.setup.abstract_device</span></code></a></p>
+<p>This class defines an EV device.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.Energy_Cost">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">Energy_Cost</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">profile</span><span class="o">=</span><span class="default_value">'0'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.Energy_Cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class defines an energy cost  event.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.Energy_Mix">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">Energy_Mix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">profile</span><span class="o">=</span><span class="default_value">'0'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.Energy_Mix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class defines an energy mix event.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.EnqueuedEvent">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">EnqueuedEvent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timestamp</span></em>, <em class="sig-param"><span class="n">event</span></em>, <em class="sig-param"><span class="n">unique_id</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.EnqueuedEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class overrides the comparison methods for the shared queue.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.Entities">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">Entities</code><a class="headerlink" href="#agents.setup.Entities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is used to enqueue/get an object in/from the queue.</p>
+<dl class="py method">
+<dt id="agents.setup.Entities.enqueue_event">
+<em class="property">classmethod </em><code class="sig-name descname">enqueue_event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timestamp</span></em>, <em class="sig-param"><span class="n">event</span></em>, <em class="sig-param"><span class="n">unique_id</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.Entities.enqueue_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is used to enqueue an event in the event queue.
+Args:</p>
+<blockquote>
+<div><p>timestamp: Event time.
+event: The event.
+unique_id: An unique id in case of same timestamp for two events.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="agents.setup.Entities.next_event">
+<em class="property">classmethod </em><code class="sig-name descname">next_event</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.Entities.next_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is used to dequeue an event from the event queue.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.ExternalSourceAgent">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">ExternalSourceAgent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">address</span></em>, <em class="sig-param"><span class="n">passw</span></em>, <em class="sig-param"><span class="n">pathneigh</span></em>, <em class="sig-param"><span class="n">pathload</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.ExternalSourceAgent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">spade.agent.Agent</span></code></p>
+<p>This Agent deals to the creation of simulation data from xml files.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.House">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">House</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">id</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">peakload</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">numcp</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.House" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class defines an house.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.Neighborhood">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">Neighborhood</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">peakload</span><span class="o">=</span><span class="default_value">'0'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.Neighborhood" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class defines a neighborhood.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.abstract_device">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">abstract_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">house</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'0'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.abstract_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class defines an abstract device, will be implemented by other classes.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.abstract_event">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">abstract_event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">house</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">creation_time</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">type2</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.abstract_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class defines an abstract event.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="agents.setup.adjustTime">
+<code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">adjustTime</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.adjustTime" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method Convert Timestamps of a timeseries of an X day in timestamps of simulation day.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.backGroundLoad">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">backGroundLoad</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">house</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'0'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.backGroundLoad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agents.setup.abstract_device" title="agents.setup.abstract_device"><code class="xref py py-class docutils literal notranslate"><span class="pre">agents.setup.abstract_device</span></code></a></p>
+<p>This class defines an background load.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="agents.setup.copyInscheduler">
+<code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">copyInscheduler</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.copyInscheduler" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method copy the scenario to the web directory to allow the scheduler to download the files.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="agents.setup.createDevicesList">
+<code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">createDevicesList</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.createDevicesList" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method read from neighborhood.xml all the devices, sort them by type and append them to device list.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="agents.setup.createEventList">
+<code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">createEventList</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.createEventList" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method read from loads.xml the events info and append them to loadslist.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.device">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">house</span><span class="o">=</span><span class="default_value">'0'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agents.setup.abstract_device" title="agents.setup.abstract_device"><code class="xref py py-class docutils literal notranslate"><span class="pre">agents.setup.abstract_device</span></code></a></p>
+<p>This class defines a schedulable device or a producer device.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.eventBackground">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">eventBackground</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">house</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">creation_time</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">profile</span><span class="o">=</span><span class="default_value">'0'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.eventBackground" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agents.setup.abstract_event" title="agents.setup.abstract_event"><code class="xref py py-class docutils literal notranslate"><span class="pre">agents.setup.abstract_event</span></code></a></p>
+<p>This class defines a background load event.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.eventBattery">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">eventBattery</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">house</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">Soc_at_arrival</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">booking_time</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">start_time</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">end_time</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">target_soc</span><span class="o">=</span><span class="default_value">'0'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.eventBattery" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agents.setup.abstract_event" title="agents.setup.abstract_event"><code class="xref py py-class docutils literal notranslate"><span class="pre">agents.setup.abstract_event</span></code></a></p>
+<p>This class defines a battery event.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.eventDelete">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">eventDelete</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">house</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">creation_time</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">consumption</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.eventDelete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agents.setup.abstract_event" title="agents.setup.abstract_event"><code class="xref py py-class docutils literal notranslate"><span class="pre">agents.setup.abstract_event</span></code></a></p>
+<p>This class defines a delete event.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.eventEcar">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">eventEcar</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">house</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">Soc_at_arrival</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">booking_time</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">planned_arrival_time</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">planned_departure_time</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">actual_arrival_time</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">actual_departure_time</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">target_soc</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">v2g</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">priority</span><span class="o">=</span><span class="default_value">'0'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.eventEcar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agents.setup.abstract_event" title="agents.setup.abstract_event"><code class="xref py py-class docutils literal notranslate"><span class="pre">agents.setup.abstract_event</span></code></a></p>
+<p>This class defines an EV event.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.eventGeneral">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">eventGeneral</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">house</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">est</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">lst</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">creation_time</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">profile</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">type2</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.eventGeneral" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agents.setup.abstract_event" title="agents.setup.abstract_event"><code class="xref py py-class docutils literal notranslate"><span class="pre">agents.setup.abstract_event</span></code></a></p>
+<p>This class defines a schedulable event.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.eventHeaterCooler">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">eventHeaterCooler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">house</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">creation_time</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">profile</span><span class="o">=</span><span class="default_value">'0'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.eventHeaterCooler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agents.setup.abstract_event" title="agents.setup.abstract_event"><code class="xref py py-class docutils literal notranslate"><span class="pre">agents.setup.abstract_event</span></code></a></p>
+<p>This class defines a heater/cooler load event.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.eventProducer">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">eventProducer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">house</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">est</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">lst</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">creation_time</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">profile</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">type2</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">energycost</span><span class="o">=</span><span class="default_value">'0'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.eventProducer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agents.setup.abstract_event" title="agents.setup.abstract_event"><code class="xref py py-class docutils literal notranslate"><span class="pre">agents.setup.abstract_event</span></code></a></p>
+<p>This class defines a producer event.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.setup.heaterCooler">
+<em class="property">class </em><code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">heaterCooler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">id</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">house</span><span class="o">=</span><span class="default_value">'0'</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'0'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.heaterCooler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#agents.setup.abstract_device" title="agents.setup.abstract_device"><code class="xref py py-class docutils literal notranslate"><span class="pre">agents.setup.abstract_device</span></code></a></p>
+<p>This class defines an heater/cooler device.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="agents.setup.makeNewSimulation">
+<code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">makeNewSimulation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pathneigh</span></em>, <em class="sig-param"><span class="n">pathload</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.makeNewSimulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>This Method create all simulation directories.
+Args:</p>
+<blockquote>
+<div><p>pathneigh: The neighborhood.xml path.
+pathload: The loads.xml path.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="agents.setup.now">
+<code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">now</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tz</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.now" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns new datetime object representing current time local to tz.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>tz</dt><dd><p>Timezone object.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>If no tz is specified, uses local timezone.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="agents.setup.uploadInInputRepository">
+<code class="sig-prename descclassname">agents.setup.</code><code class="sig-name descname">uploadInInputRepository</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agents.setup.uploadInInputRepository" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method enqueue objects in the shared queue.</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-agents.manager"></span><div class="section" id="manager">
+<h2>Manager<a class="headerlink" href="#manager" title="Permalink to this headline">¶</a></h2>
+<p>This agent starts and stops the simulation.</p>
+<dl class="py class">
+<dt id="agents.manager.setupModule">
+<em class="property">class </em><code class="sig-prename descclassname">agents.manager.</code><code class="sig-name descname">setupModule</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">jid</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">verify_security</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.manager.setupModule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">spade.agent.Agent</span></code></p>
+<p>SetupModule Agent is used for start/stop dispatching messages.
+Args:</p>
+<blockquote>
+<div><p>Agent: The spade Agent.</p>
+</div></blockquote>
+<dl class="py method">
+<dt id="agents.manager.setupModule.setup">
+<em class="property">async </em><code class="sig-name descname">setup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agents.manager.setupModule.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>The setup method is used for add behaviours to the agent.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.manager.setupModule.startService">
+<em class="property">class </em><code class="sig-name descname">startService</code><a class="headerlink" href="#agents.manager.setupModule.startService" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">spade.behaviour.OneShotBehaviour</span></code></p>
+<p>The startService Behaviour is used for start dispatcher.
+Args:</p>
+<blockquote>
+<div><p>OneShotBehaviour: The behaviour’s type.</p>
+</div></blockquote>
+<dl class="py method">
+<dt id="agents.manager.setupModule.startService.run">
+<em class="property">async </em><code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agents.manager.setupModule.startService.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Body of the behaviour.
+To be implemented by user.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="agents.manager.setupModule.stopService">
+<em class="property">class </em><code class="sig-name descname">stopService</code><a class="headerlink" href="#agents.manager.setupModule.stopService" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">spade.behaviour.OneShotBehaviour</span></code></p>
+<p>The stopService Behaviour is used for stop dispatcher.
+Args:</p>
+<blockquote>
+<div><p>OneShotBehaviour: The behaviour’s type.</p>
+</div></blockquote>
+<dl class="py method">
+<dt id="agents.manager.setupModule.stopService.run">
+<em class="property">async </em><code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agents.manager.setupModule.stopService.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Body of the behaviour.
+To be implemented by user.</p>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-agents.dispatcher"></span><div class="section" id="dispatcher">
+<h2>Dispatcher<a class="headerlink" href="#dispatcher" title="Permalink to this headline">¶</a></h2>
+<p>This agent deals with the message queue management.</p>
+<dl class="py function">
+<dt id="agents.dispatcher.calculateTime">
+<code class="sig-prename descclassname">agents.dispatcher.</code><code class="sig-name descname">calculateTime</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.dispatcher.calculateTime" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the execution time of a scheduled load. It is used to put DeleteMessage in sharedQueue at the right time.
+Args:</p>
+<blockquote>
+<div><p>file: Timeseries whose time delta is to be calculated</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="agents.dispatcher.calculate_consum">
+<code class="sig-prename descclassname">agents.dispatcher.</code><code class="sig-name descname">calculate_consum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.dispatcher.calculate_consum" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method calculates consumption in KW of a load consumer. It is used in the delete message.
+Args:</p>
+<blockquote>
+<div><p>file: Timeseries whose consumption is to be calculated</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="agents.dispatcher.switchInTime">
+<code class="sig-prename descclassname">agents.dispatcher.</code><code class="sig-name descname">switchInTime</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file</span></em>, <em class="sig-param"><span class="n">ast</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.dispatcher.switchInTime" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function shifts a timeseries over time based on the ast received from the scheduler.
+Args:</p>
+<blockquote>
+<div><p>file: Timeseries whose time is to be shift
+ast:  New assigned starting Time</p>
+</div></blockquote>
+</dd></dl>
+
+</div>
+<span class="target" id="module-agents.restscheduler"></span><div class="section" id="restscheduler">
+<h2>RESTScheduler<a class="headerlink" href="#restscheduler" title="Permalink to this headline">¶</a></h2>
+<p>This agent create a REST server in order to communicate with REST schedulers.</p>
+<dl class="py class">
+<dt id="agents.restscheduler.scheduler">
+<em class="property">class </em><code class="sig-prename descclassname">agents.restscheduler.</code><code class="sig-name descname">scheduler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">jid</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">verify_security</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.restscheduler.scheduler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">spade.agent.Agent</span></code></p>
+<p>Adaptor used for the REST protocol  .
+Args:</p>
+<blockquote>
+<div><p>Agent: The spade Agent.</p>
+</div></blockquote>
+<dl class="py class">
+<dt id="agents.restscheduler.scheduler.consumeEvent2">
+<em class="property">class </em><code class="sig-name descname">consumeEvent2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">period</span></em>, <em class="sig-param"><span class="n">start_at</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.restscheduler.scheduler.consumeEvent2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">spade.behaviour.PeriodicBehaviour</span></code></p>
+<dl class="py method">
+<dt id="agents.restscheduler.scheduler.consumeEvent2.onstart">
+<em class="property">async </em><code class="sig-name descname">onstart</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agents.restscheduler.scheduler.consumeEvent2.onstart" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="agents.restscheduler.scheduler.consumeEvent2.run">
+<em class="property">async </em><code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agents.restscheduler.scheduler.consumeEvent2.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Body of the behaviour.
+To be implemented by user.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt id="agents.restscheduler.scheduler.get_message">
+<em class="property">async </em><code class="sig-name descname">get_message</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.restscheduler.scheduler.get_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>GET API used by schedulers to get a message.
+Args:</p>
+<blockquote>
+<div><p>request: the REST request</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="agents.restscheduler.scheduler.get_time">
+<em class="property">async </em><code class="sig-name descname">get_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.restscheduler.scheduler.get_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>GET API used by schedulers to get simulation time.
+Args:</p>
+<blockquote>
+<div><p>request: the REST request</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="agents.restscheduler.scheduler.post_answer">
+<em class="property">async </em><code class="sig-name descname">post_answer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.restscheduler.scheduler.post_answer" title="Permalink to this definition">¶</a></dt>
+<dd><p>POST API used by schedulers to post an answer to the dispatcher.
+It recieve a file and write the content in simulation directory or a general message.
+Args:</p>
+<blockquote>
+<div><p>request: the REST request</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="agents.restscheduler.scheduler.setup">
+<em class="property">async </em><code class="sig-name descname">setup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agents.restscheduler.scheduler.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup agent before startup.
+This coroutine may be overloaded.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-agents.xmppscheduler"></span><div class="section" id="xmppscheduler">
+<h2>XMPPScheduler<a class="headerlink" href="#xmppscheduler" title="Permalink to this headline">¶</a></h2>
+<p>This agent create a REST server in order to communicate with XMPP schedulers.</p>
+<dl class="py class">
+<dt id="agents.xmppscheduler.scheduler">
+<em class="property">class </em><code class="sig-prename descclassname">agents.xmppscheduler.</code><code class="sig-name descname">scheduler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">jid</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">verify_security</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.xmppscheduler.scheduler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">spade.agent.Agent</span></code></p>
+<p>Adaptor used for the XMPP protocol  .
+Args:</p>
+<blockquote>
+<div><p>Agent: The spade Agent.</p>
+</div></blockquote>
+<dl class="py class">
+<dt id="agents.xmppscheduler.scheduler.consumeEvent2">
+<em class="property">class </em><code class="sig-name descname">consumeEvent2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">period</span></em>, <em class="sig-param"><span class="n">start_at</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.xmppscheduler.scheduler.consumeEvent2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">spade.behaviour.PeriodicBehaviour</span></code></p>
+<dl class="py method">
+<dt id="agents.xmppscheduler.scheduler.consumeEvent2.onstart">
+<em class="property">async </em><code class="sig-name descname">onstart</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agents.xmppscheduler.scheduler.consumeEvent2.onstart" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="agents.xmppscheduler.scheduler.consumeEvent2.run">
+<em class="property">async </em><code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agents.xmppscheduler.scheduler.consumeEvent2.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Body of the behaviour.
+To be implemented by user.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt id="agents.xmppscheduler.scheduler.post_answer">
+<em class="property">async </em><code class="sig-name descname">post_answer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">request</span></em><span class="sig-paren">)</span><a class="headerlink" href="#agents.xmppscheduler.scheduler.post_answer" title="Permalink to this definition">¶</a></dt>
+<dd><p>POST API used by schedulers to post a timeseries.
+It recieve a file and write the content in simulation directory
+Args:</p>
+<blockquote>
+<div><p>request: the REST request</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="agents.xmppscheduler.scheduler.setup">
+<em class="property">async </em><code class="sig-name descname">setup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#agents.xmppscheduler.scheduler.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup agent before startup.
+This coroutine may be overloaded.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-utils.config"></span><div class="section" id="config">
+<h2>Config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h2>
+<p>This class is used to load the configuration file.</p>
+<dl class="py class">
+<dt id="utils.config.Configuration">
+<em class="property">class </em><code class="sig-prename descclassname">utils.config.</code><code class="sig-name descname">Configuration</code><a class="headerlink" href="#utils.config.Configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Configuration loader class.</p>
+<dl class="py method">
+<dt id="utils.config.Configuration.load">
+<em class="property">classmethod </em><code class="sig-name descname">load</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#utils.config.Configuration.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method loads the configuration file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.config.Configuration.set_config_file">
+<em class="property">classmethod </em><code class="sig-name descname">set_config_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config_file</span><span class="o">=</span><span class="default_value">'config.yml'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.config.Configuration.set_config_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the name of the configuration file to be read.
+Args:</p>
+<blockquote>
+<div><p>config_file: The path of configuration file.</p>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-utils.MessageFactory"></span><div class="section" id="message-factory">
+<h2>Message Factory<a class="headerlink" href="#message-factory" title="Permalink to this headline">¶</a></h2>
+<p>This Class deals with the message creation from data.</p>
+<dl class="py class">
+<dt id="utils.MessageFactory.MessageFactory">
+<em class="property">class </em><code class="sig-prename descclassname">utils.MessageFactory.</code><code class="sig-name descname">MessageFactory</code><a class="headerlink" href="#utils.MessageFactory.MessageFactory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This Class deals with the message creation from data.</p>
+<dl class="py method">
+<dt id="utils.MessageFactory.MessageFactory.background">
+<em class="property">classmethod </em><code class="sig-name descname">background</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">protocol_version</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.MessageFactory.MessageFactory.background" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates the Background message.
+Args:</p>
+<blockquote>
+<div><p>device: Device the message refers to.
+time: Simulation Time.
+protocol_version: Distinguish between schedulers.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.MessageFactory.MessageFactory.booking_request">
+<em class="property">classmethod </em><code class="sig-name descname">booking_request</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">protocol_version</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.MessageFactory.MessageFactory.booking_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates the booking_request message.
+Args:</p>
+<blockquote>
+<div><p>device: Device the message refers to.
+time: Simulation Time.
+protocol_version: Distinguish between schedulers.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.MessageFactory.MessageFactory.chargingpoint">
+<em class="property">classmethod </em><code class="sig-name descname">chargingpoint</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">protocol_version</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.MessageFactory.MessageFactory.chargingpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates the EnergyHub for Charging Point message.
+Args:</p>
+<blockquote>
+<div><p>device: Device the message refers to.
+time: Simulation Time.
+protocol_version: Distinguish between schedulers.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.MessageFactory.MessageFactory.chargingstation">
+<em class="property">classmethod </em><code class="sig-name descname">chargingstation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">protocol_version</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.MessageFactory.MessageFactory.chargingstation" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates the EnergyHub for Charging Station message.
+Args:</p>
+<blockquote>
+<div><p>device: Device the message refers to.
+time: Simulation Time.
+protocol_version: Distinguish between schedulers.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.MessageFactory.MessageFactory.create_Battery">
+<em class="property">classmethod </em><code class="sig-name descname">create_Battery</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">protocol_version</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.MessageFactory.MessageFactory.create_Battery" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates the Create Battery message.
+Args:</p>
+<blockquote>
+<div><p>device: Device the message refers to.
+time: Simulation Time.
+protocol_version: Distinguish between schedulers.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.MessageFactory.MessageFactory.create_ev">
+<em class="property">classmethod </em><code class="sig-name descname">create_ev</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">protocol_version</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.MessageFactory.MessageFactory.create_ev" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates the Create Ev message.
+Args:</p>
+<blockquote>
+<div><p>device: Device the message refers to.
+time: Simulation Time.
+protocol_version: Distinguish between schedulers.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.MessageFactory.MessageFactory.create_load">
+<em class="property">classmethod </em><code class="sig-name descname">create_load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">protocol_version</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.MessageFactory.MessageFactory.create_load" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates the Create Load message.
+Args:</p>
+<blockquote>
+<div><p>device: Device the message refers to.
+time: Simulation Time.
+protocol_version: Distinguish between schedulers.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.MessageFactory.MessageFactory.create_producer">
+<em class="property">classmethod </em><code class="sig-name descname">create_producer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">protocol_version</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.MessageFactory.MessageFactory.create_producer" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates the Create Producer message.
+Args:</p>
+<blockquote>
+<div><p>device: Device the message refers to.
+time: Simulation Time.
+protocol_version: Distinguish between schedulers.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.MessageFactory.MessageFactory.delete_load">
+<em class="property">classmethod </em><code class="sig-name descname">delete_load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">protocol_version</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.MessageFactory.MessageFactory.delete_load" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates the Delete load message.
+Args:</p>
+<blockquote>
+<div><p>device: Device the message refers to.
+time: Simulation Time.
+protocol_version: Distinguish between schedulers.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.MessageFactory.MessageFactory.end">
+<em class="property">classmethod </em><code class="sig-name descname">end</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">actual_time</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.MessageFactory.MessageFactory.end" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates the end message.
+Args:</p>
+<blockquote>
+<div><p>actual_time: Simulation Time.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.MessageFactory.MessageFactory.energyCost">
+<em class="property">classmethod </em><code class="sig-name descname">energyCost</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">protocol_version</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.MessageFactory.MessageFactory.energyCost" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates the EnergyCost message.
+Args:</p>
+<blockquote>
+<div><p>device: Device the message refers to.
+time: Simulation Time.
+protocol_version: Distinguish between schedulers.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.MessageFactory.MessageFactory.energyCostProducer">
+<em class="property">classmethod </em><code class="sig-name descname">energyCostProducer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">protocol_version</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.MessageFactory.MessageFactory.energyCostProducer" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates the EnergyCost for producers message.
+Args:</p>
+<blockquote>
+<div><p>device: Device the message refers to.
+time: Simulation Time.
+protocol_version: Distinguish between schedulers.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.MessageFactory.MessageFactory.energyMix">
+<em class="property">classmethod </em><code class="sig-name descname">energyMix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">protocol_version</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.MessageFactory.MessageFactory.energyMix" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates the EnergyMix message.
+Args:</p>
+<blockquote>
+<div><p>device: Device the message refers to.
+time: Simulation Time.
+protocol_version: Distinguish between schedulers.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.MessageFactory.MessageFactory.heatercooler">
+<em class="property">classmethod </em><code class="sig-name descname">heatercooler</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">protocol_version</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.MessageFactory.MessageFactory.heatercooler" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates the HeaterCooler message.
+Args:</p>
+<blockquote>
+<div><p>device: Device the message refers to.
+time: Simulation Time.
+protocol_version: Distinguish between schedulers.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.MessageFactory.MessageFactory.house">
+<em class="property">classmethod </em><code class="sig-name descname">house</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">protocol_version</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.MessageFactory.MessageFactory.house" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates the EnergyHub for houses message.
+Args:</p>
+<blockquote>
+<div><p>device: Device the message refers to.
+time: Simulation Time.
+protocol_version: Distinguish between schedulers.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.MessageFactory.MessageFactory.init_parameters">
+<em class="property">classmethod </em><code class="sig-name descname">init_parameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#utils.MessageFactory.MessageFactory.init_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>This Method initializes the parameters useful to the class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.MessageFactory.MessageFactory.neighborhood">
+<em class="property">classmethod </em><code class="sig-name descname">neighborhood</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">protocol_version</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.MessageFactory.MessageFactory.neighborhood" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates the EnergyHub for neighborhood message.
+Args:</p>
+<blockquote>
+<div><p>device: Device the message refers to.
+time: Simulation Time.
+protocol_version: Distinguish between schedulers.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.MessageFactory.MessageFactory.update_producer">
+<em class="property">classmethod </em><code class="sig-name descname">update_producer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">device</span></em>, <em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">protocol_version</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.MessageFactory.MessageFactory.update_producer" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method creates the Update Producer message.
+Args:</p>
+<blockquote>
+<div><p>device: Device the message refers to.
+time: Simulation Time.
+protocol_version: Distinguish between schedulers.</p>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-utils.visualization"></span><dl class="py class">
+<dt id="utils.visualization.Intersection">
+<em class="property">class </em><code class="sig-prename descclassname">utils.visualization.</code><code class="sig-name descname">Intersection</code><a class="headerlink" href="#utils.visualization.Intersection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class compute the intersection between two curve using different
+methods.</p>
+<dl class="py method">
+<dt id="utils.visualization.Intersection.interp">
+<em class="property">classmethod </em><code class="sig-name descname">interp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em>, <em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">z</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.visualization.Intersection.interp" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>f:
+x:
+z:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.visualization.Intersection.intersect1">
+<em class="property">classmethod </em><code class="sig-name descname">intersect1</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y1</span></em>, <em class="sig-param"><span class="n">y2</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.visualization.Intersection.intersect1" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>x:
+y1:
+y2:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.visualization.Intersection.intersect2">
+<em class="property">static </em><code class="sig-name descname">intersect2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f1</span></em>, <em class="sig-param"><span class="n">f2</span></em>, <em class="sig-param"><span class="n">xx</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.visualization.Intersection.intersect2" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>f1:
+f2:
+xx:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="utils.visualization.Intersection.solve">
+<em class="property">classmethod </em><code class="sig-name descname">solve</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em>, <em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.visualization.Intersection.solve" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>f:
+x:</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.visualization.callExternal">
+<code class="sig-prename descclassname">utils.visualization.</code><code class="sig-name descname">callExternal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">folder</span></em>, <em class="sig-param"><span class="n">out_path</span><span class="o">=</span><span class="default_value">'.'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.visualization.callExternal" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>folder:
+out_path:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.visualization.ce2e">
+<code class="sig-prename descclassname">utils.visualization.</code><code class="sig-name descname">ce2e</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">yy</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.visualization.ce2e" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>yy:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.visualization.ce2p">
+<code class="sig-prename descclassname">utils.visualization.</code><code class="sig-name descname">ce2p</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xx</span></em>, <em class="sig-param"><span class="n">yy</span></em>, <em class="sig-param"><span class="n">positive</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.visualization.ce2p" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>xx:
+yy:
+positive:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.visualization.compute_area">
+<code class="sig-prename descclassname">utils.visualization.</code><code class="sig-name descname">compute_area</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ffunc</span></em>, <em class="sig-param"><span class="n">xx</span></em>, <em class="sig-param"><span class="n">a</span></em>, <em class="sig-param"><span class="n">b</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.visualization.compute_area" title="Permalink to this definition">¶</a></dt>
+<dd><p>This code compute the area below the curve ffunc, between a and b</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>ffunc:
+xx:
+a:
+b:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.visualization.ev2maxself">
+<code class="sig-prename descclassname">utils.visualization.</code><code class="sig-name descname">ev2maxself</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ev_ce</span></em>, <em class="sig-param"><span class="n">xx</span></em>, <em class="sig-param"><span class="n">res_energy</span></em>, <em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.visualization.ev2maxself" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function change the energy profile of an ev to optimize the usage of
+residual green energy :param ev_ce: :param xx: :param res_energy: :param
+filename: :return:</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>ev_ce:
+xx:
+res_energy:
+filename:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.visualization.p2ce">
+<code class="sig-prename descclassname">utils.visualization.</code><code class="sig-name descname">p2ce</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xx</span></em>, <em class="sig-param"><span class="n">yy</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.visualization.p2ce" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>xx:
+yy:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.visualization.plot_output">
+<code class="sig-prename descclassname">utils.visualization.</code><code class="sig-name descname">plot_output</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sim_output</span></em>, <em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">'.'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.visualization.plot_output" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>sim_output:
+path:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.visualization.plot_power">
+<code class="sig-prename descclassname">utils.visualization.</code><code class="sig-name descname">plot_power</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">groups</span></em>, <em class="sig-param"><span class="n">colr</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.visualization.plot_power" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>groups:
+colr:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="utils.visualization.shift_load">
+<code class="sig-prename descclassname">utils.visualization.</code><code class="sig-name descname">shift_load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shift_time</span></em>, <em class="sig-param"><span class="n">infile</span></em>, <em class="sig-param"><span class="n">outfile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.visualization.shift_load" title="Permalink to this definition">¶</a></dt>
+<dd><p>This code shift a timeseries :param shift_time: :param infile: :param
+outfile: :return:</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>shift_time:
+infile:
+outfile:</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">GcSim</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, University of Campania.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

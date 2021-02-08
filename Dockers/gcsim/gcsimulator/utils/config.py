@@ -18,6 +18,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+"""
+Config
+=======================================
+This class is used to load the configuration file.
+"""
 
 
 import yaml
@@ -29,6 +34,9 @@ import os
 # This class manages scenario's configuration and static data written in config.yml. #
 ######################################################################################
 class Configuration:
+    """
+    Configuration loader class.
+    """
     listDevice = []  # IN THIS LIST WILL BE STORED ALL THE LOADS
     listPanels = []  # IN THIS LIST WILL BE STORED ALL THE PRODUCERS
     listEvent = []
@@ -41,10 +49,18 @@ class Configuration:
 
     @classmethod
     def set_config_file(cls, config_file='config.yml'):
+        """
+        Set the name of the configuration file to be read.
+        Args:
+            config_file: The path of configuration file.
+        """
         cls.config_file = config_file
 
     @classmethod
     def load(cls):
+        """
+        This method loads the configuration file.
+        """
         if cls.config_file is None:
             raise Exception("Config File is not set")
         with open(cls.config_file, 'r') as ymlfile:
@@ -58,7 +74,7 @@ class Configuration:
                 cls.messageToWait = ['load','heatercooler', 'background', 'LoadUpdate', 'EV']
 
             mydir = 0
-            # codice aggiunto perchè non funzionava la directory web nel dispatcher
+            # codice aggiunto perchÃ¨ non funzionava la directory web nel dispatcher
             date3 = cls.parameters['date'] .split()
             newdir2 = date3[0].replace('/','_')
             sim_temp2 = newdir2.split("_")

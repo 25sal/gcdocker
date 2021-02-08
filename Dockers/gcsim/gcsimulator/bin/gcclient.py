@@ -20,10 +20,11 @@
 #
 
 """
-simulator
+Simulator
 =======================================
 This  module allows for starting, stopping and checking the status of the simulator and eventually of the optimizer
 """
+
 import argparse
 import logging
 import subprocess
@@ -31,10 +32,13 @@ import subprocess
 
 def start_optimizer(optimizer, policy):
     """
+    Args:
+        optimizer: the optimizer to start (should be supported dummy, eurecat,
+            oslo)
+        policy: the optimization policy (Es: cheapest, greenest, earliest)
 
-    :param optimizer: the optimizer to start (should be supported dummy, eurecat, oslo)
-    :param policy: the optimization policy (Es: cheapest, greenest, earliest)
-    :return:  None
+    Returns:
+        None
     """
     if args.optimizer == 'dummy':
         process = subprocess.Popen(['docker', 'exec', 'docker_gcscheduler_1', '/home/scheduler/scheduler', 'start'],
@@ -46,18 +50,20 @@ def start_optimizer(optimizer, policy):
 
 
 def start_simulator(args):
-    """
-    It will start the agents based simulator
-    :return:
+    """It will start the agents based simulator :return:
+
+    Args:
+        args:
     """
     pass
 
 
 def start(args):
-    """
-    It starts  the first simulator and eventually the optimizer
-    :param args: command line arguments
-    :return:
+    """It starts the first simulator and eventually the optimizer :param args:
+    command line arguments :return:
+
+    Args:
+        args:
     """
     logging.info("simulator starting")
     start_simulator()
@@ -66,15 +72,16 @@ def start(args):
 
 
 def stop_simulator():
-    """
-    It will stop the simulator component
-    :return:
-    """
+    """It will stop the simulator component :return:"""
     # docker exec docker_greencharge.simulator_1 /home/gc/bin/starter.sh start
     pass
 
 
 def stop_optimizer(optimizer):
+    """
+    Args:
+        optimizer:
+    """
     logging.info("stopping optimizer")
     if args.optimizer == 'dummy':
         # docker exec docker_gcscheduler_1
@@ -87,10 +94,10 @@ def stop_optimizer(optimizer):
 
 
 def stop(args):
-    """
-    It stops both the simulator and the optimizer
-    :param args:
-    :return:
+    """It stops both the simulator and the optimizer :param args: :return:
+
+    Args:
+        args:
     """
     logging.info("stop  simulator")
     if args.optimizer is not None:

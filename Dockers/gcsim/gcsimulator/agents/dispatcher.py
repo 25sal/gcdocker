@@ -19,7 +19,11 @@
 #
 
 
-
+"""
+Dispatcher
+=======================================
+This agent deals with the message queue management.
+"""
 
 from spade.agent import Agent
 from spade.behaviour import PeriodicBehaviour
@@ -44,6 +48,11 @@ LOGFILE = './gcdaemon.log'
 ######################################################################################################################################
 
 def calculateTime(file):
+    """
+    This function calculates the execution time of a scheduled load. It is used to put DeleteMessage in sharedQueue at the right time.
+    Args:
+        file: Timeseries whose time delta is to be calculated
+    """
     dirPath2 = Configuration.parameters['current_sim_dir'] + "/Inputs/" + file
     f = open(dirPath2)
     csv_f = csv.reader(f)
@@ -58,6 +67,12 @@ def calculateTime(file):
 
 
 def switchInTime(file, ast):
+    """
+    This function shifts a timeseries over time based on the ast received from the scheduler.
+    Args:
+        file: Timeseries whose time is to be shift
+        ast:  New assigned starting Time
+    """
     dirPath2 = Configuration.parameters['runtime_dir'] + "/inputs/" + file
     dirPathArrival = Configuration.parameters['runtime_dir'] + "/output/SH/" + file
     f = open(dirPath2)
@@ -83,6 +98,11 @@ def switchInTime(file, ast):
 # This method calculates consumption in KW of a load consumer. It is used in the delete message. #
 ##################################################################################################
 def calculate_consum(file):
+    """
+    This method calculates consumption in KW of a load consumer. It is used in the delete message.
+    Args:
+        file: Timeseries whose consumption is to be calculated
+    """
     dirPath2 = Configuration.parameters['current_sim_dir'] + "/Inputs/" + file
     f = open(dirPath2)
     csv_f = csv.reader(f)
@@ -106,6 +126,18 @@ def calculate_consum(file):
 class dispatcher(Agent):
 
     def __init__(self, address, passw):
+        """
+        Dispatcher Class, it is a SPADE Agent with two behaviours:
+         1) Wait for a start/stop message from Setup Module
+         2) Consume events from a queue. Phases:
+         2.1) reads object from the queue
+         2.2) prepare a message using MessageFactory using the correct protocol (REST, XMPP)
+         2.3) send message
+         2.4) wait for a response (if needed)
+        Args:
+            address: The agent Address
+            passw: The agent Password
+        """
         super(dispatcher, self).__init__(address, passw)
         self.idToLoad = {}
         self.abilitation = False
@@ -115,6 +147,11 @@ class dispatcher(Agent):
     # This method check periodically if start/stop messages are sent by setupModule. #
     ##################################################################################
     class disRecvBehav(PeriodicBehaviour):
+        '''
+        This method check periodically if start/stop messages are sent by setupModule.
+        Args:
+            PeriodicBehaviour: The behaviour's type
+        '''
         async def run(self):
             logging.info("DisRecvBehav running")
             msg = await self.receive(timeout=5)
@@ -139,7 +176,11 @@ class dispatcher(Agent):
     # This method consume events from the queue. #
     ##############################################
     class consumeEvent(PeriodicBehaviour):
-
+        '''
+        This method consume events from the queue.
+        Args:
+            PeriodicBehaviour: The behaviour's type
+        '''
         async def onstart(self):
             logging.info("A ConsumeEvent queue is Starting...")
             self.mydir = Configuration.parameters['user_dir']
@@ -443,6 +484,9 @@ class dispatcher(Agent):
     # Setup the dispatcher agent, create behaviours and start them #
     ################################################################
     async def setup(self):
+        '''
+        Setup the dispatcher agent, create behaviours and start them.
+        '''
         basejid = Configuration.parameters["userjid"]
         start_at = datetime.now() + timedelta(seconds=3)
         logging.info("ReceiverAgent started")
