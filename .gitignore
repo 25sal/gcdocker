@@ -1,0 +1,24 @@
+users/demo/Simulations/*/Results/*
+users/demo/Simulations/*/output/*
+dockers/gcsim/_static/*
+dockers/gcsim/.doctrees/*
+dockers/gcsim/.buildinfo
+dockers/gcsim/genindex.html
+dockers/gcsim/index.html
+dockers/gcsim/build/*
+dockers/gcsim/_sources/*
+dockers/gcsim/make.bat
+dockers/gcsim/Makefile
+dockers/gcsim/objects.inv
+dockers/gcsim/py-modindex.html
+dockers/gcsim/search.html
+dockers/gcsim/searchindex.js
+docker-compose.debug (2).yml
+dockers/gcsim/
+.idea/*
+dockers/gcsim/gcsimulator/simulator/greenchargeSoloDim/bin/__pycache__
+etc/prosody/conf.d/localhost.cfg.lua
+dockers/gcsim/build/*
+dockers/gcsim/gcsimulator/agents/__pycache__
+dockers/gcsim/gcsimulator/utils/__pycache__
+.vscode/*

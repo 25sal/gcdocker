@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Neighborhood peakLoad2="10000">
+  <house id="1" peakLoad="3000">
+    <user id="0">
+      <device>
+        <id>1</id>
+        <est>0</est>
+        <lst>0</lst>
+        <type>load</type>
+        <creation_time>0</creation_time>
+        <energy_cost>0_run_0_1.csv</energy_cost>
+        <profile>producer.csv </profile>
+      </device>
+      <ChargingPoint id="0" peakLoad="3000" ConnectorsType="DC">
+         <ecar>
+			  <id>2</id>
+			  <pat>50000</pat>
+			  <pdt>71000</pdt>
+			  <aat>50000</aat>
+			  <adt>71000</adt>
+			  <creation_time>10000</creation_time>
+			  <soc>20</soc>
+			  <targetSoc>90</targetSoc>
+			  <V2G>0</V2G>
+			  <priority>0</priority>
+         </ecar>
+      </ChargingPoint>
+	  <device>
+        <id>3</id>
+        <est>35000</est>
+        <lst>35000</lst>
+        <type>load</type>
+        <creation_time>15000</creation_time>
+        <energy_cost>0_run_0_1.csv</energy_cost>
+        <profile>consumer.csv</profile>
+      </device>
+
+    </user>
+  </house>
+</Neighborhood>
+
+
+
+

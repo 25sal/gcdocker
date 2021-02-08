@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Neighborhood peakLoad2="10000">
+  <energyCost>
+     <id>5</id>
+     <profile>cost.csv</profile>
+  </energyCost>
+  <energyMix>
+     <profile>energy_mix.csv</profile>
+  </energyMix>
+  <house id="1" peakLoad="3000">
+    <user id="0">
+      <device>
+			<id>1</id>
+			<name>PVPanel</name>
+			<type>Producer</type>
+      </device>
+      <ChargingPoint id="0" peakLoad="3000" ConnectorsType="DC">
+        <ecar>
+			 <model>BMW X5Eco2</model>
+			  <capacity>30000</capacity>
+			  <maxchpowac>100</maxchpowac>
+			  <maxchpowcc>100</maxchpowcc>
+			  <maxdispowac>100</maxdispowac>
+			  <maxdispowcc>100</maxdispowcc>
+			  <maxallen>200</maxallen>
+			  <minallen>150</minallen>
+			  <sbch>0.3</sbch>
+			  <sbdis>0.3</sbdis>
+			  <cheff>0.5</cheff>
+			  <dis_eff>0.8</dis_eff>
+			  <type>Prosumer</type>
+			  <name>mia</name>
+			  <id>2</id>
+        </ecar>
+      </ChargingPoint>
+      <device>
+			<type>Consumer</type>
+			<name>DishWasher</name>
+			<id>3</id>
+      </device>
+      <device>
+			<type>Consumer</type>
+			<name>WashingMachine</name>
+			<id>4</id>
+      </device>
+	  <battery>
+			<model>battery1</model>
+			<capacity>8000</capacity>
+			<maxchpowac>0.2</maxchpowac>
+			<maxchpowcc>0.3</maxchpowcc>
+			<maxdispow>0.4</maxdispow>
+			<maxallen>1</maxallen>
+			<minallen>0.1</minallen>
+			<sbch>0.1</sbch>
+			<sbdis>0.1</sbdis>
+			<cheff>0.3</cheff>
+			<diseff>0.2</diseff>
+			<type>Prosumer</type>
+			<name>batt</name>
+			<id>5</id>
+	  </battery>
+	  <backgroundload>
+			<type>NS-Consumer</type>
+			<name>BackGroundLoad</name>
+			<id>6</id>
+	  </backgroundload>
+	  <heatercooler>
+			<type>NS-Consumer</type>
+			<name>heatercooler1</name>
+			<id>7</id>
+	  </heatercooler>
+    </user>
+  </house>
+</Neighborhood>

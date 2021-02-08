@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Neighborhood>
+  <house id="1">
+    <user id="0">
+      <heatercooler>
+        <id>2</id>
+        <profile>1_run_5_1.csv </profile>
+      </heatercooler>
+      <ChargingPoint id="0">
+        <ecar>
+          <id>20</id>
+          <pat>0</pat>
+          <pdt>0</pdt>
+          <aat>0</aat>
+          <adt>0</adt>
+          <creation_time>0</creation_time>
+          <soc>0</soc>
+          <targetSoc>0</targetSoc>
+          <V2G>0</V2G>
+          <priority>0</priority>
+        </ecar>
+        <ecar>
+          <id>25</id>
+          <pat>0</pat>
+          <pdt>0</pdt>
+          <aat>0</aat>
+          <adt>0</adt>
+          <creation_time>0</creation_time>
+          <soc>0</soc>
+          <targetSoc>0</targetSoc>
+          <V2G>0</V2G>
+          <priority>0</priority>
+        </ecar>
+      </ChargingPoint>
+      <device>
+        <id>38</id>
+        <est>0</est>
+        <lst>0</lst>
+        <type>load</type>
+        <creation_time>0</creation_time>
+        <profile>2_run_4_1.csv </profile>
+      </device>
+    </user>
+  </house>
+  <chargingStation id="2">
+    <user id="0">
+      <ChargingPoint id="0">
+        <ecar>
+          <id>19</id>
+          <pat>0</pat>
+          <pdt>0</pdt>
+          <aat>0</aat>
+          <adt>0</adt>
+          <creation_time>0</creation_time>
+          <soc>0</soc>
+          <targetSoc>0</targetSoc>
+          <V2G>0</V2G>
+          <priority>0</priority>
+        </ecar>
+        <ecar>
+          <id>24</id>
+          <pat>0</pat>
+          <pdt>0</pdt>
+          <aat>0</aat>
+          <adt>0</adt>
+          <creation_time>0</creation_time>
+          <soc>0</soc>
+          <targetSoc>0</targetSoc>
+          <V2G>0</V2G>
+          <priority>0</priority>
+        </ecar>
+      </ChargingPoint>
+    </user>
+  </chargingStation>
+  <chargingStation id="3">
+    <user id="0">
+      <ChargingPoint id="0">
+        <ecar>
+          <id>18</id>
+          <pat>0</pat>
+          <pdt>0</pdt>
+          <aat>0</aat>
+          <adt>0</adt>
+          <creation_time>0</creation_time>
+          <soc>0</soc>
+          <targetSoc>0</targetSoc>
+          <V2G>0</V2G>
+          <priority>0</priority>
+        </ecar>
+        <ecar>
+          <id>23</id>
+          <pat>0</pat>
+          <pdt>0</pdt>
+          <aat>0</aat>
+          <adt>0</adt>
+          <creation_time>0</creation_time>
+          <soc>0</soc>
+          <targetSoc>0</targetSoc>
+          <V2G>0</V2G>
+          <priority>0</priority>
+        </ecar>
+      </ChargingPoint>
+      <ChargingPoint id="1">
+        <ecar>
+          <id>17</id>
+          <pat>0</pat>
+          <pdt>0</pdt>
+          <aat>0</aat>
+          <adt>0</adt>
+          <creation_time>0</creation_time>
+          <soc>0</soc>
+          <targetSoc>0</targetSoc>
+          <V2G>0</V2G>
+          <priority>0</priority>
+        </ecar>
+        <ecar>
+          <id>22</id>
+          <pat>0</pat>
+          <pdt>0</pdt>
+          <aat>0</aat>
+          <adt>0</adt>
+          <creation_time>0</creation_time>
+          <soc>0</soc>
+          <targetSoc>0</targetSoc>
+          <V2G>0</V2G>
+          <priority>0</priority>
+        </ecar>
+      </ChargingPoint>
+    </user>
+  </chargingStation>
+  <house id="4">
+    <user id="0">
+      <backgroundload>
+        <id>1</id>
+        <profile>0_run_6_1.csv </profile>
+      </backgroundload>
+    </user>
+  </house>
+  <fleet>
+    <ecar>
+      <id>3</id>
+      <pat>0</pat>
+      <pdt>0</pdt>
+      <aat>0</aat>
+      <adt>0</adt>
+      <creation_time>0</creation_time>
+      <soc>0</soc>
+      <targetSoc>0</targetSoc>
+      <V2G>0</V2G>
+      <priority>0</priority>
+    </ecar>
+    <ecar>
+      <id>21</id>
+      <pat>0</pat>
+      <pdt>0</pdt>
+      <aat>0</aat>
+      <adt>0</adt>
+      <creation_time>0</creation_time>
+      <soc>0</soc>
+      <targetSoc>0</targetSoc>
+      <V2G>0</V2G>
+      <priority>0</priority>
+    </ecar>
+  </fleet>
+</Neighborhood>
