@@ -40,11 +40,11 @@ Indices and tables
    :members:
    :show-inheritance:
    
-.. automodule:: agents.restscheduler
+.. automodule:: agents.restAdaptor
    :members:
    :show-inheritance:
    
-.. automodule:: agents.xmppscheduler
+.. automodule:: agents.xmppAdaptor
    :members:
    :show-inheritance:
 
