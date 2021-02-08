@@ -51,6 +51,7 @@ class Configuration:
     def set_config_file(cls, config_file='config.yml'):
         """
         Set the name of the configuration file to be read.
+
         Args:
             config_file: The path of configuration file.
         """

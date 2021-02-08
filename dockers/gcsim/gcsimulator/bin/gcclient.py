@@ -33,21 +33,19 @@ import subprocess
 def start_optimizer(optimizer, policy):
     """
     Args:
-        optimizer: the optimizer to start (should be supported dummy, eurecat,
-            oslo)
+        optimizer: the optimizer to start (should be supported dummy, eurecat, oslo)
         policy: the optimization policy (Es: cheapest, greenest, earliest)
 
     Returns:
         None
     """
+
     if args.optimizer == 'dummy':
         process = subprocess.Popen(['docker', 'exec', 'docker_gcscheduler_1', '/home/scheduler/scheduler', 'start'],
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE)
         stdout, stderr = process.communicate()
         print(stdout.decode('utf-8'))
-
-
 
 def start_simulator(args):
     """It will start the agents based simulator :return:

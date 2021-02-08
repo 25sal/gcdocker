@@ -46,6 +46,7 @@ class SimLifeCycle:
 class SetupModule(Agent):
     '''
     SetupModule Agent is used for start/stop dispatching messages.
+
     Args:
         Agent: The spade Agent.
     '''
@@ -55,6 +56,7 @@ class SetupModule(Agent):
     class StartService(OneShotBehaviour):
         '''
         The startService Behaviour is used for start dispatcher.
+
         Args:
             OneShotBehaviour: The behaviour's type.
         '''
@@ -78,6 +80,7 @@ class SetupModule(Agent):
     class StopService(OneShotBehaviour):
         '''
         The stopService Behaviour is used for stop dispatcher.
+
         Args:
             OneShotBehaviour: The behaviour's type.
         '''

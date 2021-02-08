@@ -44,7 +44,8 @@ LOGFILE = '/home/gc/simulator/gcdaemon.log'
 ##########################################
 class Adaptor(Agent):
     '''
-    Adaptor used for the XMPP protocol  .
+    Adaptor used for the XMPP protocol.
+
     Args:
         Agent: The spade Agent.
     '''
@@ -63,6 +64,7 @@ class Adaptor(Agent):
         """
         POST API used by schedulers to post a timeseries.
         It recieve a file and write the content in simulation directory
+
         Args:
             request: the REST request
         """

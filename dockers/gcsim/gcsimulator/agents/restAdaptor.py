@@ -42,7 +42,8 @@ LOGFILE = '/home/gc/simulator/gcdaemon.log'
 ##########################################
 class Adaptor(Agent):
     '''
-    Adaptor used for the REST protocol  .
+    Adaptor used for the REST protocol.
+
     Args:
         Agent: The spade Agent.
     '''
@@ -69,6 +70,7 @@ class Adaptor(Agent):
     async def exposeGetRestAPI(self, request):
         """
         GET API used by schedulers to get a message.
+
         Args:
             request: the REST request
         """
@@ -97,6 +99,7 @@ class Adaptor(Agent):
     async def get_time(self, request):
         """
         GET API used by schedulers to get simulation time.
+
         Args:
             request: the REST request
         """
@@ -112,6 +115,7 @@ class Adaptor(Agent):
         """
         POST API used by schedulers to post an answer to the dispatcher.
         It recieve a file and write the content in simulation directory or a general message.
+
         Args:
             request: the REST request
         """

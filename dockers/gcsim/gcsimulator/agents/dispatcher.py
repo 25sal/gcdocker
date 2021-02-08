@@ -49,7 +49,9 @@ LOGFILE = './gcdaemon.log'
 
 def calculateTime(file):
     """
-    This function calculates the execution time of a scheduled load. It is used to put DeleteMessage in sharedQueue at the right time.
+    This function calculates the execution time of a scheduled load. It is used to put DeleteMessage in sharedQueue
+     at the right time.
+
     Args:
         file: Timeseries whose time delta is to be calculated
     """
@@ -69,6 +71,7 @@ def calculateTime(file):
 def switchInTime(file, ast):
     """
     This function shifts a timeseries over time based on the ast received from the scheduler.
+
     Args:
         file: Timeseries whose time is to be shift
         ast:  New assigned starting Time
@@ -100,6 +103,7 @@ def switchInTime(file, ast):
 def calculateConsumption(file):
     """
     This method calculates consumption in KW of a load consumer. It is used in the delete message.
+
     Args:
         file: Timeseries whose consumption is to be calculated
     """

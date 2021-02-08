@@ -499,10 +499,14 @@ class Entities:
     def enqueue_event(cls, timestamp, event, unique_id=None):
         """
         This method is used to enqueue an event in the event queue.
+
         Args:
             timestamp: Event time.
             event: The event.
             unique_id: An unique id in case of same timestamp for two events.
+
+        Returns:
+
         """
         cls.sharedQueue.put(EnqueuedEvent(timestamp, event, unique_id))
 
@@ -986,6 +990,7 @@ def uploadInInputRepository():
 def makeNewSimulation(pathneigh, pathload):
     """
     This Method create all simulation directories.
+
     Args:
         pathneigh: The neighborhood.xml path.
         pathload: The loads.xml path.

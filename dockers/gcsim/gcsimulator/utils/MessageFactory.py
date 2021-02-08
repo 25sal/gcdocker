@@ -68,6 +68,7 @@ class MessageFactory:
     def end(cls, actual_time):
         """
         This method creates the end message.
+
         Args:
             actual_time: Simulation Time.
         """
@@ -91,6 +92,7 @@ class MessageFactory:
     def energyCost(cls, device, time, protocol_version):
         """
         This method creates the EnergyCost message.
+
         Args:
             device: Device the message refers to.
             time: Simulation Time.
@@ -120,6 +122,7 @@ class MessageFactory:
     def energyCostProducer(cls, device, time, protocol_version):
         """
         This method creates the EnergyCost for producers message.
+
         Args:
             device: Device the message refers to.
             time: Simulation Time.
@@ -152,6 +155,7 @@ class MessageFactory:
     def energyMix(cls, device, time, protocol_version):
         """
         This method creates the EnergyMix message.
+
         Args:
             device: Device the message refers to.
             time: Simulation Time.
@@ -178,6 +182,7 @@ class MessageFactory:
     def neighborhood(cls, device, time, protocol_version):
         """
         This method creates the EnergyHub for neighborhood message.
+
         Args:
             device: Device the message refers to.
             time: Simulation Time.
@@ -203,6 +208,7 @@ class MessageFactory:
     def house(cls, device, time, protocol_version):
         """
         This method creates the EnergyHub for houses message.
+
         Args:
             device: Device the message refers to.
             time: Simulation Time.
@@ -228,6 +234,7 @@ class MessageFactory:
     def chargingstation(cls, device, time, protocol_version):
         """
         This method creates the EnergyHub for Charging Station message.
+
         Args:
             device: Device the message refers to.
             time: Simulation Time.
@@ -254,6 +261,7 @@ class MessageFactory:
     def chargingpoint(cls, device, time, protocol_version):
         """
         This method creates the EnergyHub for Charging Point message.
+
         Args:
             device: Device the message refers to.
             time: Simulation Time.
@@ -282,6 +290,7 @@ class MessageFactory:
     def heatercooler(cls, device, time, protocol_version):
         """
         This method creates the HeaterCooler message.
+
         Args:
             device: Device the message refers to.
             time: Simulation Time.
@@ -311,6 +320,7 @@ class MessageFactory:
     def background(cls, device, time, protocol_version):
         """
         This method creates the Background message.
+
         Args:
             device: Device the message refers to.
             time: Simulation Time.
@@ -382,6 +392,7 @@ class MessageFactory:
     def booking_request(cls, device, time, protocol_version):
         """
         This method creates the booking_request message.
+        
         Args:
             device: Device the message refers to.
             time: Simulation Time.
@@ -418,6 +429,7 @@ class MessageFactory:
     def create_ev(cls, device, time, protocol_version):
         """
         This method creates the Create Ev message.
+
         Args:
             device: Device the message refers to.
             time: Simulation Time.
@@ -535,6 +547,7 @@ class MessageFactory:
     def create_Battery(cls, device, time, protocol_version):
         """
         This method creates the Create Battery message.
+
         Args:
             device: Device the message refers to.
             time: Simulation Time.
@@ -571,6 +584,7 @@ class MessageFactory:
     def create_producer(cls, device, time, protocol_version):
         """
         This method creates the Create Producer message.
+
         Args:
             device: Device the message refers to.
             time: Simulation Time.
@@ -597,6 +611,7 @@ class MessageFactory:
     def create_load(cls, device, time, protocol_version):
         """
         This method creates the Create Load message.
+
         Args:
             device: Device the message refers to.
             time: Simulation Time.
@@ -632,6 +647,7 @@ class MessageFactory:
     def update_producer(cls, device, time, protocol_version):
         """
         This method creates the Update Producer message.
+
         Args:
             device: Device the message refers to.
             time: Simulation Time.
@@ -661,6 +677,7 @@ class MessageFactory:
     def delete_load(cls, device, time, protocol_version):
         """
         This method creates the Delete load message.
+
         Args:
             device: Device the message refers to.
             time: Simulation Time.
