@@ -27,6 +27,8 @@ from scipy import interpolate
 import matplotlib.pyplot as plt
 import numpy as np
 from utils import visualization
+import sqlite3
+from utils.config import Configuration
 
 class Node:
     def __init__(self, name):
@@ -684,6 +686,204 @@ def html_images(folder):
     html_file.close()
 
 
+
+
+######################################################################
+# Create a Database Table to store all events/devices of a scenario  #
+######################################################################
+def createTable():
+    workingdir = Configuration.parameters['workingdir']
+    db_filename = workingdir + '/xml/input.db'
+    conn = sqlite3.connect(db_filename)
+    schema_filename = '../xml/schema.sql'
+
+    with open(schema_filename, 'rt') as f:
+        schema = f.read()
+    conn.executescript(schema)
+    f = open(workingdir + "/xml/neighborhood.xml", "r")
+    fileIntero = f.read()
+    root = ET.fromstring(fileIntero)
+
+    for house in root.findall('house'):  # READ XML FILE
+        houseId = house.get('id')
+        query = "insert into housecs (id) values(?)"
+        cursor = conn.cursor()
+        cursor.execute(query, (houseId,))
+
+        for user in house.findall('user'):
+            userId = user.get('id')
+            for deviceElement in user.findall('device'):
+                deviceId = deviceElement.find('id').text
+                type = deviceElement.find('type').text
+                name = deviceElement.find('name').text
+                query = "insert into device(id,id_house,name,type,class) values(?,?,?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, houseId, name, type, type,))
+
+            for OtherElement in user.findall('heatercooler'):
+                deviceId = OtherElement.find('id').text
+                name = OtherElement.find('name').text
+                query = "insert into device(id,id_house,name,type,class) values(?,?,?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, houseId, name, "heatercooler", "N-S Consumer",))
+
+            for OtherElement in user.findall('backgroundload'):
+                deviceId = OtherElement.find('id').text
+                name = OtherElement.find('name').text
+                query = "insert into device(id,id_house,name,type,class) values(?,?,?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, houseId, name, "backgroundLoad", "N-S Consumer",))
+
+            for OtherElement in user.findall('ecar'):
+                deviceId = OtherElement.find('id').text
+                name = OtherElement.find('name').text
+
+                capacity = OtherElement.find('capacity').text
+                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "Capacity", str(capacity),))
+
+                maxchpowac = OtherElement.find('maxchpowac').text
+                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "max_ch_pow_ac", str(maxchpowac),))
+
+                maxchpowcc = OtherElement.find('maxchpowcc').text
+                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "max_ch_pow_cc", str(maxchpowcc),))
+
+                maxdispow = OtherElement.find('maxdispow').text
+                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "max_dis_pow", str(maxdispow),))
+
+                maxallen = OtherElement.find('maxallen').text
+                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "max_all_en", str(maxallen),))
+
+                minallen = OtherElement.find('minallen').text
+                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "min_all_en", str(minallen),))
+
+                sbch = OtherElement.find('sbch').text
+                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "sbch", str(sbch),))
+
+                sbdis = OtherElement.find('sbdis').text
+                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "sbdis", str(sbdis),))
+
+                cheff = OtherElement.find('cheff').text
+                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "cheff", str(cheff),))
+
+                dis_eff = OtherElement.find('dis_eff').text
+                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "dis_eff", str(dis_eff),))
+
+                query = "insert into device(id,id_house,name,type,class) values(?,?,?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, houseId, name, "ecar", "Prosumer",))
+
+    f = open(workingdir + "/xml/loads.xml", "r")
+    fileIntero = f.read();
+    root = ET.fromstring(fileIntero)
+    for house in root.findall('house'):
+        houseId = house.get('id')
+        for user in house.findall('user'):
+            userId = user.get('id')
+            for device in user.findall('device'):
+                deviceId = device.find('id').text
+
+                est = device.find('est').text
+                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "est", str(est),))
+
+                lst = device.find('lst').text
+                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "lst", str(lst),))
+                creation_time = device.find('creation_time').text
+                type2 = device.find("type").text
+
+                for c in Entities.listDevice:
+                    if deviceId == c.id and houseId == c.house:
+                        if c.type == "Consumer":
+                            query = "insert into event(creation_time,idDevice,type) values(?,?,?)"
+                            cursor = conn.cursor()
+                            cursor.execute(query, (creation_time, deviceId, "Load",))
+                        elif c.type == "Producer":
+                            query = "insert into event(creation_time,idDevice,type) values(?,?,?)"
+                            cursor = conn.cursor()
+                            cursor.execute(query, (creation_time, deviceId, "Create PV",))
+
+            for device in user.findall('backgroundload'):
+                deviceId = device.find('id').text
+                query = "insert into event(creation_time,idDevice,type) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, ("0", deviceId, "Create BG",))
+
+            for device in user.findall('ecar'):
+                deviceId = device.find('id').text
+                pat = device.find('pat').text
+                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "pat", str(pat),))
+                pdt = device.find('pdt').text
+                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "pdt", str(pdt),))
+                aat = device.find('aat').text
+                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "aat", str(aat),))
+                adt = device.find('adt').text
+                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "adt", str(adt),))
+                creation_time = device.find('creation_time').text
+                soc = device.find('soc').text
+                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "soc", str(soc),))
+                targetSoc = device.find('targetSoc').text
+                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "targetSoc", str(targetSoc),))
+                V2G = device.find('V2G').text
+                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "V2G", str(V2G),))
+                priority = device.find('priority').text
+                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (deviceId, "targpriorityetSoc", str(priority),))
+                query = "insert into event(creation_time,idDevice,type) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, (creation_time, deviceId, "ECAR event",))
+
+            for device in user.findall('heatercooler'):
+                deviceId = device.find('id').text
+                query = "insert into event(creation_time,idDevice,type) values(?,?,?)"
+                cursor = conn.cursor()
+                cursor.execute(query, ("0", deviceId, "Create HC",))
+    conn.commit()
+    conn.close()
+
+
+
+
+
+
+
 if __name__ == "__main__":
 
 
@@ -691,5 +891,5 @@ if __name__ == "__main__":
     visualization.callExternal(".", ".../../Simulations/trivial/Results/12_12_15_3/output")
 
     checker.doChecks("../../Simulations/trivial/Results/12_12_15_3/output", 1449878400, "../../Simulations/trivial/Results/12_12_15_3/xml", "../../Simulations/trivial/Results/12_12_15_3")
-    #shutil.copy('../../../../../../Dockers/gcsim/gcsimulator/templates/checks.html', 'checks.html')
+    #shutil.copy('../../../../../../dockers/gcsim/gcsimulator/templates/checks.html', 'checks.html')
     html_images("./output")

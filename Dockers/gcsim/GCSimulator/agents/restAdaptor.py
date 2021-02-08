@@ -18,7 +18,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 """
-RESTScheduler
+RESTAdaptor
 =======================================
 This agent create a REST server in order to communicate with REST schedulers.
 """
@@ -40,7 +40,7 @@ LOGFILE = '/home/gc/simulator/gcdaemon.log'
 ##########################################
 #  Adaptor used for the rest protocol    #
 ##########################################
-class scheduler(Agent):
+class Adaptor(Agent):
     '''
     Adaptor used for the REST protocol  .
     Args:
@@ -58,7 +58,7 @@ class scheduler(Agent):
         self.dispatched = queue.Queue()
         self.simulated_time = 0
         self.last_object_type = 0
-        Behaviour2 = self.consumeEvent2(1, start_at=self.start_at)
+        Behaviour2 = self.MessageManager(1, start_at=self.start_at)
         self.add_behaviour(Behaviour2)
         #self.traces.reset()
 
@@ -66,7 +66,7 @@ class scheduler(Agent):
     #  GET API used by schedulers to get a simulation message.                     #
     #  It consume an object from the dispatched message queue and return a json    #
     ################################################################################
-    async def get_message(self, request):
+    async def exposeGetRestAPI(self, request):
         """
         GET API used by schedulers to get a message.
         Args:
@@ -108,7 +108,7 @@ class scheduler(Agent):
     #  POST API used by schedulers to post a timeseries.                  #
     #  It recieve a file and write the content in simulation directory    #
     #######################################################################
-    async def post_answer(self,request):
+    async def exposePostRestAPI(self, request):
         """
         POST API used by schedulers to post an answer to the dispatcher.
         It recieve a file and write the content in simulation directory or a general message.
@@ -169,7 +169,7 @@ class scheduler(Agent):
     #  placed in the dispatched queue.               #
     ##################################################
 
-    class consumeEvent2(PeriodicBehaviour):
+    class MessageManager(PeriodicBehaviour):
 
         async def onstart(self):
             logging.info("A ConsumeEvent queue is Starting...")

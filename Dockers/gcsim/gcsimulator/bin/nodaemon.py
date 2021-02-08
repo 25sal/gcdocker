@@ -20,7 +20,7 @@
 #
 
 import time
-from agents import xmppscheduler as sche, restscheduler as sche1, setup as es, manager as sm, \
+from agents import xmppAdaptor as sche, restAdaptor as sche1, setup as es, manager as sm, \
     dispatcher as di
 import aiohttp_cors
 from utils.config import Configuration
@@ -49,11 +49,11 @@ def adaptor():
     password = Configuration.parameters['xmpp_password']
     if protocol_version == "2.0":
         logging.info("Starting Adaptor")
-        scheduler = sche.scheduler(basejid + "/" + jid, password)
+        adaptor = sche.Adaptor(basejid + "/" + jid, password)
         # scheduler.web.add_get("/gettime", scheduler.get_time, "message.html")
         # scheduler.web.add_post("/postanswer", scheduler.post_answer, "message2.html")
-        sc2 = scheduler.start()
-        cors = aiohttp_cors.setup(scheduler.web.app, defaults={
+        sc2 = adaptor.start()
+        cors = aiohttp_cors.setup(adaptor.web.app, defaults={
             "*": aiohttp_cors.ResourceOptions(
                 allow_credentials=True,
                 expose_headers="*",
@@ -65,40 +65,40 @@ def adaptor():
         route = {
             'method': 'GET',
             'path': '/getmessage',
-            'handler': scheduler.get_message,
+            'handler': adaptor.exposeGetRestAPI,
             'name': 'test'
         }
         route2 = {
             'method': 'POST',
             'path': '/postanswer',
-            'handler': scheduler.post_answer,
+            'handler': adaptor.exposePostRestAPI,
             'name': 'test2'
         }
         route3 = {
             'method': 'GET',
             'path': '/gettime',
-            'handler': scheduler.get_time,
+            'handler': adaptor.get_time,
             'name': 'test3'
         }
         cors.add(
-            scheduler.web.app.router.add_route(method=route3['method'], path=route3['path'], handler=route3['handler'],
+            adaptor.web.app.router.add_route(method=route3['method'], path=route3['path'], handler=route3['handler'],
                                                name=route3['name']))
         cors.add(
-            scheduler.web.app.router.add_route(method=route['method'], path=route['path'], handler=route['handler'],
+            adaptor.web.app.router.add_route(method=route['method'], path=route['path'], handler=route['handler'],
                                                name=route['name']))
         cors.add(
-            scheduler.web.app.router.add_route(method=route2['method'], path=route2['path'], handler=route2['handler'],
+            adaptor.web.app.router.add_route(method=route2['method'], path=route2['path'], handler=route2['handler'],
                                                name=route2['name']))
 
-        temp=scheduler.web.start(hostname=hostname, port=port)
-        temp2=scheduler.web.is_started()
+        temp=adaptor.web.start(hostname=hostname, port=port)
+        temp2=adaptor.web.is_started()
         sc2.result()
     elif protocol_version == "1.0":
-        scheduler = sche1.scheduler(basejid + "/" + jid, password)
+        adaptor = sche1.Adaptor(basejid + "/" + jid, password)
         # scheduler.web.add_get("/gettime", scheduler.get_time, "message.html")
         #scheduler.web.add_post("/postanswer", scheduler.post_answer, "message2.html")
-        sc2 = scheduler.start()
-        cors = aiohttp_cors.setup(scheduler.web.app, defaults={
+        sc2 = adaptor.start()
+        cors = aiohttp_cors.setup(adaptor.web.app, defaults={
             "*": aiohttp_cors.ResourceOptions(
                 allow_credentials=True,
                 expose_headers="*",
@@ -110,16 +110,16 @@ def adaptor():
         route = {
             'method': 'POST',
             'path': '/postanswer',
-            'handler': scheduler.post_answer,
+            'handler': adaptor.exposePostRestAPI,
             'name': 'test2'
         }
 
         cors.add(
-            scheduler.web.app.router.add_route(method=route['method'], path=route['path'], handler=route['handler'],
+            adaptor.web.app.router.add_route(method=route['method'], path=route['path'], handler=route['handler'],
                                                name=route['name']))
-        temp=scheduler.web.start(hostname=hostname, port=port)
+        temp=adaptor.web.start(hostname=hostname, port=port)
         temp.result()
-        temp2=scheduler.web.is_started()
+        temp2=adaptor.web.is_started()
         sc2.result()
 
 ############################################
@@ -129,7 +129,7 @@ def start_disp():
     simjid = Configuration.parameters['simulator']
     basejid = Configuration.parameters['userjid']
     password = Configuration.parameters['xmpp_password']
-    dispatcher = di.dispatcher(basejid + "/" + simjid, password)
+    dispatcher = di.Dispatcher(basejid + "/" + simjid, password)
     future = dispatcher.start()
     future.result()
 ######################################################
@@ -161,7 +161,7 @@ if __name__ == "__main__":
     setup_jid = Configuration.parameters['userjid'] + "/setupmodule"
     password =  Configuration.parameters['xmpp_password']
     start_disp()
-    setupmodule = sm.setupModule(setup_jid, password)
+    setupmodule = sm.SetupModule(setup_jid, password)
     setupmodule.start()
 
 

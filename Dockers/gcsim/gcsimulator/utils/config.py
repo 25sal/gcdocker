@@ -95,3 +95,12 @@ class Configuration:
             cls.parameters['user_dir'] = temp[-1]
             cls.dirCount1 = dirCount1
             # fine codice aggiunto
+
+
+
+
+
+
+
+
+

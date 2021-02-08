@@ -20,7 +20,7 @@
 #
 
 """
-XMPPScheduler
+XMPPAdaptor
 =======================================
 This agent create a REST server in order to communicate with XMPP schedulers.
 """
@@ -42,7 +42,7 @@ LOGFILE = '/home/gc/simulator/gcdaemon.log'
 ##########################################
 #  Adaptor used for the XMPP protocol    #
 ##########################################
-class scheduler(Agent):
+class Adaptor(Agent):
     '''
     Adaptor used for the XMPP protocol  .
     Args:
@@ -59,7 +59,7 @@ class scheduler(Agent):
     #  POST API used by schedulers to post a timeseries.                  #
     #  It recieve a file and write the content in simulation directory    #
     #######################################################################
-    async def post_answer(self,request):
+    async def exposePostRestAPI(self, request):
         """
         POST API used by schedulers to post a timeseries.
         It recieve a file and write the content in simulation directory
@@ -115,7 +115,7 @@ class scheduler(Agent):
         return response
 
 
-    class consumeEvent2(PeriodicBehaviour):
+    class XMPPMessageManager(PeriodicBehaviour):
 
         async def onstart(self):
             logging.info("A ConsumeEvent queue is Starting...")

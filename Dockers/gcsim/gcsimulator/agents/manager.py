@@ -43,7 +43,7 @@ class SimLifeCycle:
 #####################################################################
 #  SetupModule Agent is used for start/stop dispatching messages    #
 #####################################################################
-class setupModule(Agent):
+class SetupModule(Agent):
     '''
     SetupModule Agent is used for start/stop dispatching messages.
     Args:
@@ -52,7 +52,7 @@ class setupModule(Agent):
     #########################################################
     #  startService Behaviour is used for start dispatcher  #
     #########################################################
-    class startService(OneShotBehaviour):
+    class StartService(OneShotBehaviour):
         '''
         The startService Behaviour is used for start dispatcher.
         Args:
@@ -75,7 +75,7 @@ class setupModule(Agent):
     #############################################################
     #  stopService Behaviour is used for stop/pause dispatcher  #
     #############################################################
-    class stopService(OneShotBehaviour):
+    class StopService(OneShotBehaviour):
         '''
         The stopService Behaviour is used for stop dispatcher.
         Args:
@@ -95,7 +95,7 @@ class setupModule(Agent):
         The setup method is used for add behaviours to the agent.
         '''
         logging.info("SenderAgent started")
-        b = self.startService()
+        b = self.StartService()
         self.add_behaviour(b)
         self.presence.on_available = self.my_on_available_handler
 
@@ -104,5 +104,5 @@ class setupModule(Agent):
         if peer_jid == Configuration.parameters['userjid'] + '/' + Configuration.parameters['simulator']:
             if SimLifeCycle.status == 0:
                 SimLifeCycle.status = 1
-                b = self.startService()
+                b = self.StartService()
                 self.add_behaviour(b)

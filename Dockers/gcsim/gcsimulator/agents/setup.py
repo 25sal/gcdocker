@@ -34,7 +34,6 @@ from shutil import copy2
 import csv
 import shutil
 from utils.config import Configuration
-import sqlite3
 import logging
 from os import listdir
 LOGFILE = '/home/gc/simulator/gcdaemon.log'
@@ -49,7 +48,7 @@ LOGFILE = '/home/gc/simulator/gcdaemon.log'
 ###########################****************** DEFINE CLASS SECTION ************************###########################
 # ANY DEVICE IS DEFINED BY A A COMPLEX OBJECT
 
-class abstract_device:
+class AbstractDevice:
     """This class defines an abstract device, will be implemented by other classes."""
     def __init__(self, id='0', house='0', type='0', name='0'):
         """
@@ -65,7 +64,7 @@ class abstract_device:
         self.name = name
 
 
-class backGroundLoad(abstract_device):
+class BackGroundLoad(AbstractDevice):
     """This class defines an background load."""
     def __init__(self, id='0', house='0', name='0'):
         """
@@ -74,10 +73,10 @@ class backGroundLoad(abstract_device):
             house: The house where the device is located.
             name: The device's name.
         """
-        super(backGroundLoad,self).__init__(id, house, "backgroundLoad", name)
+        super(BackGroundLoad, self).__init__(id, house, "backgroundLoad", name)
 
 
-class heaterCooler(abstract_device):
+class HeaterCooler(AbstractDevice):
     """This class defines an heater/cooler device."""
     def __init__(self, id='0', house='0', name='0'):
         """
@@ -86,10 +85,10 @@ class heaterCooler(abstract_device):
             house: The house where the device is located.
             name: The device's name.
         """
-        super(heaterCooler,self).__init__(id, house, "heaterCooler",  name)
+        super(HeaterCooler, self).__init__(id, house, "heaterCooler", name)
 
 
-class EV(abstract_device):
+class EV(AbstractDevice):
     """This class defines an EV device."""
     def __init__(self, id=0, house=0, chargingPoint=0, name='0', capacity='0', max_ch_pow_ac='0', max_ch_pow_cc='0',
                  max_dis_pow_ac='0', max_dis_pow_cc='0', max_all_en='0', min_all_en='0', sb_ch='0', sb_dis='0',
@@ -127,7 +126,7 @@ class EV(abstract_device):
         self.dis_eff = dis_eff
 
 
-class Battery(abstract_device):
+class Battery(AbstractDevice):
     """This class defines an Battery device."""
 
     def __init__(self, id=0, house=0, name='0', capacity='0', max_ch_pow_ac='0', max_ch_pow_cc='0',
@@ -165,7 +164,7 @@ class Battery(abstract_device):
         self.dis_eff = dis_eff
 
 
-class device(abstract_device):
+class Device(AbstractDevice):
     """This class defines a schedulable device or a producer device."""
 
     def __init__(self, id='0', type='0', name='0', house='0'):
@@ -179,7 +178,7 @@ class device(abstract_device):
         super().__init__(id, house, type, name)
 
 
-class abstract_event:
+class Abstract_event:
     """This class defines an abstract event."""
     def __init__(self, device='0', house='0', creation_time='0', type2=0):
         """
@@ -195,7 +194,7 @@ class abstract_event:
         self.house = house
 
 
-class eventGeneral(abstract_event):
+class EventGeneral(Abstract_event):
     """This class defines a schedulable event."""
     def __init__(self, device='0', house='0', est='0', lst='0', creation_time='0', profile='0', type2=0):
         """
@@ -208,13 +207,13 @@ class eventGeneral(abstract_event):
             profile: The consumption profile the device has to perform.
             type2: The event type.
         """
-        super(eventGeneral, self).__init__(device, house, creation_time, type2)
+        super(EventGeneral, self).__init__(device, house, creation_time, type2)
         self.est = est
         self.lst = lst
         self.profile = profile
 
 
-class eventDelete(abstract_event):
+class EventDelete(Abstract_event):
     """This class defines a delete event."""
 
     def __init__(self, device='0', house='0', creation_time='0', consumption=0):
@@ -232,7 +231,7 @@ class eventDelete(abstract_event):
         self.consumption = consumption
 
 
-class eventEcar(abstract_event):
+class EventEcar(Abstract_event):
     """This class defines an EV event."""
 
     def __init__(self, device='0', house='0', Soc_at_arrival='0', booking_time='0', planned_arrival_time='0'
@@ -266,7 +265,7 @@ class eventEcar(abstract_event):
         self.priority = priority
 
 
-class eventBattery(abstract_event):
+class EventBattery(Abstract_event):
     """This class defines a battery event."""
     def __init__(self, device='0', house='0', Soc_at_arrival='0', booking_time='0', start_time='0', end_time='0',
                  target_soc='0'):
@@ -290,7 +289,7 @@ class eventBattery(abstract_event):
         self.target_soc = target_soc
 
 
-class eventProducer(abstract_event):
+class EventProducer(Abstract_event):
     """This class defines a producer event."""
     def __init__(self, device='0', house='0', est='0', lst='0', creation_time='0', profile='0', type2=0,
                  energycost='0'):
@@ -314,7 +313,7 @@ class eventProducer(abstract_event):
         self.lst = lst
 
 
-class eventBackground(abstract_event):
+class EventBackground(Abstract_event):
     """This class defines a background load event."""
 
     def __init__(self, device='0', house='0', creation_time='0', profile='0'):
@@ -332,7 +331,7 @@ class eventBackground(abstract_event):
         self.type = "background"
 
 
-class eventHeaterCooler(abstract_event):
+class EventHeaterCooler(Abstract_event):
     """This class defines a heater/cooler load event."""
     def __init__(self, device='0', house='0', creation_time='0', profile='0'):
         """
@@ -522,195 +521,6 @@ class Entities:
 ###########################*************** ANY ACTION IS DEFINED BY A METHOD ****************###################################################
 
 
-######################################################################
-# Create a Database Table to store all events/devices of a scenario  #
-######################################################################
-def createTable():
-    workingdir = Configuration.parameters['workingdir']
-    db_filename = workingdir + '/xml/input.db'
-    conn = sqlite3.connect(db_filename)
-    schema_filename = '../xml/schema.sql'
-
-    with open(schema_filename, 'rt') as f:
-        schema = f.read()
-    conn.executescript(schema)
-    f = open(workingdir + "/xml/neighborhood.xml", "r")
-    fileIntero = f.read()
-    root = ET.fromstring(fileIntero)
-
-    for house in root.findall('house'):  # READ XML FILE
-        houseId = house.get('id')
-        query = "insert into housecs (id) values(?)"
-        cursor = conn.cursor()
-        cursor.execute(query, (houseId,))
-
-        for user in house.findall('user'):
-            userId = user.get('id')
-            for deviceElement in user.findall('device'):
-                deviceId = deviceElement.find('id').text
-                type = deviceElement.find('type').text
-                name = deviceElement.find('name').text
-                query = "insert into device(id,id_house,name,type,class) values(?,?,?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, houseId, name, type, type,))
-
-            for OtherElement in user.findall('heatercooler'):
-                deviceId = OtherElement.find('id').text
-                name = OtherElement.find('name').text
-                query = "insert into device(id,id_house,name,type,class) values(?,?,?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, houseId, name, "heatercooler", "N-S Consumer",))
-
-            for OtherElement in user.findall('backgroundload'):
-                deviceId = OtherElement.find('id').text
-                name = OtherElement.find('name').text
-                query = "insert into device(id,id_house,name,type,class) values(?,?,?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, houseId, name, "backgroundLoad", "N-S Consumer",))
-
-            for OtherElement in user.findall('ecar'):
-                deviceId = OtherElement.find('id').text
-                name = OtherElement.find('name').text
-
-                capacity = OtherElement.find('capacity').text
-                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "Capacity", str(capacity),))
-
-                maxchpowac = OtherElement.find('maxchpowac').text
-                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "max_ch_pow_ac", str(maxchpowac),))
-
-                maxchpowcc = OtherElement.find('maxchpowcc').text
-                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "max_ch_pow_cc", str(maxchpowcc),))
-
-                maxdispow = OtherElement.find('maxdispow').text
-                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "max_dis_pow", str(maxdispow),))
-
-                maxallen = OtherElement.find('maxallen').text
-                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "max_all_en", str(maxallen),))
-
-                minallen = OtherElement.find('minallen').text
-                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "min_all_en", str(minallen),))
-
-                sbch = OtherElement.find('sbch').text
-                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "sbch", str(sbch),))
-
-                sbdis = OtherElement.find('sbdis').text
-                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "sbdis", str(sbdis),))
-
-                cheff = OtherElement.find('cheff').text
-                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "cheff", str(cheff),))
-
-                dis_eff = OtherElement.find('dis_eff').text
-                query = "insert into staticParameter(iddevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "dis_eff", str(dis_eff),))
-
-                query = "insert into device(id,id_house,name,type,class) values(?,?,?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, houseId, name, "ecar", "Prosumer",))
-
-    f = open(workingdir + "/xml/loads.xml", "r")
-    fileIntero = f.read();
-    root = ET.fromstring(fileIntero)
-    for house in root.findall('house'):
-        houseId = house.get('id')
-        for user in house.findall('user'):
-            userId = user.get('id')
-            for device in user.findall('device'):
-                deviceId = device.find('id').text
-
-                est = device.find('est').text
-                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "est", str(est),))
-
-                lst = device.find('lst').text
-                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "lst", str(lst),))
-                creation_time = device.find('creation_time').text
-                type2 = device.find("type").text
-
-                for c in Entities.listDevice:
-                    if deviceId == c.id and houseId == c.house:
-                        if c.type == "Consumer":
-                            query = "insert into event(creation_time,idDevice,type) values(?,?,?)"
-                            cursor = conn.cursor()
-                            cursor.execute(query, (creation_time, deviceId, "Load",))
-                        elif c.type == "Producer":
-                            query = "insert into event(creation_time,idDevice,type) values(?,?,?)"
-                            cursor = conn.cursor()
-                            cursor.execute(query, (creation_time, deviceId, "Create PV",))
-
-            for device in user.findall('backgroundload'):
-                deviceId = device.find('id').text
-                query = "insert into event(creation_time,idDevice,type) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, ("0", deviceId, "Create BG",))
-
-            for device in user.findall('ecar'):
-                deviceId = device.find('id').text
-                pat = device.find('pat').text
-                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "pat", str(pat),))
-                pdt = device.find('pdt').text
-                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "pdt", str(pdt),))
-                aat = device.find('aat').text
-                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "aat", str(aat),))
-                adt = device.find('adt').text
-                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "adt", str(adt),))
-                creation_time = device.find('creation_time').text
-                soc = device.find('soc').text
-                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "soc", str(soc),))
-                targetSoc = device.find('targetSoc').text
-                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "targetSoc", str(targetSoc),))
-                V2G = device.find('V2G').text
-                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "V2G", str(V2G),))
-                priority = device.find('priority').text
-                query = "insert into dinamicParameter(idDevice,key,val) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (deviceId, "targpriorityetSoc", str(priority),))
-                query = "insert into event(creation_time,idDevice,type) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, (creation_time, deviceId, "ECAR event",))
-
-            for device in user.findall('heatercooler'):
-                deviceId = device.find('id').text
-                query = "insert into event(creation_time,idDevice,type) values(?,?,?)"
-                cursor = conn.cursor()
-                cursor.execute(query, ("0", deviceId, "Create HC",))
-    conn.commit()
-    conn.close()
 
 #
 #############################################################################################################
@@ -748,20 +558,20 @@ def createDevicesList():
                 deviceId = deviceElement.find('id').text
                 type = deviceElement.find('type').text
                 name = deviceElement.find('name').text
-                c = device(deviceId, type, name, houseId)
+                c = Device(deviceId, type, name, houseId)
                 Entities.listDevice.append(c)
             for OtherElement in user.findall('heatercooler'):
                 logging.debug("new heatercooler")
                 deviceId = OtherElement.find('id').text
                 name = OtherElement.find('name').text
-                c = heaterCooler(deviceId, houseId, name)
+                c = HeaterCooler(deviceId, houseId, name)
                 Entities.listDevice.append(c)
 
             for OtherElement in user.findall('backgroundload'):
                 logging.debug("new bg")
                 deviceId = OtherElement.find('id').text
                 name = OtherElement.find('name').text
-                c = backGroundLoad(deviceId, houseId, name)
+                c = BackGroundLoad(deviceId, houseId, name)
                 Entities.listDevice.append(c)
             for OtherElement in user.findall('battery'):
                 logging.debug("new battery")
@@ -818,20 +628,20 @@ def createDevicesList():
                 deviceId = deviceElement.find('id').text
                 type = deviceElement.find('type').text
                 name = deviceElement.find('name').text
-                c = device(deviceId, type, name, houseId)
+                c = Device(deviceId, type, name, houseId)
                 Entities.listDevice.append(c)
             for OtherElement in user.findall('heatercooler'):
                 logging.debug("new heatercooler")
                 deviceId = OtherElement.find('id').text
                 name = OtherElement.find('name').text
-                c = heaterCooler(deviceId, houseId, name)
+                c = HeaterCooler(deviceId, houseId, name)
                 Entities.listDevice.append(c)
 
             for OtherElement in user.findall('backgroundload'):
                 logging.debug("new bg")
                 deviceId = OtherElement.find('id').text
                 name = OtherElement.find('name').text
-                c = backGroundLoad(deviceId, houseId, name)
+                c = BackGroundLoad(deviceId, houseId, name)
                 Entities.listDevice.append(c)
             for OtherElement in user.findall('battery'):
                 logging.debug("new buttery")
@@ -934,7 +744,7 @@ def createEventList():
                     for c in Entities.listDevice:
                         if deviceId == c.id and houseId == c.house:
                             if c.type == "Consumer":
-                                e = eventGeneral(c, houseId, est, lst, creation_time, profile, "load")
+                                e = EventGeneral(c, houseId, est, lst, creation_time, profile, "load")
                                 Entities.listEvent.append(e)
                                 #copy2(workingdir + "/Inputs/" + profile, workingdir + "/inputs")
                                 copy2(workingdir + "/inputs/" + profile, workingdir + "/output/SH")
@@ -943,7 +753,7 @@ def createEventList():
                                 #copy2(workingdir + "/Inputs/" + profile, workingdir + "/inputs")
                                 copy2(workingdir + "/inputs/" + profile, workingdir + "/output/PV")
 
-                                e = eventProducer(c, houseId, est, lst, creation_time, profile, "load", energycost)
+                                e = EventProducer(c, houseId, est, lst, creation_time, profile, "load", energycost)
 
                                 Entities.listEvent.append(e)
                                 # CODICE PROVVISORIO
@@ -975,7 +785,7 @@ def createEventList():
                     for c in Entities.listDevice:
                         if deviceId == c.id and houseId == c.house:
                             if c.type == "backgroundLoad":
-                                e = eventBackground(c, houseId, 0, profile)
+                                e = EventBackground(c, houseId, 0, profile)
                                 Entities.listEvent.append(e)
                 for device in user.findall('heatercooler'):
                     deviceId = device.find('id').text
@@ -988,7 +798,7 @@ def createEventList():
                     for c in Entities.listDevice:
                         if deviceId == c.id and houseId == c.house:
                             if c.type == "heaterCooler":
-                                e = eventHeaterCooler(c, houseId, 0, profile)
+                                e = EventHeaterCooler(c, houseId, 0, profile)
                                 Entities.listEvent.append(e)
                 for device in user.findall('battery'):
                     deviceId = device.find('id').text
@@ -1000,7 +810,7 @@ def createEventList():
                                 creation_time = device.find('creation_time').text
                                 soc = device.find('soc').text
                                 targetSoc = device.find('targetSoc').text
-                                e = eventBattery(c, houseId, soc, creation_time, aat, adt, targetSoc)
+                                e = EventBattery(c, houseId, soc, creation_time, aat, adt, targetSoc)
                                 Entities.listEvent.append(e)
                 for cp in user.findall('ChargingPoint'):
                     for device in cp.findall('ecar'):
@@ -1017,7 +827,7 @@ def createEventList():
                                     targetSoc = device.find('targetSoc').text
                                     V2G = device.find('V2G').text
                                     priority = device.find('priority').text
-                                    e = eventEcar(c, houseId, soc, creation_time, pat, pdt, aat, adt, targetSoc, V2G,
+                                    e = EventEcar(c, houseId, soc, creation_time, pat, pdt, aat, adt, targetSoc, V2G,
                                                   priority)
                                     Entities.listEvent.append(e)
         else:
@@ -1035,13 +845,13 @@ def createEventList():
                             targetSoc = device.find('targetSoc').text
                             V2G = device.find('V2G').text
                             priority = device.find('priority').text
-                            e = eventEcar(c, -1, soc, creation_time, pat, pdt, aat, adt, targetSoc, V2G, priority)
+                            e = EventEcar(c, -1, soc, creation_time, pat, pdt, aat, adt, targetSoc, V2G, priority)
                             Entities.listEvent.append(e)
 
 ####################################################################################
 #  Convert Timestamps of a timeseries of an X day in timestamps of simulation day  #
 ####################################################################################
-def adjustTime():
+def switchInTime():
     """ This method Convert Timestamps of a timeseries of an X day in timestamps of simulation day."""
 
     workingdir = Configuration.parameters['runtime_dir']
@@ -1091,7 +901,7 @@ def uploadInInputRepository():
 
     timestamp = datetime.timestamp(datetime_object)
     for c in Entities.listEvent:
-        if c.device.type == "Consumer" or c.device.type == "Producer":
+        if c.Device.type == "Consumer" or c.Device.type == "Producer":
             est_data = datetime.fromtimestamp(int(c.est))
             lst_data = datetime.fromtimestamp(int(c.lst))
             ct_data = datetime.fromtimestamp(int(c.creation_time))
@@ -1108,13 +918,13 @@ def uploadInInputRepository():
                 c.est = str(int(timestamp + midsecondsEST))
             else:
                 c.est = str(int(timestamp))
-            if c.device.type == "Consumer":
+            if c.Device.type == "Consumer":
                 Entities.enqueue_event(int(c.creation_time) + 100, c)
-            if c.device.type == "Producer":
+            if c.Device.type == "Producer":
                 Entities.enqueue_event(int(c.creation_time),  c)
 
         # logging.info("inserito")
-        elif c.device.type == "EV":
+        elif c.Device.type == "EV":
             logging.debug("new EV")
             book_time = datetime.fromtimestamp(int(c.creation_time))
             planned_arrival_time = datetime.fromtimestamp(int(c.planned_arrival_time))
@@ -1135,7 +945,7 @@ def uploadInInputRepository():
             c.planned_departure_time = str(int(timestamp + midseconds_planned_departure_time))
             c.actual_arrival_time = str(int(timestamp + midseconds_actual_arrival_time))
             c.actual_departure_time = str(int(timestamp + midseconds_actual_departure_time))
-            c.device.type = "CREATE_EV"
+            c.Device.type = "CREATE_EV"
             '''
             logging.info(c.device.id)
             logging.info("timestamp = " + str(timestamp))
@@ -1151,13 +961,13 @@ def uploadInInputRepository():
 
             Entities.enqueue_event(int(c.actual_departure_time),  c)
 
-        elif c.device.type == "heaterCooler":
+        elif c.Device.type == "heaterCooler":
             c.creation_time = str(int(timestamp))
             Entities.enqueue_event(int(c.creation_time),  c)
-        elif c.device.type == "backgroundLoad":
+        elif c.Device.type == "backgroundLoad":
             c.creation_time = str(int(timestamp))
             Entities.enqueue_event(int(c.creation_time),  c)
-        elif c.device.type == "battery":
+        elif c.Device.type == "battery":
             est_data = datetime.fromtimestamp(int(c.start_time))
             lst_data = datetime.fromtimestamp(int(c.end_time))
             ct_data = datetime.fromtimestamp(int(c.creation_time))
@@ -1185,9 +995,7 @@ def makeNewSimulation(pathneigh, pathload):
     date2 = date.split()
     dir1 = Configuration.parameters['current_sim_dir']
 
-    with open("../tt", "w") as f:
-        f.write(str(datetime.timestamp(datetime_object)).split(".")[0])
-        f.close()
+
     newdir = date2[0].replace('/', '_')
 
     sim_temp = newdir.split("_")
@@ -1311,7 +1119,7 @@ class ExternalSourceAgent(spade.agent.Agent):
         Entities.listEvent = []
 
         makeNewSimulation(self.pathneighbor, self.pathload2)
-        adjustTime()
+        switchInTime()
 
         createDevicesList()
         logging.info("List Created.")

@@ -15,6 +15,6 @@ RUN mkdir -p /home/scheduler
 #RUN mkdir -p /var/www/Simulations/demo
 #COPY users/demo/bin /home/gc/bin
 #RUN chmod +x ./starter.sh
-#COPY GCSimulator/Simulator/greenchargeSoloDim/bin /usr/local/lib/python3.8/dist-packages/gcsimulator
+#COPY gcsimulator/simulator/greenchargeSoloDim/bin /usr/local/lib/python3.8/dist-packages/gcsimulator
 #ENTRYPOINT [ "./starter.sh"]
 #CMD ["trivial"]

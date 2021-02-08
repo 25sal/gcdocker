@@ -97,7 +97,7 @@ def switchInTime(file, ast):
 ##################################################################################################
 # This method calculates consumption in KW of a load consumer. It is used in the delete message. #
 ##################################################################################################
-def calculate_consum(file):
+def calculateConsumption(file):
     """
     This method calculates consumption in KW of a load consumer. It is used in the delete message.
     Args:
@@ -123,7 +123,7 @@ def calculate_consum(file):
 # 2.3) send message                                                                              #
 # 2.4) wait for a response (if needed)                                                           #
 ##################################################################################################
-class dispatcher(Agent):
+class Dispatcher(Agent):
 
     def __init__(self, address, passw):
         """
@@ -138,7 +138,7 @@ class dispatcher(Agent):
             address: The agent Address
             passw: The agent Password
         """
-        super(dispatcher, self).__init__(address, passw)
+        super(Dispatcher, self).__init__(address, passw)
         self.idToLoad = {}
         self.abilitation = False
         self.messageToWait = Configuration.messageToWait
@@ -146,7 +146,7 @@ class dispatcher(Agent):
     ##################################################################################
     # This method check periodically if start/stop messages are sent by setupModule. #
     ##################################################################################
-    class disRecvBehav(PeriodicBehaviour):
+    class DispatcherMessageReceiver(PeriodicBehaviour):
         '''
         This method check periodically if start/stop messages are sent by setupModule.
         Args:
@@ -175,7 +175,7 @@ class dispatcher(Agent):
     ##############################################
     # This method consume events from the queue. #
     ##############################################
-    class consumeEvent(PeriodicBehaviour):
+    class ConsumeEventInQueue(PeriodicBehaviour):
         '''
         This method consume events from the queue.
         Args:
@@ -239,8 +239,8 @@ class dispatcher(Agent):
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
                         file.flush()
-                    elif next2[1].type == "EV" and next2[1].device.type == "CREATE_EV":
-                        next2[1].device.type = "EV_BOOKING"
+                    elif next2[1].type == "EV" and next2[1].Device.type == "CREATE_EV":
+                        next2[1].Device.type = "EV_BOOKING"
                         message = MessageFactory.create_ev(next2[1], next2[0], protocol_version)
                         await self.send(message)
                         file.write(message.body + "\n")
@@ -253,7 +253,7 @@ class dispatcher(Agent):
                     elif next2[1].type == "background":
                         message = MessageFactory.background(next2[1], next2[0], protocol_version)
                         await self.send(message)
-                    elif next2[1].type == "load" and next2[1].device.type == "Producer":
+                    elif next2[1].type == "load" and next2[1].Device.type == "Producer":
                         message = MessageFactory.create_producer(next2[1], next2[0], protocol_version)
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
@@ -317,7 +317,7 @@ class dispatcher(Agent):
                         f2.write(str(next2[0]))
                         f2.close()
                     completed += 1
-                    if nextload.device.type == "Producer" and nextload.type == "load":
+                    if nextload.Device.type == "Producer" and nextload.type == "load":
                         message = MessageFactory.create_producer(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
@@ -335,7 +335,7 @@ class dispatcher(Agent):
                         nextload.count = 1
                         es.Entities.enqueue_event(int(nextload.creation_time),  nextload)
                         file.flush()
-                    elif nextload.device.type == "Producer" and nextload.type == "LoadUpdate":
+                    elif nextload.Device.type == "Producer" and nextload.type == "LoadUpdate":
                         message = MessageFactory.update_producer(nextload, next2[0], protocol_version)
                         await self.send(message)
                         msg2 = await self.receive(timeout=3)
@@ -345,37 +345,37 @@ class dispatcher(Agent):
                             es.Entities.enqueue_event(int(nextload.creation_time),  nextload, int(next2[2]))
                         file.write(">>> " + message.body + "\n")
                         file.flush()
-                    elif nextload.device.type == "battery":
+                    elif nextload.Device.type == "battery":
                         message = MessageFactory.create_Battery(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
                         file.flush()
-                    elif nextload.type == "load" and nextload.device.type == "Consumer":
+                    elif nextload.type == "load" and nextload.Device.type == "Consumer":
                         total += 1
                         message = MessageFactory.create_load(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
-                        self.agent.idToLoad["[" + str(nextload.house) + ']:[' + str(nextload.device.id) + ']'] = nextload
+                        self.agent.idToLoad["[" + str(nextload.house) + ']:[' + str(nextload.Device.id) + ']'] = nextload
                     elif nextload.type == "delete":
-                        if nextload.device.id not in deletedList:
-                            deletedList.append(nextload.device.id)
+                        if nextload.Device.id not in deletedList:
+                            deletedList.append(nextload.Device.id)
                             message = MessageFactory.delete_load(nextload, next2[0], protocol_version)
                             await self.send(message)
                             file.write(">>> " + message.body + "\n")
                             file.flush()
-                    elif nextload.type == "EV" and nextload.device.type == "EV_ARRIVAL":
-                        nextload.device.type = "EV_DEPARTURE"
+                    elif nextload.type == "EV" and nextload.Device.type == "EV_ARRIVAL":
+                        nextload.Device.type = "EV_DEPARTURE"
                         message = MessageFactory.booking_request(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
                         file.flush()
-                    elif nextload.type == "EV" and nextload.device.type == "EV_BOOKING":
-                        nextload.device.type = "EV_ARRIVAL"
+                    elif nextload.type == "EV" and nextload.Device.type == "EV_BOOKING":
+                        nextload.Device.type = "EV_ARRIVAL"
                         message = MessageFactory.booking_request(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(message.body + "\n")
                         file.flush()
-                    elif nextload.type == "EV" and nextload.device.type == "EV_DEPARTURE":
+                    elif nextload.type == "EV" and nextload.Device.type == "EV_DEPARTURE":
                         message = MessageFactory.booking_request(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
@@ -409,7 +409,7 @@ class dispatcher(Agent):
                                     logging.debug(messageFromScheduler.body)
                                     delta = calculateTime(receivedLoad.profile)
                                     newTime = str(int(messageFromScheduler.body.split(" ")[3]) + int(delta))
-                                    mydel = es.eventDelete(receivedLoad.device, receivedLoad.house, newTime,calculate_consum(receivedLoad.profile))
+                                    mydel = es.EventDelete(receivedLoad.Device, receivedLoad.house, newTime, calculateConsumption(receivedLoad.profile))
                                     switchInTime(receivedLoad.profile, int(messageFromScheduler.body.split(" ")[3]))
                                     es.Entities.enqueue_event(int(newTime),  mydel)
                                     file.write("<<< " + messageFromScheduler.body + "\r\n")
@@ -434,7 +434,7 @@ class dispatcher(Agent):
                                         receivedLoad = self.agent.idToLoad[messageFromScheduler.body.split(" ")[1]]
                                         delta = calculateTime(receivedLoad.profile)
                                         newTime = str(int(messageFromScheduler.body.split(" ")[3]) + int(delta))
-                                        mydel = es.eventDelete(receivedLoad.device, receivedLoad.house, newTime,calculate_consum(receivedLoad.profile),messageFromScheduler.body.split(" ")[5])
+                                        mydel = es.EventDelete(receivedLoad.Device, receivedLoad.house, newTime, calculateConsumption(receivedLoad.profile), messageFromScheduler.body.split(" ")[5])
                                         switchInTime(receivedLoad.profile, int(messageFromScheduler.body.split(" ")[3]))
                                         es.Entities.enqueue_event(int(newTime),  mydel)
                                         file.write(">>> " + message.body + "\n")
@@ -455,7 +455,7 @@ class dispatcher(Agent):
                                         receivedLoad = self.agent.idToLoad[messageFromScheduler.body.split(" ")[1]]
                                         delta = calculateTime(receivedLoad.profile)
                                         newTime = str(int(messageFromScheduler.body.split(" ")[3]) + int(delta))
-                                        mydel = es.eventDelete(receivedLoad.device, receivedLoad.house, newTime,calculate_consum(receivedLoad.profile),messageFromScheduler.body.split(" ")[4])
+                                        mydel = es.EventDelete(receivedLoad.Device, receivedLoad.house, newTime, calculateConsumption(receivedLoad.profile), messageFromScheduler.body.split(" ")[4])
                                         switchInTime(receivedLoad.profile, int(messageFromScheduler.body.split(" ")[3]))
                                         es.Entities.enqueue_event(int(newTime),mydel)
                                         es.count += 1
@@ -490,7 +490,7 @@ class dispatcher(Agent):
         basejid = Configuration.parameters["userjid"]
         start_at = datetime.now() + timedelta(seconds=3)
         logging.info("ReceiverAgent started")
-        b = self.disRecvBehav(1, start_at=start_at)
+        b = self.DispatcherMessageReceiver(1, start_at=start_at)
         template = Template()
         template2 = Template()
         template = Template()
@@ -503,5 +503,5 @@ class dispatcher(Agent):
         self.presence.set_available(show=PresenceShow.CHAT)
         self.add_behaviour(b, template)
         start_at = datetime.now() + timedelta(seconds=3)
-        Behaviour2 = self.consumeEvent(1, start_at=start_at)
+        Behaviour2 = self.ConsumeEventInQueue(1, start_at=start_at)
         self.add_behaviour(Behaviour2, template2)
