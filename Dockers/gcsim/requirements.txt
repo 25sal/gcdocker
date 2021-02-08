@@ -1,3 +1,0 @@
- spade
- pyyaml
- aiohttp_cors
