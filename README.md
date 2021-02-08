@@ -1,5 +1,4 @@
-# gcdocker
-# gcdocker
+# GreenCharge Simulator
 The  GreenCharge  simulator reproduces in a virtual environment the events that occur in a real energy smart neighborhood (ESN) using a collection of real misured data [[1]](#aversa2020). It is based on the original  CoSSMic  simulator [[2]](#amato2018), and allows to extend the evaluation capability in real pilots, which are limited in the heterogeneity and number of devices and in the duration of operating trials.  
 The simulator is based on the discrete-event simulation (DES) model where the system appears as a discrete sequence of events in time.  
 
