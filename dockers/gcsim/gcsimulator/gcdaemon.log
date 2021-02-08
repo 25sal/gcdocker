@@ -1,0 +1,44 @@
+ERROR:root:start failed
+ERROR:root:start failed
+INFO:daemons.daemonize.simple:Succesfully daemonized process 38.
+INFO:daemons.startstop.simple:Beginning run loop for process.
+INFO:root:configuration loaded
+INFO:root:runtime folders created
+INFO:root:List Created.
+INFO:root:Information Added.
+INFO:root:2015-12-12 00:00:00
+INFO:root:Information Uploaded.
+INFO:spade.Web:Serving on http://greencharge.simulator:10021/
+INFO:aiosasl:attempting SCRAM-SHA-1 mechanism (using SCRAMHashInfo(hashfun_name='sha1', quality=1, minimum_iteration_count=4096) hashfun)
+INFO:demo:bound to jid: demo@greencharge.local/adaptor
+INFO:spade.Agent:Agent demo@greencharge.local/adaptor connected and authenticated.
+INFO:root:simulation runtime built
+INFO:aiosasl:attempting SCRAM-SHA-1 mechanism (using SCRAMHashInfo(hashfun_name='sha1', quality=1, minimum_iteration_count=4096) hashfun)
+INFO:demo:bound to jid: demo@greencharge.local/taskmanager
+INFO:spade.Agent:Agent demo@greencharge.local/taskmanager connected and authenticated.
+INFO:root:ReceiverAgent started
+INFO:aiosasl:attempting SCRAM-SHA-1 mechanism (using SCRAMHashInfo(hashfun_name='sha1', quality=1, minimum_iteration_count=4096) hashfun)
+INFO:demo:bound to jid: demo@greencharge.local/setupmodule
+INFO:spade.Agent:Agent demo@greencharge.local/setupmodule connected and authenticated.
+INFO:root:SenderAgent started
+INFO:root:InformBehav running
+INFO:root:Message start sent!
+INFO:spade.behaviour:Killing behavior OneShotBehaviour/startService with exit code: None
+INFO:root:DisRecvBehav running
+INFO:root:Message received with content: start
+INFO:root:DisRecvBehav running
+INFO:root:messaggio:ASSIGNED_START_TIME [1]:[3] 1 1449913400
+INFO:root:messaggio:SCHEDULED
+INFO:root:DisRecvBehav running
+INFO:root:Simulazione terminata.
+INFO:root:Ho rilevato un segnale di stop
+INFO:spade.behaviour:Killing behavior PeriodicBehaviour/disRecvBehav with exit code: None
+INFO:spade.behaviour:Killing behavior PeriodicBehaviour/consumeEvent with exit code: None
+INFO:demo:client shutting down (on request)
+INFO:demo:stopping stream
+INFO:spade.Agent:Client disconnected.
+INFO:spade.behaviour:Killing behavior PeriodicBehaviour/consumeEvent with exit code: None
+INFO:root:riceveid
+INFO:root:AAAAAA RICEVUTOOO
+INFO:aiohttp.access:172.20.0.3 [20/Jan/2021:09:01:00 +0000] "POST /postanswer HTTP/1.1" 200 182 "-" "-"
+INFO:spade.behaviour:Killing behavior PeriodicBehaviour/disRecvBehav with exit code: None
