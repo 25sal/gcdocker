@@ -36,6 +36,7 @@ import shutil
 from utils.config import Configuration
 import logging
 from os import listdir
+import copy
 LOGFILE = '/home/gc/simulator/gcdaemon.log'
 
 # logging.basicConfig(filename=LOGFILE, filemode= 'w', level=logging.INFO)
@@ -899,7 +900,7 @@ def switchInTime():
 ################################################################
 def uploadInInputRepository():
     """ This method enqueue objects in the shared queue."""
-
+    EVcreatedList = []
     date = Configuration.parameters['date'] + " 00:00:00"
     datetime_object = datetime.strptime(date, '%m/%d/%y %H:%M:%S')
 
@@ -949,7 +950,10 @@ def uploadInInputRepository():
             c.planned_departure_time = str(int(timestamp + midseconds_planned_departure_time))
             c.actual_arrival_time = str(int(timestamp + midseconds_actual_arrival_time))
             c.actual_departure_time = str(int(timestamp + midseconds_actual_departure_time))
-            c.device.type = "CREATE_EV"
+            if c.device.id not in EVcreatedList:
+                EVcreatedList.append(c.device.id)
+                c.type = "CREATE_EV"
+                Entities.enqueue_event(timestamp, c)
             '''
             logging.info(c.device.id)
             logging.info("timestamp = " + str(timestamp))
@@ -957,14 +961,20 @@ def uploadInInputRepository():
             logging.info("arrival_Time =  " + str(c.actual_arrival_time))
             logging.info("departure_Time = " + str(c.actual_departure_time))
             '''
-            Entities.enqueue_event(timestamp, c)
+            
+            creationEV = copy.deepcopy(c)
+            creationEV.type = "EV_BOOKING"
 
-            Entities.enqueue_event(int(c.creation_time),  c)
+            Entities.enqueue_event(int(c.creation_time),  creationEV)
+            bookingEV = copy.deepcopy(c)
+            bookingEV.type = "EV_ARRIVAL"
 
-            Entities.enqueue_event(int(c.actual_arrival_time),  c)
+            Entities.enqueue_event(int(c.actual_arrival_time),  bookingEV)
+            departureEV = copy.deepcopy(c)
+            departureEV.type = "EV_DEPARTURE"
 
-            Entities.enqueue_event(int(c.actual_departure_time),  c)
-
+            Entities.enqueue_event(int(c.actual_departure_time),  departureEV)
+            
         elif c.device.type == "heaterCooler":
             c.creation_time = str(int(timestamp))
             Entities.enqueue_event(int(c.creation_time),  c)
