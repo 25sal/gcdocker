@@ -243,8 +243,7 @@ class Dispatcher(Agent):
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
                         file.flush()
-                    elif next2[1].type == "EV" and next2[1].device.type == "CREATE_EV":
-                        next2[1].device.type = "EV_BOOKING"
+                    elif next2[1].device.type == "EV" and next2[1].type == "CREATE_EV":
                         message = MessageFactory.create_ev(next2[1], next2[0], protocol_version)
                         await self.send(message)
                         file.write(message.body + "\n")
@@ -367,19 +366,19 @@ class Dispatcher(Agent):
                             await self.send(message)
                             file.write(">>> " + message.body + "\n")
                             file.flush()
-                    elif nextload.type == "EV" and nextload.device.type == "EV_ARRIVAL":
-                        nextload.device.type = "EV_DEPARTURE"
+                    elif nextload.device.type == "EV" and nextload.type == "EV_ARRIVAL":
                         message = MessageFactory.booking_request(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
                         file.flush()
-                    elif nextload.type == "EV" and nextload.device.type == "EV_BOOKING":
-                        nextload.device.type = "EV_ARRIVAL"
+
+                    elif nextload.device.type == "EV" and nextload.type == "EV_BOOKING":
                         message = MessageFactory.booking_request(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(message.body + "\n")
                         file.flush()
-                    elif nextload.type == "EV" and nextload.device.type == "EV_DEPARTURE":
+
+                    elif nextload.device.type == "EV" and nextload.type == "EV_DEPARTURE":
                         message = MessageFactory.booking_request(nextload, next2[0], protocol_version)
                         await self.send(message)
                         file.write(">>> " + message.body + "\n")
