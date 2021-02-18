@@ -49,6 +49,7 @@ class Adaptor(Agent):
     Args:
         Agent: The spade Agent.
     '''
+    count = 0
     async def setup(self):
         start_at = datetime.now() + timedelta(seconds=3)
         self.mexToSend = queue.Queue()
@@ -89,22 +90,23 @@ class Adaptor(Agent):
                     id_load = parsed_json['id']
                     input_file = data['csvfile'].file
                     if input_file:
-                        f = open(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/HC/"+id_load+".csv", "w+")
+                        f = open(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/HC/"+str(self.count)+"_"+id_load+".csv", "w+")
                         for line in input_file:
                             f.write(line.decode("utf-8"))
-                    copy2(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/HC/"+id_load+".csv","/var/www/Simulations/demo/"+Configuration.parameters['user_dir']+"/output")
-
+                    copy2(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/HC/"+str(self.count)+"_"+id_load+".csv","/var/www/Simulations/demo/"+Configuration.parameters['user_dir']+"/output")
+                    
             elif(sub == "EV_PROFILE"):
                     id_load = parsed_json['id']
                     input_file = data['csvfile'].file
                     file_name = data['csvfile'].filename
                     if input_file:
-                        f = open(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/EV/"+id_load+".csv", "w+")
+                        f = open(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/EV/"+str(self.count)+"_"+id_load+".csv", "w+")
                         for line in input_file:
                             f.write(line.decode("utf-8"))
-                        f.flush()
+                        f.flush()    
                         f.close()
-                    copy2(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/EV/"+id_load+".csv","/var/www/Simulations/demo/"+Configuration.parameters['user_dir']+"/output")
+                    copy2(path+"/"+simdir+"/Results/"+Configuration.parameters['user_dir']+"/output/EV/"+str(self.count)+"_"+id_load+".csv","/var/www/Simulations/demo/"+Configuration.parameters['user_dir']+"/output")
+            self.count+=1
         except Exception as e:
             logging.info(e)
             logging.info("not valid request")
