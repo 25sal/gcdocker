@@ -21,3 +21,4 @@ dockers/gcsim/build/*
 dockers/gcsim/gcsimulator/agents/__pycache__
 dockers/gcsim/gcsimulator/utils/__pycache__
 .vscode/*
+users/demo/Simulations/dates/*/*/Results/*

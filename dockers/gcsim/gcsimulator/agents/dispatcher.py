@@ -37,6 +37,8 @@ from aioxmpp import PresenceShow
 from utils.config import Configuration
 import logging
 from utils.MessageFactory import MessageFactory
+import os
+import signal
 
 path.append("..")
 LOGFILE = './gcdaemon.log'
@@ -467,10 +469,53 @@ class Dispatcher(Agent):
                                 messageFromScheduler = await self.receive(timeout=10)
                     if es.Entities.sharedQueue.empty():
                         message = MessageFactory.end(actual_time)
+                        await self.send(message)
                         file.write(">>> " + message.body + "\n")
+
+                        finish = False
+                        if protocol_version == "1.0":
+                            while isinstance(messageFromScheduler, type(None)):
+                                messageFromScheduler = await self.receive(timeout=20)
+                            while messageFromScheduler.body.split(" ")[0] != "SCHEDULED":
+                                logging.info("messaggio:" + messageFromScheduler.body)
+                                try:
+                                    file.write("<<< " + messageFromScheduler.body + "\r\n")
+                                    file.flush()
+                                except Exception as e:
+                                    logging.warning(e)
+                                    logging.warning("unrecognized Message")
+                                messageFromScheduler = await self.receive()
+                                while (isinstance(messageFromScheduler, type(None))):
+                                    messageFromScheduler = await self.receive(timeout=20)
+                                logging.info("messaggio:" + messageFromScheduler.body)
+                            file.write("<<< " + messageFromScheduler.body + "\r\n")
+                            file.flush()
+                        else:
+                            messageFromScheduler = await self.receive(timeout=20)
+                            while not isinstance(messageFromScheduler, type(None)):
+                                logging.info(messageFromScheduler.body)
+                                if messageFromScheduler.body == "AckMessage":
+                                    logging.info("Ack Received")
+                                else:
+                                    try:
+                                        file.write(">>> " + message.body + "\n")
+                                        file.write("<<< " + messageFromScheduler.body + "\r\n")
+                                        file.flush()
+                                    except Exception as e:
+                                        logging.info(e)
+                                messageFromScheduler = await self.receive(timeout=20)
                         file.flush()
                         file.close()
-                        finish = False
+                        PIDFILE = '/home/gc/simulator/gcdaemon.pid'
+                        pf = open(PIDFILE,'r')
+                        pid = int(pf.read().strip())
+                        logging.info(pid)
+                        pf.close()
+                        #open(PIDFILE, 'w').close()
+
+                        os.killpg(os.getpgid(pid), signal.SIGHUP)
+                        os.killpg(os.getpgid(pid), signal.SIGKILL)
+                        os.kill(pid,signal.SIGKILL)
                         logging.info("Simulazione terminata.")
 
                 if WasEnable:

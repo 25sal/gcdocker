@@ -45,7 +45,6 @@ def start_optimizer(optimizer, policy):
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE)
         stdout, stderr = process.communicate()
-        print(stdout.decode('utf-8'))
 
 
 

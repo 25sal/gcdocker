@@ -175,6 +175,17 @@ class GCDaemon(run.RunDaemon):
 
 
 
+def startBycode():
+    PIDFILE = '/home/gc/simulator/gcdaemon.pid'
+
+    daemon = GCDaemon(pidfile=PIDFILE)
+    try:
+        daemon.start()
+    except Exception as e:
+        print(e)
+        logging.error("start failed")
+
+
 if __name__ == "__main__":
 
     PIDFILE = '/home/gc/simulator/gcdaemon.pid'
@@ -200,19 +211,28 @@ if __name__ == "__main__":
         else:
             try:
                 daemon.start()
-            except:
+            except Exception as e:
+                print(e)
                 logging.error("start failed")
 
     elif 'stop' ==  args.cmd:
         print("Stopping ...")
         pf = open(PIDFILE,'r')
-        pid = int(pf.read().strip())
-        logging.info(pid)
-        pf.close()
-        os.killpg(os.getpgid(pid), signal.SIGHUP)
-        os.killpg(os.getpgid(pid), signal.SIGKILL)
-        os.kill(pid,signal.SIGKILL)
-        #daemon.stop()
+        stringpid = pf.read().strip()
+        pid = int(stringpid)
+        try:
+            os.getpgid(pid)
+            logging.info(pid)
+            pf.close()
+            os.killpg(os.getpgid(pid), signal.SIGHUP)
+            os.killpg(os.getpgid(pid), signal.SIGKILL)
+            os.kill(pid,signal.SIGKILL)
+        except:
+            print('no process running')
+
+            
+
+            #daemon.stop()
 
     elif 'restart' == sys.argv[1]:
         print("Restarting ...")

@@ -2,15 +2,15 @@ config:
   adaptor: adaptor
   adaptor_address: greencharge.simulator
   adaptor_port: 10021
-  date: 12/12/15
+  date: 08/10/16
+  forcedwait: false
   protocol: '1.0'
   scheduler: actormanager
-  simulation: trivialComplete
-  simulation_dir: /home/gc/Simulations
+  simulation: '20210330_123716'
+  simulation_dir: /home/gc/Simulations/dates/08-10-16
   simulator: taskmanager
   userjid: demo@greencharge.local
+  web_url: http://localhost/demo
   webdir: /var/www/Simulations/demo
   workingdir: /home/gc/bin
   xmpp_password: demo
-  web_url: http://localhost/demo
-  forcedwait: false

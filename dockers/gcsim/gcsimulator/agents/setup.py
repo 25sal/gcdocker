@@ -861,9 +861,7 @@ def switchInTime():
     entry = []
     allFilenames = listdir(workingdir+'/inputs')
     csvFilenames = [ filename for filename in allFilenames if filename.endswith( ".csv" ) ]
-    print(csvFilenames)
     for file in csvFilenames:
-            print(file)
             with open(workingdir + "/inputs/" + file, "r") as f:
                 with open(workingdir + "/inputs/temp" + file, "w") as f2:
                     reader = csv.reader(f)

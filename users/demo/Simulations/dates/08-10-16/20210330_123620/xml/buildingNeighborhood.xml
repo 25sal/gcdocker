@@ -1,0 +1,183 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<neighborhood id="1" name="test">
+  <house id="12">
+    <user id="0">
+      <heatercooler>
+        <type>NS-Consumer</type>
+        <name>HeaterCooler</name>
+        <id>0</id>
+      </heatercooler>
+      <backgroundload>
+        <type>NS-Consumer</type>
+        <name>BackGroundLoad</name>
+        <id>6</id>
+      </backgroundload>
+    </user>
+  </house>
+  <house id="11">
+    <user id="0">
+      <device>
+        <type>Consumer</type>
+        <name>DishWasher</name>
+        <id>1</id>
+      </device>
+      <device>
+        <type>Consumer</type>
+        <name>WashDish</name>
+        <id>2</id>
+      </device>
+      <backgroundload>
+        <type>NS-Consumer</type>
+        <name>BackGroundLoad</name>
+        <id>6</id>
+      </backgroundload>
+    </user>
+  </house>
+  <house id="10">
+    <user id="0">
+      <device>
+        <type>Consumer</type>
+        <name>DishWasher</name>
+        <id>1</id>
+      </device>
+      <device>
+        <type>Consumer</type>
+        <name>WashDish</name>
+        <id>2</id>
+      </device>
+      <device>
+        <type>Producer</type>
+        <name>PVPanel</name>
+        <id>5</id>
+      </device>
+      <backgroundload>
+        <type>NS-Consumer</type>
+        <name>BackGroundLoad</name>
+        <id>6</id>
+      </backgroundload>
+    </user>
+  </house>
+  <house id="9">
+    <user id="0">
+      <device>
+        <type>Consumer</type>
+        <name>WashDish</name>
+        <id>2</id>
+      </device>
+      <heatercooler>
+        <type>NS-Consumer</type>
+        <name>HeaterCooler</name>
+        <id>4</id>
+      </heatercooler>
+      <device>
+        <type>Producer</type>
+        <name>PVPanel</name>
+        <id>5</id>
+      </device>
+      <backgroundload>
+        <type>NS-Consumer</type>
+        <name>BackGroundLoad</name>
+        <id>6</id>
+      </backgroundload>
+    </user>
+  </house>
+  <house id="8">
+    <user id="0">
+      <device>
+        <type>Consumer</type>
+        <name>WashDish</name>
+        <id>2</id>
+      </device>
+      <backgroundload>
+        <type>NS-Consumer</type>
+        <name>BackGroundLoad</name>
+        <id>6</id>
+      </backgroundload>
+    </user>
+  </house>
+  <house id="7">
+    <user id="0">
+      <device>
+        <type>Consumer</type>
+        <name>WashDish</name>
+        <id>2</id>
+      </device>
+      <device>
+        <type>Producer</type>
+        <name>PVPanel</name>
+        <id>5</id>
+      </device>
+      <backgroundload>
+        <type>NS-Consumer</type>
+        <name>BackGroundLoad</name>
+        <id>6</id>
+      </backgroundload>
+    </user>
+  </house>
+  <house id="4">
+    <user id="0">
+      <ChargingPoint id="0" peakLoad="3000" ConnectorsType="DC">
+        <ecar>
+          <model>EcarModel1</model>
+          <capacity>24</capacity>
+          <maxchpowac>4</maxchpowac>
+          <maxchpowcc>40</maxchpowcc>
+          <maxdispowac>100</maxdispowac>
+          <maxdispowcc>100</maxdispowcc>
+          <maxallen>99</maxallen>
+          <minallen>2</minallen>
+          <sbch>90.0</sbch>
+          <sbdis>0.0</sbdis>
+          <cheff>0.7</cheff>
+          <dis_eff>0.0</dis_eff>
+          <type>Prosumer</type>
+          <name>Ecar_model</name>
+          <id>3</id>
+        </ecar>
+      </ChargingPoint>
+      <heatercooler>
+        <type>NS-Consumer</type>
+        <name>HeaterCooler</name>
+        <id>4</id>
+      </heatercooler>
+      <device>
+        <type>Producer</type>
+        <name>PVPanel</name>
+        <id>5</id>
+      </device>
+      <backgroundload>
+        <type>NS-Consumer</type>
+        <name>BackGroundLoad</name>
+        <id>6</id>
+      </backgroundload>
+    </user>
+  </house>
+  <house id="3">
+    <user id="0">
+      <device>
+        <type>Producer</type>
+        <name>PVPanel</name>
+        <id>5</id>
+      </device>
+      <backgroundload>
+        <type>NS-Consumer</type>
+        <name>BackGroundLoad</name>
+        <id>6</id>
+      </backgroundload>
+    </user>
+  </house>
+  <house id="1">
+    <user id="0">
+      <device>
+        <type>Producer</type>
+        <name>PVPanel</name>
+        <id>5</id>
+      </device>
+      <backgroundload>
+        <type>NS-Consumer</type>
+        <name>BackGroundLoad</name>
+        <id>6</id>
+      </backgroundload>
+    </user>
+  </house>
+</neighborhood>

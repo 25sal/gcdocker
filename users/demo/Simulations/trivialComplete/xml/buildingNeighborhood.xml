@@ -38,11 +38,7 @@
 			<name>DishWasher</name>
 			<id>3</id>
       </device>
-      <device>
-			<type>Consumer</type>
-			<name>WashingMachine</name>
-			<id>4</id>
-      </device>
+
 	  <battery>
 			<model>battery1</model>
 			<capacity>8000</capacity>
