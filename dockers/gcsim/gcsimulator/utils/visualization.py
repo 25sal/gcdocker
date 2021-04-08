@@ -87,7 +87,7 @@ class Intersection:
 
 
 class EnergyOutput:
-    cons_series = {'EV', 'SH', 'HC'}
+    cons_series = {'EV', 'SH', 'HC', 'BG'}
     prod_series = {'PV'}
     sample_time = None
     self_consumption = None

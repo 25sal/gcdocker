@@ -1076,8 +1076,13 @@ def copyInscheduler():
     # mydir = .split("/")[-1]
     # print ( myd i r)
 
-    os.mkdir(webdir + "/" + mydir)
-    os.mkdir(webdir + "/" + mydir + "/output")
+    try:
+        os.mkdir(webdir + "/" + mydir)
+        os.mkdir(webdir + "/" + mydir + "/output")
+    except:
+        shutil.rmtree(webdir + "/" + mydir+"/")
+        os.mkdir(webdir + "/" + mydir)
+        os.mkdir(webdir + "/" + mydir + "/output")
 
     for file_name in src_files:
         full_file_name = os.path.join(workingdir + "/inputs/", file_name)

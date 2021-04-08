@@ -18,6 +18,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+from os import path
 import os
 import csv
 import glob
@@ -26,9 +27,9 @@ import shutil
 from scipy import interpolate
 import matplotlib.pyplot as plt
 import numpy as np
-from utils import visualization
+import visualization
 import sqlite3
-from utils.config import Configuration
+import config 
 
 class Node:
     def __init__(self, name):
@@ -123,6 +124,7 @@ class Checker:
         prod_files = [os.path.join(dp, f) for dp, dn, filenames in os.walk(path+"/PV") for f in filenames if f.endswith('.csv')]
         self.readConsumptionProduction(prod_files, self.energyProducerDict)
         ev_files = [os.path.join(dp, f) for dp, dn, filenames in os.walk(path+"/EV") for f in filenames if f.endswith('.csv')]
+        bg_files = [os.path.join(dp, f) for dp, dn, filenames in os.walk(path+"/BG") for f in filenames if f.endswith('.csv')]
         self.readConsumptionProduction(ev_files, self.energyEVDict)
         for key,energy in self.energyDict.items():
             self.totalEnergyConsumption += float(energy)
@@ -131,22 +133,24 @@ class Checker:
         for key,energy in self.energyProducerDict.items():
             self.totalEnergyProduced += float(energy)
         self.totalEnergyConsumption = self.totalEnergyConsumption - self.totalEnergyProduced
+
         self.workWithOutputTXT(path)
 
         for key,value in self.powerPeakListFiles.items():
             self.powerPeakListFiles[key] = generatePowerTimeSeries(value,startTime)
         for key,energy in self.energyProducerDict.items():
-            self.pvListResampled[key] = generateEnergyTimeSeries(key,startTime)
+            self.pvListResampled[key] = generatePowerTimeSeries(key,startTime)
         for key,energy in self.energyDict.items():
             if(key not in self.pvListResampled):
-                self.consumerResampled[key] = generateEnergyTimeSeries(key,startTime)
+                print(key)
+                self.consumerResampled[key] = generatePowerTimeSeries(key,startTime)
+
         self.calculateSelfConsumption()
         self.readNeighborhoodXML(pathXML, startTime)
         self.readLoadXML(pathXML, startTime)
         sumForPowerPeak(self.root, self.powerPeakListFiles)
         findPeak(self.root, self.listOfPeaks)
         self.checkPowerPeakConstraint()
-
         self.checkEnergyRespectToCapacityConstraint()
         self.checkEnergyRespectToConnectionTime()
         self.checkselfConsumedEnergyRespectToProduction()
@@ -222,7 +226,8 @@ class Checker:
         tree = ET.parse(pathXML +'/neighborhood.xml')
         neighborhood = tree.getroot()
         buildingID = "["
-        for elem in neighborhood:
+        for elem in neighborhood: # CASE 
+         
             buildingID = "["
             root = Node("root")
             if 'peakLoad' in elem.attrib:
@@ -230,17 +235,21 @@ class Checker:
                     self.cpNum +=1
                 buildingID += elem.attrib['id']+"]"
                 buildingID += ":["
-                for subelement in elem:
+                for subelement in elem: # UTENTI
+                  
                     if(subelement.tag == "ChargingPoint"):
                         self.cpNum +=1
+
                     if 'peakLoad' in subelement.attrib:
                         tempo = buildingID + subelement.attrib['id']+"]"
-                    for subsubelement in subelement:
+                    for subsubelement in subelement: # charginPoint
+                       
                         if(subsubelement.tag == "ChargingPoint"):
                             self.cpNum +=1
                         if 'peakLoad' in subsubelement.attrib:
                             tempo = buildingID + subsubelement.attrib['id']+"]"
-                        for ecar in subsubelement:
+                        for ecar in subsubelement: # car 
+                          
                             if(ecar.tag == "ecar"):
                                 tempo = '[' + ecar.find("id").text+']'
                                 self.evList[tempo].capacity = float(ecar.find("capacity").text)
@@ -260,9 +269,9 @@ class Checker:
         tree = ET.parse(pathXML +'/loads.xml')
         neighborhood = tree.getroot()
         buildingID = "["
+        self.root = Node("root")
         for elem in neighborhood:
             buildingID = "["
-            self.root = Node("root")
             elemNode = self.root.addChild("["+elem.attrib['id']+"]")
             if 'peakLoad' in elem.attrib:
                 buildingID += elem.attrib['id']+"]"
@@ -360,7 +369,7 @@ class Checker:
                     self.powerPeakListFiles[id] = csv_name
                 if(splittedMessage[1] == "EV"):
                     id = splittedMessage[6]
-                    csv_name = path+'/EV/'+ splittedMessage[3]+'.csv'
+                    csv_name = path+'/EV/'+ splittedMessage[6].split(":")[0]+"_"+splittedMessage[2]+'.csv'
                     self.powerPeakListFiles[id] = csv_name
                     longId =  splittedMessage[2]
                     self.evList[longId] = EV()
@@ -390,14 +399,23 @@ class Checker:
             offeredFlexTime = ev.adt - ev.aat
             actualFlexTime = plug_out_time - ev.aat
             RequiredEnergy = ev.capacity*(ev.targetSoc - ev.soc)
-            offeredFlexibility.append(1-(RequiredEnergy/ev.maxch)/offeredFlexTime)
-            actualFlexibility.append(1-(RequiredEnergy/ev.maxch)/actualFlexTime)
-            V2GFlexibility.append(1-(RequiredEnergy/ev.maxDisPow)/offeredFlexTime)
+          
+            if offeredFlexTime != 0:
+                offeredFlexibility.append(1-(RequiredEnergy/ev.maxch)/offeredFlexTime)
+                V2GFlexibility.append(1-(RequiredEnergy/ev.maxDisPow)/offeredFlexTime)
+            else:
+                offeredFlexibility.append(0)
+                V2GFlexibility.append(0)
+            if actualFlexTime != 0:
+                actualFlexibility.append(1-(RequiredEnergy/ev.maxch)/actualFlexTime)
+            else:
+                actualFlexibility.append(0)
+            
         offeredFlexibilityIndex = 0
         actualFlexibilityIndex = 0
         V2GFlexibilityIndex = 0
         for i in range(0,len(offeredFlexibility)):
-            print(offeredFlexibility[i])
+          
             offeredFlexibilityIndex += offeredFlexibility[i]
             actualFlexibilityIndex += actualFlexibility[i]
             V2GFlexibilityIndex += V2GFlexibility[i]
@@ -539,7 +557,7 @@ class Checker:
         cwd_parts = cwd.split("/")
         sim_date = cwd_parts[-1]
         parts = sim_date.split("_")
-        print(parts)
+
         sim_date = ' 12_12_15'
         test_file = "../../tests/" + sim_date + "/outputParam.csv"
         test_values = None
@@ -556,10 +574,11 @@ def findPeak(node, listOfPeaks):
         node:
         listOfPeaks:
     """
+    
     max = 0
     for i in range(0,287):
-        if(node.data[i]>max):
-            max = node.data[i]
+        if(float(node.data[i][0])>max):
+            max = node.data[i][0]
     if(node.name != 'root'):
         listOfPeaks[node.name] = max
 
@@ -572,7 +591,7 @@ def printChilds(node):
     Args:
         node:
     """
-    print(node.name)
+  
     for i in range(0,287):
         print(node.data[i])
     for childNode in node.children:
@@ -586,13 +605,15 @@ def sumForPowerPeak(node, dictConsumer):
         dictConsumer:
     """
     for nodechild in node.children:
-        print(node.name)
+    
+        #print(nodechild.name)
         powerList = sumForPowerPeak(nodechild, dictConsumer)
         for i in range(0,287):
             node.data[i] += powerList[i]
+        
     for key,consumer in dictConsumer.items():
         if(key == node.name):
-            print(key)
+            #print(key)
             for i in range(0,287):
                 node.data[i] += consumer[i]
     return node.data
@@ -679,7 +700,11 @@ def html_images(folder):
     """
     html_file = open(folder + "/index.html", "w")
     html_file.write('<html><body>')
-    images = glob.glob(folder + "/*.png")
+    images = glob.glob( "./*.png")
+    for image in images:
+        shutil.copy2(image,folder)
+        os.remove(os.path.basename(image))
+    images= glob.glob(folder+ "/*.png")
     for image in images:
         html_file.write('<img src="'+os.path.basename(image)+'"/>')
     html_file.write('</body></html>')
@@ -692,7 +717,7 @@ def html_images(folder):
 # Create a Database Table to store all events/devices of a scenario  #
 ######################################################################
 def createTable():
-    workingdir = Configuration.parameters['workingdir']
+    workingdir = config.Configuration.parameters['workingdir']
     db_filename = workingdir + '/xml/input.db'
     conn = sqlite3.connect(db_filename)
     schema_filename = '../xml/schema.sql'
@@ -886,10 +911,18 @@ def createTable():
 
 if __name__ == "__main__":
 
-
     checker = Checker()
-    visualization.callExternal(".", ".../../Simulations/trivial/Results/12_12_15_3/output")
+  
+    visualization.callExternal("../../Simulations/_dates/10-08-16/RealScenario/Results/10_08_16_2")
 
-    checker.doChecks("../../Simulations/trivial/Results/12_12_15_3/output", 1449878400, "../../Simulations/trivial/Results/12_12_15_3/xml", "../../Simulations/trivial/Results/12_12_15_3")
+    checker.doChecks("../../Simulations/_dates/10-08-16/RealScenario/Results/10_08_16_2/output", 1475877600, 
+    "../../Simulations/_dates/10-08-16/RealScenario/Results/10_08_16_2/xml", 
+    "../../Simulations/_dates/10-08-16/RealScenario/Results/10_08_16_2")
     #shutil.copy('../../../../../../dockers/gcsim/gcsimulator/templates/checks.html', 'checks.html')
-    html_images("./output")
+    html_images("../../Simulations/_dates/10-08-16/RealScenario/Results/10_08_16_2/output")
+
+    # Simulations/dates/10-08-16/RealScenario/Results/10_08_16_1/output
+    # Simulations/dates/10-08-16/RealScenario/Results/10_08_16_1/output
+    # 1475877600
+    # Simulations/dates/10-08-16/RealScenario/Results/10_08_16_1/xml
+    # Simulations/dates/10-08-16/RealScenario/Results/10_08_16_1

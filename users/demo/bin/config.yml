@@ -7,7 +7,7 @@ config:
   protocol: '1.0'
   scheduler: actormanager
   simulation: '20210330_123716'
-  simulation_dir: /home/gc/Simulations/dates/08-10-16
+  simulation_dir: /home/gc/Simulations/_dates/08-10-16
   simulator: taskmanager
   userjid: demo@greencharge.local
   web_url: http://localhost/demo

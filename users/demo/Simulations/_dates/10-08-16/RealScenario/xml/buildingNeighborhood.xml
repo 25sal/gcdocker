@@ -1,0 +1,183 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<neighborhood id="1" name="test" peakLoad="30000">
+  <house id="12" peakLoad="5000">
+    <user id="0">
+      <heatercooler>
+        <type>NS-Consumer</type>
+        <name>HeaterCooler</name>
+        <id>0</id>
+      </heatercooler>
+      <backgroundload>
+        <type>NS-Consumer</type>
+        <name>BackGroundLoad</name>
+        <id>6</id>
+      </backgroundload>
+    </user>
+  </house>
+  <house id="11" peakLoad="5000">
+    <user id="0">
+      <device>
+        <type>Consumer</type>
+        <name>DishWasher</name>
+        <id>1</id>
+      </device>
+      <device>
+        <type>Consumer</type>
+        <name>WashDish</name>
+        <id>2</id>
+      </device>
+      <backgroundload>
+        <type>NS-Consumer</type>
+        <name>BackGroundLoad</name>
+        <id>6</id>
+      </backgroundload>
+    </user>
+  </house>
+  <house id="10" peakLoad="5000">
+    <user id="0">
+      <device>
+        <type>Consumer</type>
+        <name>DishWasher</name>
+        <id>1</id>
+      </device>
+      <device>
+        <type>Consumer</type>
+        <name>WashDish</name>
+        <id>2</id>
+      </device>
+      <device>
+        <type>Producer</type>
+        <name>PVPanel</name>
+        <id>5</id>
+      </device>
+      <backgroundload>
+        <type>NS-Consumer</type>
+        <name>BackGroundLoad</name>
+        <id>6</id>
+      </backgroundload>
+    </user>
+  </house>
+  <house id="9" peakLoad="5000">
+    <user id="0">
+      <device>
+        <type>Consumer</type>
+        <name>WashDish</name>
+        <id>2</id>
+      </device>
+      <heatercooler>
+        <type>NS-Consumer</type>
+        <name>HeaterCooler</name>
+        <id>4</id>
+      </heatercooler>
+      <device>
+        <type>Producer</type>
+        <name>PVPanel</name>
+        <id>5</id>
+      </device>
+      <backgroundload>
+        <type>NS-Consumer</type>
+        <name>BackGroundLoad</name>
+        <id>6</id>
+      </backgroundload>
+    </user>
+  </house>
+  <house id="8" peakLoad="5000">
+    <user id="0">
+      <device>
+        <type>Consumer</type>
+        <name>WashDish</name>
+        <id>2</id>
+      </device>
+      <backgroundload>
+        <type>NS-Consumer</type>
+        <name>BackGroundLoad</name>
+        <id>6</id>
+      </backgroundload>
+    </user>
+  </house>
+  <house id="7" peakLoad="5000">
+    <user id="0">
+      <device>
+        <type>Consumer</type>
+        <name>WashDish</name>
+        <id>2</id>
+      </device>
+      <device>
+        <type>Producer</type>
+        <name>PVPanel</name>
+        <id>5</id>
+      </device>
+      <backgroundload>
+        <type>NS-Consumer</type>
+        <name>BackGroundLoad</name>
+        <id>6</id>
+      </backgroundload>
+    </user>
+  </house>
+  <house id="4" peakLoad="5000">
+    <user id="0">
+      <ChargingPoint id="0" peakLoad="3000" ConnectorsType="DC">
+        <ecar>
+          <model>EcarModel1</model>
+          <capacity>24</capacity>
+          <maxchpowac>3.6</maxchpowac>
+          <maxchpowcc>3.6</maxchpowcc>
+          <maxdispowac>3.6</maxdispowac>
+          <maxdispowcc>3.6</maxdispowcc>
+          <maxallen>1</maxallen>
+          <minallen>1</minallen>
+          <sbch>0.8</sbch>
+          <sbdis>0.7</sbdis>
+          <cheff>0.9</cheff>
+          <dis_eff>0.9</dis_eff>
+          <type>Prosumer</type>
+          <name>Ecar_model</name>
+          <id>3</id>
+        </ecar>
+      </ChargingPoint>
+      <heatercooler>
+        <type>NS-Consumer</type>
+        <name>HeaterCooler</name>
+        <id>4</id>
+      </heatercooler>
+      <device>
+        <type>Producer</type>
+        <name>PVPanel</name>
+        <id>5</id>
+      </device>
+      <backgroundload>
+        <type>NS-Consumer</type>
+        <name>BackGroundLoad</name>
+        <id>6</id>
+      </backgroundload>
+    </user>
+  </house>
+  <house id="3" peakLoad="5000">
+    <user id="0">
+      <device>
+        <type>Producer</type>
+        <name>PVPanel</name>
+        <id>5</id>
+      </device>
+      <backgroundload>
+        <type>NS-Consumer</type>
+        <name>BackGroundLoad</name>
+        <id>6</id>
+      </backgroundload>
+    </user>
+  </house>
+  <house id="1" peakLoad="5000">
+    <user id="0">
+      <device>
+        <type>Producer</type>
+        <name>PVPanel</name>
+        <id>5</id>
+      </device>
+      <backgroundload>
+        <type>NS-Consumer</type>
+        <name>BackGroundLoad</name>
+        <id>6</id>
+      </backgroundload>
+    </user>
+  </house>
+</neighborhood>

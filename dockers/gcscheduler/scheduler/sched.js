@@ -180,7 +180,7 @@ function log(msg, msgid)
 
     	  //jsonResponse["sim_id"]=jsonRequest.sim_id;
           jsonResponse["time"]=tokens[27];
-          jsonResponse["id"]=tokens[2];
+          jsonResponse["id"]=tokens[5].split(":")[0]+":"+tokens[1];
 	  form.append("response", JSON.stringify(jsonResponse));
 	  const fileBuffer = Buffer.from(csvstr, 'utf-8');
 	  form.append('csvfile',fileBuffer ,'test.csv');

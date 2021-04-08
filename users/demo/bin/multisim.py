@@ -22,15 +22,15 @@ if __name__ == "__main__":
 		day = sdate + timedelta(days=i)
 		days.append(day.strftime("%m-%d-%y"))
 	print(days)
-	for dir in os.listdir("../Simulations/dates/"):
+	for dir in os.listdir("../Simulations/_dates/"):
 		if(dir in days):
-			for dir2 in os.listdir("../Simulations/dates/"+dir):
+			for dir2 in os.listdir("../Simulations/_dates/"+dir):
 				newDate = dir.replace('-', '/')
 				with open('./config.yml') as f:
 					data = yaml.load(f, Loader=yaml.FullLoader)
 					data["config"]["date"] = str(newDate)
 					data["config"]["simulation"] = dir2
-					data["config"]["simulation_dir"] = "/home/gc/Simulations/dates/"+dir
+					data["config"]["simulation_dir"] = "/home/gc/Simulations/_dates/"+dir
 					f.close()
 					with open('./config.yml', 'w') as f:
 						yaml.dump(data, f)
@@ -39,6 +39,7 @@ if __name__ == "__main__":
 					time.sleep(5)
 					active = True
 					while(active):
+						time.sleep(5)
 						with open('../simulator/gcdaemon.pid', 'r') as f:
 							r = f.readline()
 						try:
@@ -46,7 +47,3 @@ if __name__ == "__main__":
 						except:
 							active = False
 					print('Simulazione terminata')
-					
-    					
-
-    
